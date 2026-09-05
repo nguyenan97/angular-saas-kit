@@ -1,0 +1,41 @@
+name: Bug report
+description: Something in the kit does not behave as documented.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you saw, and what you expected instead.
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: >
+        Steps, or a link to a fork. A bug we cannot reproduce usually gets
+        closed unfixed, so this is the field that decides the outcome.
+      placeholder: |
+        1. npx nx serve dashboard
+        2. Switch accent to emerald
+        3. ...
+    validations: { required: true }
+  - type: input
+    id: version
+    attributes:
+      label: Kit version or commit SHA
+    validations: { required: true }
+  - type: input
+    id: env
+    attributes:
+      label: Node / npm / browser
+      placeholder: Node 22.13, npm 11.0, Chrome 141
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before filing
+      options:
+        - label: I ran `npm ci` on a clean checkout
+          required: true
+        - label: I searched existing issues
+          required: true

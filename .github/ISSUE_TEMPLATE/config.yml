@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/nguyenan97/angular-saas-kit/discussions
+    about: Usage questions and open-ended ideas belong in Discussions.

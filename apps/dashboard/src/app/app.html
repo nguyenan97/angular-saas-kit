@@ -1,0 +1,80 @@
+<div class="flex min-h-dvh bg-background text-foreground">
+  <!-- Sidebar. Width comes from a token so the topbar offset can never
+       drift out of sync with it. -->
+  <aside
+    class="fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card transition-[width] duration-200"
+    [style.width.rem]="sidebarOpen() ? 16 : 3.5"
+  >
+    <div class="flex h-topbar items-center gap-2 border-b border-border px-4">
+      <span class="size-6 shrink-0 rounded-md bg-primary"></span>
+      @if (sidebarOpen()) {
+        <span class="truncate text-sm font-semibold">Angular SaaS Kit</span>
+      }
+    </div>
+
+    <nav class="flex-1 space-y-1 overflow-y-auto p-2" aria-label="Main">
+      @for (item of nav; track item.path) {
+        <a
+          [routerLink]="item.path"
+          routerLinkActive="bg-accent text-accent-foreground"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          [attr.aria-disabled]="item.soon ? 'true' : null"
+          [attr.title]="sidebarOpen() ? null : item.label"
+        >
+          <span class="size-2 shrink-0 rounded-full bg-current opacity-40"></span>
+          @if (sidebarOpen()) {
+            <span class="truncate">{{ item.label }}</span>
+            @if (item.soon) {
+              <span
+                class="ml-auto rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
+                >soon</span
+              >
+            }
+          }
+        </a>
+      }
+    </nav>
+  </aside>
+
+  <div
+    class="flex min-w-0 flex-1 flex-col transition-[margin] duration-200"
+    [style.marginLeft.rem]="sidebarOpen() ? 16 : 3.5"
+  >
+    <header
+      class="sticky top-0 z-30 flex h-topbar items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur"
+    >
+      <button
+        type="button"
+        class="rounded-md border border-border px-2.5 py-1 text-xs hover:bg-accent hover:text-accent-foreground"
+        [attr.aria-expanded]="sidebarOpen()"
+        aria-controls="app-sidebar"
+        (click)="toggleSidebar()"
+      >
+        {{ sidebarOpen() ? 'Collapse' : 'Expand' }}
+      </button>
+
+      <span class="text-sm font-medium">Overview</span>
+
+      <button
+        type="button"
+        class="ml-auto rounded-md border border-border px-2.5 py-1 text-xs hover:bg-accent hover:text-accent-foreground"
+        (click)="theme.toggleMode()"
+      >
+        {{ theme.isDark() ? 'Light' : 'Dark' }} mode
+      </button>
+    </header>
+
+    <main class="flex-1 p-6">
+      <router-outlet />
+
+      <section class="mt-8 max-w-md rounded-lg border border-border bg-card p-5">
+        <h2 class="text-sm font-semibold">Theme</h2>
+        <p class="mt-1 mb-4 text-xs text-muted-foreground">
+          Three axes, all driven from tokens. No rebuild, no component knows a colour value.
+        </p>
+        <ask-theme-switcher />
+      </section>
+    </main>
+  </div>
+</div>

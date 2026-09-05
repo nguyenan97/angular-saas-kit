@@ -1,0 +1,32 @@
+name: Component request
+description: Ask for a component that is not in libs/ui yet.
+labels: [component]
+body:
+  - type: input
+    id: component
+    attributes:
+      label: Component
+      placeholder: Combobox
+    validations: { required: true }
+  - type: textarea
+    id: usecase
+    attributes:
+      label: What you are building with it
+      description: >
+        The concrete screen matters more than the component name - it decides
+        which variants and states actually get built.
+    validations: { required: true }
+  - type: textarea
+    id: prior-art
+    attributes:
+      label: Prior art
+      description: Links to implementations whose behaviour or API you like.
+  - type: dropdown
+    id: blocking
+    attributes:
+      label: Is this blocking you?
+      options:
+        - 'No, would be nice'
+        - 'Yes, I worked around it'
+        - 'Yes, I cannot ship without it'
+    validations: { required: true }

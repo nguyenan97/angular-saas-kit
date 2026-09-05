@@ -1,0 +1,68 @@
+# Contributing
+
+Thanks for looking. This kit is early, so contributions have outsized
+influence right now — particularly component work and accessibility findings.
+
+## Setup
+
+```bash
+npm ci
+npx nx serve dashboard
+```
+
+Node 22+, npm 11+. Older npm hits a dependency resolution bug on this tree.
+
+## Before you open a PR
+
+```bash
+npx nx run-many -t lint test build
+```
+
+CI runs exactly this plus a typecheck. A green local run is a green CI run.
+
+## The rules that are not negotiable
+
+These are the things the kit is _for_. A PR that breaks one of them will be
+asked to change, however good the rest of it is.
+
+**Components never name a colour.** No `bg-white`, no `text-slate-500`, no
+`dark:` colour overrides in a component. Use the semantic token —
+`bg-card`, `text-muted-foreground`, `border-border`. If the token you need
+does not exist, add it to `libs/tokens` in the same PR and say why. This is
+what lets the whole kit reskin from three attributes on `<html>`.
+
+**Accessibility is a gate.** Interactive elements are reachable and operable
+by keyboard, focus is visible, state is announced. Template a11y lint rules
+are errors, not warnings. If a component needs a roving tabindex or a focus
+trap, use the Angular CDK rather than rolling one.
+
+**Signals, not RxJS state.** Component state is `signal` / `computed`. RxJS
+is fine at the edges — HTTP, event streams — but it should not be how a
+component holds its own state. Every component is `OnPush`.
+
+**No new UI-library dependency.** The Angular CDK is in. A dependency that
+brings its own styling, theming layer or component markup is not, because
+that is the thing this kit exists to avoid. Small, single-purpose utilities
+are fine — open an issue first.
+
+## Adding a component
+
+A component in `libs/ui` is done when it has:
+
+- signal inputs/outputs (`input()`, `output()`, `model()`)
+- host classes merged through `cn()` so consumers can override them
+- keyboard support and the ARIA attributes its WAI-ARIA pattern requires
+- unit tests covering behaviour and the a11y contract, not just "it renders"
+- a short README next to it: usage, API table, a11y notes
+
+## Commits
+
+[Conventional Commits](https://www.conventionalcommits.org/):
+`feat(ui): add combobox`, `fix(tokens): correct dark ring contrast`,
+`docs(readme): ...`. The changelog is generated from these.
+
+## Reporting a bug
+
+Reproduction steps decide whether a bug gets fixed. "The dropdown is broken"
+with no repro usually gets closed; a fork with three steps usually gets fixed
+the same week.

@@ -1,0 +1,6 @@
+dist
+coverage
+.nx
+.angular
+test-output
+package-lock.json

@@ -1,0 +1,6 @@
+/* Dashboard global styles.
+ * Tokens, Tailwind and the theme mapping all arrive through the shared
+ * stylesheet; this file only declares what is specific to this app. */
+@import '../../../libs/tokens/src/styles.css';
+
+@source './';

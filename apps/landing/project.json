@@ -1,0 +1,82 @@
+{
+  "name": "landing",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "ask",
+  "sourceRoot": "apps/landing/src",
+  "tags": ["type:app", "scope:landing"],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/landing",
+        "browser": "apps/landing/src/main.ts",
+        "tsConfig": "apps/landing/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/landing/public"
+          }
+        ],
+        "styles": ["apps/landing/src/styles.css"],
+        "server": "apps/landing/src/main.server.ts",
+        "ssr": {
+          "entry": "apps/landing/src/server.ts"
+        },
+        "outputMode": "server"
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "350kb",
+              "maximumError": "500kb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "configurations": {
+        "production": {
+          "buildTarget": "landing:build:production"
+        },
+        "development": {
+          "buildTarget": "landing:build:development"
+        }
+      }
+    },
+    "test": {
+      "executor": "@angular/build:unit-test",
+      "options": {
+        "watch": false
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "landing:build",
+        "staticFilePath": "dist/apps/landing/browser",
+        "spa": true
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+/* Landing global styles. Shares the exact same token set as the dashboard -
+ * that shared design system is the point of the monorepo. */
+@import '../../../libs/tokens/src/styles.css';
+
+@source './';

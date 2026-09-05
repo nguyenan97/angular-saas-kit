@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # Angular packages must move together or the build breaks on a
+      # half-upgraded tree.
+      angular:
+        patterns: ['@angular/*', '@angular-devkit/*', 'angular-eslint']
+      nx:
+        patterns: ['@nx/*', 'nx']
+      dev-minor:
+        dependency-type: development
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

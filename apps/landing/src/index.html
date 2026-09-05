@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Angular SaaS Kit</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!-- Applies the stored theme before first paint. Kept byte-identical to
+         THEME_INIT_SCRIPT in libs/tokens - theme-init.spec.ts asserts it, and
+         prettier-ignore stops the formatter from rewriting the snippet. -->
+    <!-- prettier-ignore -->
+    <script>(function(){try{
+var s=localStorage.getItem('ask.theme.v1');
+var t=s?JSON.parse(s):{};
+var m=t.mode||'system';
+var d=m==='dark'||(m==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);
+var r=document.documentElement;
+r.classList.toggle('dark',d);
+r.dataset.accent=t.accent||'blue';
+r.dataset.radius=t.radius||'md';
+r.style.colorScheme=d?'dark':'light';
+}catch(e){}})();</script>
+  </head>
+  <body>
+    <ask-root></ask-root>
+  </body>
+</html>
