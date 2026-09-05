@@ -3,8 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
+    paths-ignore: ['**/*.md', 'docs/**']
   pull_request:
     branches: [main]
+    paths-ignore: ['**/*.md', 'docs/**']
 
 # A new push to a PR makes the in-flight run pointless - cancel it rather than
 # burning minutes on a commit nobody will merge.
@@ -34,6 +36,10 @@ jobs:
           # Nx `affected` needs history to diff against the base branch.
           fetch-depth: 0
 
+      # Sets NX_BASE / NX_HEAD so `nx affected` diffs against the right
+      # commits for both push and pull_request events.
+      - uses: nrwl/nx-set-shas@v4
+
       - uses: actions/setup-node@v5
         with:
           node-version-file: .nvmrc
@@ -43,7 +49,7 @@ jobs:
         run: npm ci
 
       - name: Run ${{ matrix.target }}
-        run: npx nx run-many -t ${{ matrix.target }} --output-style=static
+        run: npx nx affected -t ${{ matrix.target }} --output-style=static
 
   typecheck:
     name: typecheck
