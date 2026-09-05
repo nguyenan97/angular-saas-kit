@@ -58,3 +58,15 @@ jobs:
       # The build compiles with the app tsconfigs; this catches anything the
       # build's own program does not include, such as spec-only type errors.
       - run: npx tsc -p tsconfig.base.json --noEmit
+
+  format:
+    name: format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --check .
