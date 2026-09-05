@@ -3,10 +3,8 @@ name: CI
 on:
   push:
     branches: [main]
-    paths-ignore: ['**/*.md', 'docs/**']
   pull_request:
     branches: [main]
-    paths-ignore: ['**/*.md', 'docs/**']
 
 # A new push to a PR makes the in-flight run pointless - cancel it rather than
 # burning minutes on a commit nobody will merge.
@@ -24,6 +22,9 @@ jobs:
   verify:
     name: ${{ matrix.target }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
     strategy:
       # Report every failing gate in one run instead of stopping at the first.
       fail-fast: false
