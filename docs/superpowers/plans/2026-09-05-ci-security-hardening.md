@@ -169,13 +169,53 @@ EOF
 
 ---
 
-## Task 2: Switch CI to `nx affected`, skip docs-only changes
+## Task 2: Switch CI to `nx affected`
+
+> **Amended after code-quality review of the first implementation attempt**
+> (commit `499b456`). The original version of this task also added
+> `paths-ignore: ['**/*.md', 'docs/**']` to the workflow triggers. Review
+> found two problems, both preserved here as a record: (1) `nrwl/nx-set-shas@v4`
+> needs `actions: read` to handle `push` events (it calls the Actions API to
+> find the last successful run) — the workflow only grants `contents: read`,
+> so every `push` to `main`, including every PR merge, would fail the
+> `verify` job. (2) `paths-ignore` at the workflow-trigger level means
+> GitHub creates no check-run at all for a docs-only change — once Task 9
+> makes `lint`/`test`/`build`/`typecheck`/`format` required status checks,
+> a docs-only PR would get permanently stuck on "Expected — waiting for
+> status," unmergeable. Fix: add the missing permission, and drop
+> `paths-ignore` entirely — `nx affected` already makes a docs-only run
+> cheap (zero projects affected, jobs finish in seconds), without the
+> required-checks trap. Task 9 no longer needs to account for this
+> interaction.
 
 **Files:**
 
 - Modify: `.github/workflows/ci.yml`
 
-- [ ] **Step 1: Add `nx-set-shas` and switch `run-many` to `affected`**
+- [ ] **Step 1: Give the `verify` job its own `actions: read` permission**
+
+`nrwl/nx-set-shas` (added in Step 2 below) needs `actions: read` to look up the
+last successful workflow run on `push` events — the workflow only grants
+`contents: read` at the top level, which isn't enough, and `push` fires on
+every merge to `main`. Scope the extra permission to the `verify` job only
+(not `typecheck`/`format`, which don't need it). Indentation below matches
+the real file exactly (`name:`/`runs-on:` sit 4 spaces in, under `verify:`
+under `jobs:`) — shown as plain text rather than a `yaml` fence so it
+survives untouched:
+
+```
+  verify:
+    name: ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    strategy:
+```
+
+(This is the same `verify:` job header that's already in the file — you're inserting the new `permissions:` block between the existing `runs-on: ubuntu-latest` line and the existing `strategy:` line. Nothing else in the header changes.)
+
+- [ ] **Step 2: Add `nx-set-shas` and switch `run-many` to `affected`**
 
 In `.github/workflows/ci.yml`, replace the `verify` job's `steps:` block. Indentation below matches the real file exactly (`steps:` sits 4 spaces in, under `verify:` under `jobs:`) — shown as plain text rather than a `yaml` fence so it survives untouched:
 
@@ -223,30 +263,6 @@ with:
         run: npx nx affected -t ${{ matrix.target }} --output-style=static
 ```
 
-- [ ] **Step 2: Add `paths-ignore` so docs-only changes skip CI entirely**
-
-Replace the `on:` block:
-
-```yaml
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
-```
-
-with:
-
-```yaml
-on:
-  push:
-    branches: [main]
-    paths-ignore: ['**/*.md', 'docs/**']
-  pull_request:
-    branches: [main]
-    paths-ignore: ['**/*.md', 'docs/**']
-```
-
 - [ ] **Step 3: Verify the workflow YAML is well-formed**
 
 Run: `node -e "require('yaml') || 1" 2>/dev/null; npx -y yaml-lint .github/workflows/ci.yml`
@@ -254,16 +270,41 @@ Expected: no parse errors printed (if `yaml-lint` itself fails to install/run in
 
 - [ ] **Step 4: Commit**
 
+If Steps 1-3 above are landing as a fix on top of an already-committed first
+attempt (as happened here — see the amendment note at the top of this task),
+commit them separately with a message that explains the correction:
+
 ```bash
 git add .github/workflows/ci.yml
 git commit -m "$(cat <<'EOF'
-ci: run only affected projects, skip docs-only changes
+fix: grant actions: read to verify, drop paths-ignore
+
+Code-quality review of 499b456 found two problems: nx-set-shas needs
+actions: read to handle push events (only contents: read was granted,
+so every push to main would fail the verify job), and paths-ignore at
+the workflow-trigger level means no check-run is created for docs-only
+changes - once Task 9 makes these required status checks, a docs-only
+PR would get permanently stuck unmergeable. nx affected already makes
+a docs-only run cheap on its own, so drop paths-ignore rather than work
+around the required-checks interaction.
+
+Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
+EOF
+)"
+```
+
+If instead you're implementing this task fresh (no prior `paths-ignore` commit exists yet), fold Steps 1-3 into a single commit with the original message:
+
+```bash
+git add .github/workflows/ci.yml
+git commit -m "$(cat <<'EOF'
+ci: run only affected projects in verify
 
 nx run-many always ran lint/test/build across all 5 projects regardless
 of what changed. fetch-depth: 0 was already set up for nx affected but
-nothing used it. Switch to affected + nrwl/nx-set-shas so CI work scales
-with the size of the change, and skip the pipeline entirely for
-docs-only pushes.
+nothing used it. Switch to affected + nrwl/nx-set-shas (with the
+actions: read permission it needs for push events) so CI work scales
+with the size of the change.
 
 Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>
 EOF
