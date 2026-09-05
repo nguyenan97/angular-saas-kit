@@ -135,20 +135,20 @@ jobs:
       - run: npx tsc -p tsconfig.base.json --noEmit
 ```
 
-Add this job at the end of the file (keep everything above unchanged for this step — Task 2 edits the `verify` job body):
+Add this job at the end of the file (keep everything above unchanged for this step — Task 2 edits the `verify` job body). Indentation below is exactly as it must appear in the file — `format:` is a sibling of `verify:` and `typecheck:` under `jobs:`, so it starts 2 spaces in (shown as plain text, not a `yaml` fence, so this markdown file's own formatter can't quietly re-indent it):
 
-```yaml
-format:
-  name: format
-  runs-on: ubuntu-latest
-  steps:
-    - uses: actions/checkout@v5
-    - uses: actions/setup-node@v5
-      with:
-        node-version-file: .nvmrc
-        cache: npm
-    - run: npm ci
-    - run: npx prettier --check .
+```
+  format:
+    name: format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --check .
 ```
 
 - [ ] **Step 4: Commit**
@@ -177,50 +177,50 @@ EOF
 
 - [ ] **Step 1: Add `nx-set-shas` and switch `run-many` to `affected`**
 
-In `.github/workflows/ci.yml`, replace the `verify` job's `steps:` block:
+In `.github/workflows/ci.yml`, replace the `verify` job's `steps:` block. Indentation below matches the real file exactly (`steps:` sits 4 spaces in, under `verify:` under `jobs:`) — shown as plain text rather than a `yaml` fence so it survives untouched:
 
-```yaml
-steps:
-  - uses: actions/checkout@v5
-    with:
-      # Nx `affected` needs history to diff against the base branch.
-      fetch-depth: 0
+```
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Nx `affected` needs history to diff against the base branch.
+          fetch-depth: 0
 
-  - uses: actions/setup-node@v5
-    with:
-      node-version-file: .nvmrc
-      cache: npm
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
 
-  - name: Install
-    run: npm ci
+      - name: Install
+        run: npm ci
 
-  - name: Run ${{ matrix.target }}
-    run: npx nx run-many -t ${{ matrix.target }} --output-style=static
+      - name: Run ${{ matrix.target }}
+        run: npx nx run-many -t ${{ matrix.target }} --output-style=static
 ```
 
 with:
 
-```yaml
-steps:
-  - uses: actions/checkout@v5
-    with:
-      # Nx `affected` needs history to diff against the base branch.
-      fetch-depth: 0
+```
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Nx `affected` needs history to diff against the base branch.
+          fetch-depth: 0
 
-  # Sets NX_BASE / NX_HEAD so `nx affected` diffs against the right
-  # commits for both push and pull_request events.
-  - uses: nrwl/nx-set-shas@v4
+      # Sets NX_BASE / NX_HEAD so `nx affected` diffs against the right
+      # commits for both push and pull_request events.
+      - uses: nrwl/nx-set-shas@v4
 
-  - uses: actions/setup-node@v5
-    with:
-      node-version-file: .nvmrc
-      cache: npm
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
 
-  - name: Install
-    run: npm ci
+      - name: Install
+        run: npm ci
 
-  - name: Run ${{ matrix.target }}
-    run: npx nx affected -t ${{ matrix.target }} --output-style=static
+      - name: Run ${{ matrix.target }}
+        run: npx nx affected -t ${{ matrix.target }} --output-style=static
 ```
 
 - [ ] **Step 2: Add `paths-ignore` so docs-only changes skip CI entirely**
@@ -437,17 +437,17 @@ EOF
 
 - [ ] **Step 1: Add the Codecov upload step to the `verify` job**
 
-In `.github/workflows/ci.yml`, the `verify` job's steps end with the `Run ${{ matrix.target }}` step (added in Task 2). Add one more step after it:
+In `.github/workflows/ci.yml`, the `verify` job's steps end with the `Run ${{ matrix.target }}` step (added in Task 2). Add one more step after it. Indentation below matches the real file exactly (6 spaces before each `-`, matching the other items in this `steps:` list) — shown as plain text rather than a `yaml` fence so it survives untouched:
 
-```yaml
-- name: Run ${{ matrix.target }}
-  run: npx nx affected -t ${{ matrix.target }} --output-style=static
+```
+      - name: Run ${{ matrix.target }}
+        run: npx nx affected -t ${{ matrix.target }} --output-style=static
 
-- name: Upload coverage to Codecov
-  if: matrix.target == 'test'
-  uses: codecov/codecov-action@v5
-  with:
-    fail_ci_if_error: false
+      - name: Upload coverage to Codecov
+        if: matrix.target == 'test'
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: false
 ```
 
 No `token:` input — this is a public repo, so Codecov accepts tokenless uploads. No `files:`/`directory:` input either: the action auto-discovers coverage reports across the repo, which sidesteps needing to know the exact per-project output path (see "Verified facts").
