@@ -52,6 +52,12 @@ jobs:
       - name: Run ${{ matrix.target }}
         run: npx nx affected -t ${{ matrix.target }} --output-style=static
 
+      - name: Upload coverage to Codecov
+        if: matrix.target == 'test'
+        uses: codecov/codecov-action@v5
+        with:
+          fail_ci_if_error: false
+
   typecheck:
     name: typecheck
     runs-on: ubuntu-latest
