@@ -752,6 +752,6 @@ No commit — nothing in the working tree changed.
 
 ## Self-review notes
 
-- **Spec coverage:** format gate → Task 1; CodeQL → Task 6; Dependabot alerts/security updates → Task 8; secret scanning + push protection → Task 8; Codecov → Task 5; branch protection → Task 9; `nx affected` + `paths-ignore` + PR-funneled flow → Tasks 2 and 7. All spec sections have a task.
+- **Spec coverage:** format gate → Task 1; CodeQL → Task 6; Dependabot alerts/security updates → Task 8; secret scanning + push protection → Task 8; Codecov → Task 5; branch protection → Task 9; `nx affected` + PR-funneled flow → Tasks 2 and 7 (`paths-ignore`, originally part of Task 2, was reverted after code review — see Task 2's amendment note — `nx affected`'s own no-op-on-zero-projects behavior covers the cost-control goal instead). All spec sections have a task.
 - **Placeholder scan:** the one intentionally-unresolved value is `<CODEQL_CHECK_NAME>` in Task 9 — flagged in "Verified facts" and at Task 7 Step 5 as a deliberate verify-then-use step (the actual GitHub-assigned check name can't be known without a live run), not an oversight.
 - **Type/name consistency:** `format` (script name, CI job name, and required-status-check context) is spelled identically everywhere it appears. `coverageReporters`/`reporter` option names match each executor's actual schema (plural key differs between the Angular builder (`coverageReporters`) and raw Vitest config (`reporter`) — this is intentional, not a typo, because they're two different tools' config surfaces).

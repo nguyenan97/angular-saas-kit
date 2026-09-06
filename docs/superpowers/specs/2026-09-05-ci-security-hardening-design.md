@@ -58,8 +58,16 @@ be balanced:
   the affected project graph. On `pull_request` events this diffs against
   the PR base; on `push` events it diffs against the previous commit
   (`github.event.before`).
-- Add `paths-ignore: ['**/*.md', 'docs/**']` to the `ci.yml` triggers —
-  docs-only changes skip the pipeline entirely.
+- **Amended during implementation:** the original design here added
+  `paths-ignore: ['**/*.md', 'docs/**']` to the `ci.yml` triggers so
+  docs-only changes would skip the pipeline entirely. Code review of the
+  first implementation attempt found this breaks required status checks
+  (section 6, below): when a workflow is skipped via `paths-ignore`, GitHub
+  creates no check-run at all for that commit, so a docs-only PR can never
+  satisfy a required check and becomes permanently unmergeable. `paths-ignore`
+  was dropped; `nx affected` alone already resolves a docs-only change to a
+  fast no-op (confirmed empirically: exits in under a second, "No tasks were
+  run"), which is enough cost control without the required-checks trap.
 - Keep the existing `concurrency` block (`cancel-in-progress: true`) as-is —
   it already cancels superseded runs on the same ref, which is the main
   defense against rapid-fire commits on one branch.
@@ -123,7 +131,9 @@ only sees one CI run per merge.
 ## Rollout order
 
 1. `package.json` script + `format` CI job.
-2. Switch matrix job to `nx affected`, add `paths-ignore`.
+2. Switch matrix job to `nx affected` (job-scoped `actions: read`
+   permission for `nrwl/nx-set-shas`; no `paths-ignore` — see amendment
+   above).
 3. Coverage config per project + Codecov action + README badge.
 4. `codeql.yml` (Advanced setup) + CodeQL README badge.
 5. Confirm with user, then enable via API/Settings: Dependabot alerts,
@@ -138,8 +148,9 @@ session operates under.
 
 - Open a throwaway PR touching one project only; confirm the `verify`
   matrix only runs targets for the affected project(s), not all five.
-- Open a PR touching only a `.md` file; confirm the workflow does not run
-  at all.
+- Open a PR touching only a `.md` file; confirm the `verify` matrix still
+  runs (no `paths-ignore` — see amendment above) but `nx affected` finds
+  zero affected projects and each job finishes quickly as a no-op.
 - Confirm `format` job fails on a deliberately unformatted file, then
   passes after `prettier --write`.
 - Confirm CodeQL run appears under the Security tab after the PR trigger
