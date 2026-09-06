@@ -6,6 +6,7 @@
 Signals-first, zoneless, Tailwind v4, and not locked to any UI library.
 
 [![CI](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/codeql.yml/badge.svg)](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/nguyenan97/angular-saas-kit/graph/badge.svg)](https://codecov.io/gh/nguyenan97/angular-saas-kit)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Angular](https://img.shields.io/badge/Angular-22-dd0031.svg)](https://angular.dev)
