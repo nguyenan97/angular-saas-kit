@@ -16,7 +16,7 @@
 
 Recorded here because they came from reading the actual tool source (not assumed), and later tasks rely on them:
 
-- `@angular/build:unit-test` (used by `dashboard`, `landing`) and `@nx/angular:unit-test` (used by `tokens`, `ui`) share the exact same options schema — `@nx/angular:unit-test`'s schema literally extends `UnitTestBuilderOptions` from `@angular/build`. Both accept `coverage: boolean` and `coverageReporters: string[]` (valid values include `'lcov'`, `'text-summary'`). **Neither exposes a coverage output-directory option** — there is no `reportsDirectory`/`coverageDirectory` field in the schema, confirmed by reading `options.ts` in `angular/angular-cli`, which normalizes builder options into a coverage config object with no directory field. The directory is therefore whatever Vitest's own default resolves to per project — this plan does not hardcode it (see Task 5).
+- `@angular/build:unit-test` (used by `dashboard`, `landing`) and `@nx/angular:unit-test` (used by `tokens`, `ui`) share the exact same options schema — `@nx/angular:unit-test`'s schema literally extends `UnitTestBuilderOptions` from `@angular/build`. Both accept `coverage: boolean` and `coverageReporters: string[]` (valid values include `'lcov'`, `'text-summary'`). **Neither exposes a coverage output-directory option** — there is no `reportsDirectory`/`coverageDirectory` field in the schema, confirmed by reading `options.ts` in `angular/angular-cli`, which normalizes builder options into a coverage config object with no directory field. The actual on-disk directory is `coverage/<project-name>` — confirmed by reading the vitest runner's own default (`plugins.js`: `reportsDirectory: configCoverage?.reportsDirectory ?? path.join('coverage', projectName)`) and by running each project's tests. **Amended during Task 3:** the directory is now hardcoded after all, in each project's `test.outputs` (e.g. `["{workspaceRoot}/coverage/dashboard"]`) — not for the Codecov step (which still auto-discovers), but because Nx needs an explicit `outputs` declaration to restore a cached target's artifacts; without it, a cache hit reports success but silently never restores `coverage/<project>/lcov.info`, confirmed by reproducing the failure before the fix and the correct restore after it.
 - `libs/mock-api` uses the `@nx/vitest:test` executor, which has **no `coverage` option at all** (confirmed from its schema in `nrwl/nx`) — coverage there is controlled entirely by `libs/mock-api/vite.config.mts`'s own `test.coverage` block. That block currently sets `reportsDirectory` and `provider` but not `enabled`, so **coverage is not actually being collected today**. Task 4 fixes this.
 - `@nx/vitest:test` is deprecated upstream (removal planned for Nx v24). Out of scope for this plan (see spec Non-goals) — noted here so nobody "fixes" it by accident while touching this file.
 - `gh` is installed and authenticated as `nguyenan97` (repo owner) with `repo` scope — sufficient for the repo-settings tasks at the end.
@@ -315,12 +315,31 @@ EOF
 
 ## Task 3: Enable coverage on the four Angular-builder projects
 
+> **Amended after two rounds of code-quality review of the first
+> implementation attempt (commit `ca4ac6b`).** (1) Enabling `coverage: true`
+> on `tokens` broke `libs/tokens/src/lib/theme-init.spec.ts` (5/6 tests
+> failing): that spec hand-rolled `workspaceRoot` via
+> `join(__dirname, '..','..','..','..')`, and coverage instrumentation
+> changes how `__dirname` resolves in that module, so the climb overshot
+> above the repo root. Fixed (`04a44eb`) by importing `workspaceRoot` from
+> `@nx/devkit` instead, which is `process.cwd()`-based and structurally
+> unaffected by this. (2) None of the 4 `test` targets declared `outputs`,
+> so an Nx cache hit would report success without ever restoring
+> `coverage/<project>/lcov.info` — harmless today (CI has no cache
+> persistence yet) but a landmine for later. Fixed (`98c338c`) by adding
+> `"outputs": ["{workspaceRoot}/coverage/<project>"]` to each (see the
+> updated "Verified facts" note above for why this is a literal path, not
+> an `{options.X}` token). Both fixes were independently reproduced and
+> verified by a reviewer, not just asserted.
+
 **Files:**
 
 - Modify: `apps/dashboard/project.json`
 - Modify: `apps/landing/project.json`
 - Modify: `libs/tokens/project.json`
 - Modify: `libs/ui/project.json`
+- Modify: `libs/tokens/src/lib/theme-init.spec.ts` (regression fix, not part
+  of the original task)
 
 - [ ] **Step 1: `apps/dashboard/project.json` — add coverage to the `test` target**
 
