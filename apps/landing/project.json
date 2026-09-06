@@ -65,6 +65,7 @@
     },
     "test": {
       "executor": "@angular/build:unit-test",
+      "outputs": ["{workspaceRoot}/coverage/landing"],
       "options": {
         "watch": false,
         "coverage": true,

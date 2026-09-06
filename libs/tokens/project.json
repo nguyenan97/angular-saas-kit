@@ -28,6 +28,7 @@
     },
     "test": {
       "executor": "@nx/angular:unit-test",
+      "outputs": ["{workspaceRoot}/coverage/tokens"],
       "options": {
         "watch": false,
         "coverage": true,
