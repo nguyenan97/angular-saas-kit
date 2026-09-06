@@ -61,7 +61,9 @@
     "test": {
       "executor": "@angular/build:unit-test",
       "options": {
-        "watch": false
+        "watch": false,
+        "coverage": true,
+        "coverageReporters": ["lcov", "text-summary"]
       }
     },
     "serve-static": {
