@@ -1,0 +1,29 @@
+name: CodeQL
+
+# Advanced setup (own workflow file) instead of GitHub's Default Setup,
+# specifically so this can skip push-to-main and only run on PRs plus a
+# weekly schedule - Default Setup does not expose that trigger control.
+on:
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '17 3 * * 1' # Monday 03:17 UTC
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+
+      - uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:javascript-typescript'

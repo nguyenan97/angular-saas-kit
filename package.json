@@ -9,6 +9,7 @@
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
     "typecheck": "tsc -p tsconfig.base.json --noEmit",
+    "format:check": "prettier --check .",
     "verify": "nx run-many -t lint test build && npm run typecheck",
     "prepare": "husky"
   },

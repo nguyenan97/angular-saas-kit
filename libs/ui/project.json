@@ -35,8 +35,11 @@
     },
     "test": {
       "executor": "@nx/angular:unit-test",
+      "outputs": ["{workspaceRoot}/coverage/ui"],
       "options": {
-        "watch": false
+        "watch": false,
+        "coverage": true,
+        "coverageReporters": ["lcov", "text-summary"]
       }
     }
   }
