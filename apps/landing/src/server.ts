@@ -20,7 +20,7 @@ const angularApp = new AngularNodeAppEngine();
  *
  * Example:
  * ```ts
- * app.get('/api/**', (req, res) => {
+ * app.get('/api/*splat', (req, res) => {
  *   // Handle API request
  * });
  * ```
@@ -39,8 +39,12 @@ app.use(
 
 /**
  * Handle all other requests by rendering the Angular application.
+ *
+ * No path argument - Express 5's stricter path-to-regexp parser rejects a
+ * bare `/**` wildcard. Omitting the path matches every request, which is
+ * exactly what a catch-all needs anyway.
  */
-app.use('/**', (req, res, next) => {
+app.use((req, res, next) => {
   angularApp
     .handle(req)
     .then((response) =>
