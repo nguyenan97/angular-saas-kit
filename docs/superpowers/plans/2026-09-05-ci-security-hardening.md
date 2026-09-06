@@ -663,10 +663,10 @@ Expected: eventually all of `lint`, `test`, `build`, `typecheck`, `format`, and 
 Run: `gh pr view --comments`
 Expected: a comment from the `codecov` bot showing a coverage percentage (not an error message about missing reports).
 
-- [ ] **Step 5: Note the exact CodeQL check name for Task 9**
+- [ ] **Step 5: Confirm CodeQL actually ran and reported**
 
 Run: `gh api repos/nguyenan97/angular-saas-kit/commits/$(git rev-parse HEAD)/check-runs --jq '.check_runs[].name'`
-Expected: a list of check-run names including `lint`, `test`, `build`, `typecheck`, `format`, and one for CodeQL. **Write down the CodeQL one exactly as printed** (it may be `Analyze` or `Analyze (javascript-typescript)` depending on how GitHub names single-language Advanced-setup runs) — Task 9 needs the literal string, and guessing wrong would silently make `main` unmergeable forever.
+Expected: a list including `lint`, `test`, `build`, `typecheck`, `format`, and a CodeQL check (name may be `Analyze` or `Analyze (javascript-typescript)`). If the CodeQL one is missing entirely, check Settings → Code security and analysis for a conflicting **Default Setup** — GitHub refuses to process an Advanced-setup SARIF upload while Default Setup is also enabled for the same repo. **Task 9 does not need this name recorded** — see its amendment note: CodeQL is deliberately left out of required status checks, so there's no `<CODEQL_CHECK_NAME>` substitution to prepare for anymore.
 
 No commit in this task — it's verification only.
 
@@ -723,13 +723,24 @@ No commit — nothing in the working tree changed.
 
 ## Task 9: Branch protection on `main`
 
-**Ask the user for explicit confirmation before running this task**, same reason as Task 8. Do this task _after_ Task 7's PR has actually run (so the exact CodeQL check name from Task 7 Step 5 is in hand — do not guess it here).
+> **Amended after code-quality review of Task 6.** The original design put
+> CodeQL's `Analyze` check into the required-status-checks list below.
+> Review found a real problem: GitHub always issues a **read-only**
+> `GITHUB_TOKEN` to a `pull_request`-triggered run whose head is a fork,
+> regardless of the workflow's own `permissions:` block — so
+> `codeql-action/analyze`'s SARIF upload (which needs `security-events:
+write`) fails for every fork PR, through no fault of the contributor.
+> This repo is public, MIT-licensed, and explicitly built to invite outside
+> contributions (see README's "Status: early" note) — making `Analyze` a
+> required check would permanently block every external PR from merging.
+> `Analyze` is therefore deliberately left out of `required_status_checks`
+> below: CodeQL still runs and reports findings (visible under the Security
+> tab and as PR annotations), it's just not a merge gate. Revisit only if
+> this repo later restricts contributions to trusted maintainers only.
 
 **Files:** none (repo settings via API).
 
 - [ ] **Step 1: Apply branch protection**
-
-Substitute the real CodeQL check name from Task 7 Step 5 for `<CODEQL_CHECK_NAME>` below, then run:
 
 ```bash
 gh api -X PUT repos/nguyenan97/angular-saas-kit/branches/main/protection --input - <<EOF
@@ -741,8 +752,7 @@ gh api -X PUT repos/nguyenan97/angular-saas-kit/branches/main/protection --input
       { "context": "test" },
       { "context": "build" },
       { "context": "typecheck" },
-      { "context": "format" },
-      { "context": "<CODEQL_CHECK_NAME>" }
+      { "context": "format" }
     ]
   },
   "enforce_admins": false,

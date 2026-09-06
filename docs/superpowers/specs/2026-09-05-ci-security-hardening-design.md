@@ -121,8 +121,14 @@ only sees one CI run per merge.
 
 ### 6. Branch protection on `main`
 
-- Required status checks: `lint`, `test`, `build`, `typecheck`, `format`,
-  and the CodeQL analysis check.
+- Required status checks: `lint`, `test`, `build`, `typecheck`, `format`.
+  **Amended during implementation:** CodeQL's `Analyze` check was originally
+  included here too, but code review of Task 6 found that a `pull_request`
+  run from a fork always gets a read-only `GITHUB_TOKEN`, so CodeQL's SARIF
+  upload fails for every fork PR regardless of the workflow's own
+  `permissions:` block. Making it required would permanently block external
+  contributions on a repo explicitly built to invite them. CodeQL still runs
+  and reports (Security tab, PR annotations); it's just not a merge gate.
 - Require the branch to be up to date with `main` before merging.
 - Do **not** require PR review approvals (see Non-goals).
 - Applied via the GitHub API/Settings UI — requires explicit confirmation
