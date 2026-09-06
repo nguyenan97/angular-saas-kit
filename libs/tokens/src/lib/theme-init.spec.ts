@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { workspaceRoot } from '@nx/devkit';
 import { describe, expect, it } from 'vitest';
 
 import { THEME_INIT_SCRIPT } from './theme-init';
@@ -13,7 +14,6 @@ import { THEME_INIT_SCRIPT } from './theme-init';
  */
 describe('THEME_INIT_SCRIPT', () => {
   const apps = ['dashboard', 'landing'];
-  const workspaceRoot = join(__dirname, '..', '..', '..', '..');
 
   /**
    * Prettier reformats index.html, so a byte-for-byte comparison would fail
