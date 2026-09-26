@@ -86,7 +86,7 @@
     "clsx": "^2.1.1",
     "express": "^5.2.1",
     "rxjs": "~7.8.0",
-    "tailwind-merge": "^3.6.0"
+    "tailwind-merge": "^3.7.0"
   },
   "nx": {
     "includedScripts": []
