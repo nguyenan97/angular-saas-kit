@@ -105,7 +105,7 @@ else changes.
 
 - [x] Nx monorepo, Angular 22 zoneless, Tailwind v4
 - [x] Token system — 3 axes, dark mode, no flash on load
-- [x] CI: lint, typecheck, unit tests, bundle budgets
+- [x] CI: lint, typecheck, format, unit tests with coverage, bundle budgets; CodeQL scanning; `main` protected by required checks
 - [ ] Component library — ~40 components on the CDK
 - [ ] Dashboard pages — analytics, orders, customers, products, settings, auth
 - [ ] Landing sections — pricing, FAQ, testimonials, blog
