@@ -15,6 +15,25 @@ updates:
       dev-minor:
         dependency-type: development
         update-types: [minor, patch]
+        # Keep the two groups above intact. Without this, dev-only Angular and
+        # Nx packages (build, cli, compiler-cli, ...) land here instead, which
+        # splits the Angular set across two PRs that cannot be installed on
+        # their own: @angular/compiler and @angular/compiler-cli peer-depend
+        # on each other's exact version.
+        exclude-patterns:
+          ['@angular/*', '@angular-devkit/*', 'angular-eslint', '@nx/*', 'nx']
+    ignore:
+      # Vitest 5 is not supported yet: @angular/build wants ^4.0.8, @nx/vitest
+      # ^3 || ^4 and @analogjs/vitest-angular <= ^4. Drop these two entries
+      # once all three widen their peer range.
+      - dependency-name: 'vitest'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@vitest/*'
+        update-types: ['version-update:semver-major']
+      # Types must track the minimum supported Node (22, see .nvmrc and
+      # engines), not the newest one.
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /
