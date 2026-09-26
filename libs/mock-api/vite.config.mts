@@ -22,6 +22,9 @@ export default defineConfig(() => ({
     reporters: ['default'],
     coverage: {
       enabled: true,
+      // Under `nx test` the @nx/vitest executor overrides this with
+      // project.json's options.reportsDirectory (the same location); this
+      // value only applies to a bare `vitest` run.
       reportsDirectory: '../../coverage/libs/mock-api',
       provider: 'v8' as const,
       reporter: ['lcov', 'text-summary'],

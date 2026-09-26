@@ -24,6 +24,10 @@ describe('THEME_INIT_SCRIPT', () => {
   const normalise = (value: string): string =>
     value.replace(/\s+/g, ' ').trim();
 
+  // workspaceRoot comes from @nx/devkit on purpose: it is derived from
+  // process.cwd(). __dirname and import.meta.dirname resolve to the wrong
+  // directory in this file once coverage instrumentation is on, so a "climb N
+  // levels from here" path lands outside the repo.
   const readIndex = (app: string): string =>
     readFileSync(
       join(workspaceRoot, 'apps', app, 'src', 'index.html'),
