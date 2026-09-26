@@ -1,6 +1,6 @@
 # CI / Security Hardening — Design
 
-- **Status:** Approved
+- **Status:** Implemented on 2026-09-26; the Codecov upload still needs a token (see section 5)
 - **Date:** 2026-09-05
 
 ## Context
@@ -96,14 +96,16 @@ only sees one CI run per merge.
   `main` and a weekly `schedule` (not on every push to `main`) — chosen over
   Default Setup specifically because Default Setup does not expose this
   trigger control, and avoiding a push-to-main trigger is the point here.
-  Needs `security-events: write` permission.
+  Needs `security-events: write` permission. Pinned to `codeql-action@v4`
+  (v3 is deprecated as of December 2026).
 - **Dependabot alerts + automated security fixes** — repository setting,
   not a file (`vulnerability_alerts` / `automated_security_fixes` via the
   GitHub API or the Security tab). Requires explicit confirmation at
   execution time (repo-settings change).
 - **Secret scanning + push protection** — repository setting
   (`security_and_analysis` block via the GitHub API or the Security tab).
-  Requires explicit confirmation at execution time.
+  Requires explicit confirmation at execution time. **As-built:** both were
+  already enabled by default on this public repo, so nothing had to change.
 
 ### 5. Coverage → Codecov
 
@@ -113,9 +115,14 @@ only sees one CI run per merge.
   `reportsDirectory: coverage/libs/mock-api`. Add equivalent coverage output
   configuration (provider `v8`, reporters including `lcov`) to the other
   four projects' test targets so every project emits an `lcov.info`.
-- Add a `codecov/codecov-action@v5` step to the CI `test` job, uploading all
-  five `coverage/**/lcov.info` paths. Public repo → tokenless upload, no
-  `CODECOV_TOKEN` secret needed.
+- Add a `codecov/codecov-action` step to the CI `test` job, uploading all
+  five `coverage/**/lcov.info` paths.
+  **Amended during implementation:** the assumption that a public repo can
+  upload without a token was wrong. The action finds all five reports, but
+  Codecov rejects the upload (`Token required - not valid tokenless upload`;
+  on `main`, `Token required because branch is protected`), and
+  `fail_ci_if_error: false` hides that behind a green build. A
+  `CODECOV_TOKEN` Actions secret passed as `token:` is required.
 - Add Codecov and CodeQL badges to `README.md`, next to the existing CI /
   License / Angular / Sponsor badges.
 
@@ -163,6 +170,10 @@ session operates under.
   fires (not on a direct push to `main`, since that trigger is intentionally
   excluded).
 - Confirm Codecov comment/status appears on the PR and the badge in
-  `README.md` renders a real percentage after merge.
+  `README.md` renders a real percentage after merge. **Open:** not
+  achieved until `CODECOV_TOKEN` is configured.
 - Once branch protection is enabled, confirm a PR cannot merge with a
-  failing required check, and that a direct push to `main` is rejected.
+  failing required check. A direct push to `main` is _not_ rejected for the
+  repository admin because `enforce_admins` is off, so it is not used as a
+  check; confirm the rule with `GET .../branches/main/protection` and by
+  watching new PRs report `BLOCKED` until the five checks pass.

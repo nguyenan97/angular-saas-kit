@@ -12,13 +12,26 @@ npx nx serve dashboard
 
 Node 22+, npm 11+. Older npm hits a dependency resolution bug on this tree.
 
+Installs resolve peer dependencies strictly, the way CI does (the repo's
+`.npmrc` sets `legacy-peer-deps=false`). If `npm ci` reports `ERESOLVE`, the
+tree has a real conflict - don't paper over it with `--legacy-peer-deps`.
+
 ## Before you open a PR
 
 ```bash
 npx nx run-many -t lint test build
+npm run typecheck
+npm run format:check
 ```
 
-CI runs exactly this plus a typecheck. A green local run is a green CI run.
+CI runs the same lint, test and build (through `nx affected`, so only the
+projects your change touches), a workspace typecheck, a Prettier check and
+CodeQL scanning. Tests collect coverage for every project. A green local run
+is a green CI run.
+
+`main` is protected: changes land through a pull request, `lint`, `test`,
+`build`, `typecheck` and `format` must pass, and the branch has to be up to
+date with `main` before it can merge.
 
 ## The rules that are not negotiable
 
