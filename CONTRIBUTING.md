@@ -33,6 +33,19 @@ is a green CI run.
 `build`, `typecheck` and `format` must pass, and the branch has to be up to
 date with `main` before it can merge.
 
+## Reviewing the demo site
+
+The landing page and the dashboard demo are deployed to GitHub Pages from
+`main`. To see what your change does to them before it ships:
+
+```bash
+npm run pages           # builds both apps with the `pages` configuration and checks _site
+npm run pages:preview   # serves _site the way Pages does, at http://localhost:8123/angular-saas-kit/
+```
+
+Every pull request also runs this build (the **Pages / Build site** check) and
+uploads the result as a downloadable `github-pages` artifact on the run.
+
 ## The rules that are not negotiable
 
 These are the things the kit is _for_. A PR that breaks one of them will be

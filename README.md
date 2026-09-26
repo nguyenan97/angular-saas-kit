@@ -5,6 +5,9 @@
 **A free, production-ready admin dashboard and landing page for Angular 22.**
 Signals-first, zoneless, Tailwind v4, and not locked to any UI library.
 
+**[Live demo](https://nguyenan97.github.io/angular-saas-kit/demo/)** ·
+[Landing page](https://nguyenan97.github.io/angular-saas-kit/)
+
 [![CI](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/codeql.yml/badge.svg)](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/codeql.yml)
 [![codecov](https://codecov.io/gh/nguyenan97/angular-saas-kit/graph/badge.svg)](https://codecov.io/gh/nguyenan97/angular-saas-kit)
@@ -106,6 +109,7 @@ else changes.
 - [x] Nx monorepo, Angular 22 zoneless, Tailwind v4
 - [x] Token system — 3 axes, dark mode, no flash on load
 - [x] CI: lint, typecheck, format, unit tests with coverage, bundle budgets; CodeQL scanning; `main` protected by required checks
+- [x] Live demo on GitHub Pages — landing at the root, dashboard on the mock API under `/demo/`, deployed from `main`
 - [ ] Component library — ~40 components on the CDK
 - [ ] Dashboard pages — analytics, orders, customers, products, settings, auth
 - [ ] Landing sections — pricing, FAQ, testimonials, blog
