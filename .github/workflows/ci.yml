@@ -39,7 +39,7 @@ jobs:
 
       # Sets NX_BASE / NX_HEAD so `nx affected` diffs against the right
       # commits for both push and pull_request events.
-      - uses: nrwl/nx-set-shas@v4
+      - uses: nrwl/nx-set-shas@v5
 
       - uses: actions/setup-node@v7
         with:
