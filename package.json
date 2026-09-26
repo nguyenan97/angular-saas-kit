@@ -74,7 +74,6 @@
     "vitest": "^4.0.8"
   },
   "dependencies": {
-    "@angular-devkit/build-angular": "~22.1.9",
     "@angular/common": "~22.1.7",
     "@angular/compiler": "~22.1.7",
     "@angular/core": "~22.1.7",
@@ -106,5 +105,8 @@
   },
   "lint-staged": {
     "*.{ts,html,css,json,md,mjs}": "prettier --write"
+  },
+  "overrides": {
+    "smol-toml": "^1.7.1"
   }
 }
