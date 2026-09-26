@@ -4,3 +4,4 @@ coverage
 .angular
 test-output
 package-lock.json
+_site

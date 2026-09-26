@@ -44,6 +44,13 @@
           class="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
           >Get started</a
         >
+        @if (links.demo) {
+          <a
+            [href]="links.demo"
+            class="rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+            >Live demo</a
+          >
+        }
         <a
           href="https://github.com/sponsors/nguyenan97"
           class="rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"

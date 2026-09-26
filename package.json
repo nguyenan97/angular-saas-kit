@@ -6,6 +6,8 @@
     "start": "nx serve dashboard",
     "start:landing": "nx serve landing",
     "build": "nx run-many -t build",
+    "pages": "nx run-many -t build -p landing dashboard -c pages && node scripts/assemble-pages.mjs",
+    "pages:preview": "node scripts/preview-pages.mjs",
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
     "typecheck": "tsc -p tsconfig.base.json --noEmit",

@@ -47,6 +47,17 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "pages": {
+          "baseHref": "/angular-saas-kit/",
+          "outputMode": "static",
+          "fileReplacements": [
+            {
+              "replace": "apps/landing/src/app/site-links.ts",
+              "with": "apps/landing/src/app/site-links.pages.ts"
+            }
+          ],
+          "outputHashing": "all"
         }
       }
     },

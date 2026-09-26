@@ -29,4 +29,11 @@ describe('Landing', () => {
     const text = fixture.nativeElement.textContent ?? '';
     expect(text).toContain('Get started');
   });
+
+  it('shows no demo link when the landing runs on its own', async () => {
+    // The link only exists in the GitHub Pages build; elsewhere it would be dead.
+    const fixture = await render();
+    const text = fixture.nativeElement.textContent ?? '';
+    expect(text).not.toContain('Live demo');
+  });
 });

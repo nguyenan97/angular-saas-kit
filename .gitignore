@@ -60,3 +60,6 @@ vitest.config.*.timestamp*
 test-output
 coverage
 playwright-report
+
+# GitHub Pages output (scripts/assemble-pages.mjs)
+_site
