@@ -12,6 +12,36 @@
 
 ---
 
+## As-built status (2026-09-26)
+
+All nine tasks were executed. Tasks 1-6 landed as #6; #16 and #17 were follow-ups (a combined Angular/tooling bump and the Dependabot grouping rules); #23 fixed the advisories that Task 8 surfaced. One acceptance criterion is still open: **Codecov does not receive coverage** (Task 5).
+
+| Task                                      | Outcome                                                                        |
+| ----------------------------------------- | ------------------------------------------------------------------------------ |
+| 1 Format gate                             | Done                                                                           |
+| 2 `nx affected`                           | Done, amended (job-scoped `actions: read`; `paths-ignore` dropped)             |
+| 3 Coverage, four Angular-builder projects | Done, amended (`__dirname` regression fixed, cache `outputs` declared)         |
+| 4 Coverage, `mock-api`                    | Done                                                                           |
+| 5 Codecov upload                          | Steps done, **upload rejected**: needs a `CODECOV_TOKEN`                       |
+| 6 CodeQL                                  | Done (`codeql-action@v4`); weekly schedule runs green, no open alerts          |
+| 7 Push, PR, verify                        | Done as #6; the Codecov comment never appeared (Task 5)                        |
+| 8 Dependabot alerts and secret scanning   | Done; secret scanning and push protection were already on for this public repo |
+| 9 Branch protection                       | Done; CodeQL deliberately not a required check                                 |
+
+### Still open
+
+- **Codecov:** get the repository upload token from codecov.io, store it as the `CODECOV_TOKEN` Actions secret, and pass `token: ${{ secrets.CODECOV_TOKEN }}` to the upload step.
+- **Dependabot:** confirm on a Monday run that the `angular` group carries every `@angular/*` package (the `dev-minor` group already shrank from 36 updates to 3).
+- **Nx:** `@nx/vitest:test` (used by `mock-api`) is deprecated and removed in Nx 24; migrate to the inferred `@nx/vitest/plugin` before upgrading.
+- **smol-toml:** drop the npm `overrides` entry once Nx ships a release that no longer pins the vulnerable 1.6.1 (`nx@23.2.1` does).
+
+### Lessons from execution
+
+- A user-level `~/.npmrc` with `legacy-peer-deps=true` hid a peer-dependency conflict that failed `npm ci` in CI. The repo `.npmrc` now pins `legacy-peer-deps=false`; verify installs with a clean `npm ci` under that setting.
+- npm keeps a lockfile entry that any edge still points at, including optional peers, so removing a dependency from `package.json` can leave its whole subtree in the lockfile (#23 pruned one by hand).
+
+---
+
 ## Verified facts this plan depends on
 
 Recorded here because they came from reading the actual tool source (not assumed), and later tasks rely on them:
@@ -30,7 +60,7 @@ Recorded here because they came from reading the actual tool source (not assumed
 - Modify: `package.json`
 - Modify: `.github/workflows/ci.yml`
 
-- [ ] **Step 1: Add the `format:check` script**
+- [x] **Step 1: Add the `format:check` script**
 
 In `package.json`, add a new script. Current scripts block:
 
@@ -63,12 +93,12 @@ Change it to:
   },
 ```
 
-- [ ] **Step 2: Verify the script fails today (repo is not fully formatted-checked yet)**
+- [x] **Step 2: Verify the script fails today (repo is not fully formatted-checked yet)**
 
 Run: `npm run format:check`
 Expected: exits non-zero and lists any files that are not Prettier-formatted (or exits 0 if the tree is already clean — either is fine, this step just confirms the script runs and Prettier resolves correctly).
 
-- [ ] **Step 3: Add the `format` job to CI**
+- [x] **Step 3: Add the `format` job to CI**
 
 In `.github/workflows/ci.yml`, add a new job after `typecheck` (the full current file, for orientation):
 
@@ -151,7 +181,7 @@ Add this job at the end of the file (keep everything above unchanged for this st
       - run: npx prettier --check .
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add package.json .github/workflows/ci.yml
@@ -192,7 +222,7 @@ EOF
 
 - Modify: `.github/workflows/ci.yml`
 
-- [ ] **Step 1: Give the `verify` job its own `actions: read` permission**
+- [x] **Step 1: Give the `verify` job its own `actions: read` permission**
 
 `nrwl/nx-set-shas` (added in Step 2 below) needs `actions: read` to look up the
 last successful workflow run on `push` events — the workflow only grants
@@ -215,7 +245,7 @@ survives untouched:
 
 (This is the same `verify:` job header that's already in the file — you're inserting the new `permissions:` block between the existing `runs-on: ubuntu-latest` line and the existing `strategy:` line. Nothing else in the header changes.)
 
-- [ ] **Step 2: Add `nx-set-shas` and switch `run-many` to `affected`**
+- [x] **Step 2: Add `nx-set-shas` and switch `run-many` to `affected`**
 
 In `.github/workflows/ci.yml`, replace the `verify` job's `steps:` block. Indentation below matches the real file exactly (`steps:` sits 4 spaces in, under `verify:` under `jobs:`) — shown as plain text rather than a `yaml` fence so it survives untouched:
 
@@ -263,12 +293,12 @@ with:
         run: npx nx affected -t ${{ matrix.target }} --output-style=static
 ```
 
-- [ ] **Step 3: Verify the workflow YAML is well-formed**
+- [x] **Step 3: Verify the workflow YAML is well-formed**
 
 Run: `node -e "require('yaml') || 1" 2>/dev/null; npx -y yaml-lint .github/workflows/ci.yml`
 Expected: no parse errors printed (if `yaml-lint` itself fails to install/run in this environment, instead visually diff the file against the two blocks above — every `steps:`/`on:` key must line up at the same indentation as its siblings).
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 If Steps 1-3 above are landing as a fix on top of an already-committed first
 attempt (as happened here — see the amendment note at the top of this task),
@@ -341,7 +371,7 @@ EOF
 - Modify: `libs/tokens/src/lib/theme-init.spec.ts` (regression fix, not part
   of the original task)
 
-- [ ] **Step 1: `apps/dashboard/project.json` — add coverage to the `test` target**
+- [x] **Step 1: `apps/dashboard/project.json` — add coverage to the `test` target**
 
 Current:
 
@@ -367,11 +397,11 @@ New:
     },
 ```
 
-- [ ] **Step 2: `apps/landing/project.json` — same change**
+- [x] **Step 2: `apps/landing/project.json` — same change**
 
 Apply the identical edit (same current block, same new block as Step 1) to `apps/landing/project.json`.
 
-- [ ] **Step 3: `libs/tokens/project.json` — same change**
+- [x] **Step 3: `libs/tokens/project.json` — same change**
 
 Current:
 
@@ -399,11 +429,11 @@ New:
 
 (This is the last key in the `targets` object for this file — no trailing comma.)
 
-- [ ] **Step 4: `libs/ui/project.json` — same change**
+- [x] **Step 4: `libs/ui/project.json` — same change**
 
 Apply the identical edit as Step 3 (same executor, same shape, no trailing comma — last key in `targets`).
 
-- [ ] **Step 5: Run each project's tests and confirm coverage is collected**
+- [x] **Step 5: Run each project's tests and confirm coverage is collected**
 
 Run: `npx nx test dashboard`
 Expected: test output includes a coverage summary table (statements/branches/functions/lines), and the run does not error on the new options (an error here almost always means a typo in the option name — re-check against Step 1's exact JSON).
@@ -411,12 +441,12 @@ Expected: test output includes a coverage summary table (statements/branches/fun
 Run: `npx nx test landing && npx nx test tokens && npx nx test ui`
 Expected: same — each prints a coverage summary.
 
-- [ ] **Step 6: Find where each project wrote its lcov report**
+- [x] **Step 6: Find where each project wrote its lcov report**
 
 Run: `find . -name lcov.info -not -path '*/node_modules/*'`
 Expected: at least 4 paths printed (one per project just run). Note the paths in the task output — they're not hardcoded anywhere in this plan on purpose (see "Verified facts" above), but Codecov's own auto-discovery (Task 6) needs at least one to exist to prove the setup works.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add apps/dashboard/project.json apps/landing/project.json libs/tokens/project.json libs/ui/project.json
@@ -440,7 +470,7 @@ EOF
 
 - Modify: `libs/mock-api/vite.config.mts`
 
-- [ ] **Step 1: Turn on coverage collection and add the lcov reporter**
+- [x] **Step 1: Turn on coverage collection and add the lcov reporter**
 
 Current `test.coverage` block in `libs/mock-api/vite.config.mts`:
 
@@ -464,12 +494,12 @@ New:
 
 `@nx/vitest:test` (the executor `mock-api`'s `test` target uses) has no `coverage` flag of its own — it just runs Vitest against this config file, so `enabled: true` here is the only thing that turns coverage on. Without it, `reportsDirectory`/`provider` were already present but silently doing nothing.
 
-- [ ] **Step 2: Run the test and confirm coverage now writes a real lcov file**
+- [x] **Step 2: Run the test and confirm coverage now writes a real lcov file**
 
 Run: `npx nx test mock-api && ls coverage/libs/mock-api/lcov.info`
 Expected: the `ls` prints the file path (not "No such file or directory"). Before this change, that file did not exist because coverage was never enabled.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add libs/mock-api/vite.config.mts
@@ -490,12 +520,14 @@ EOF
 
 ## Task 5: Upload coverage to Codecov
 
+> **Amended after execution.** The premise below - "public repo, so Codecov accepts tokenless uploads" - did not hold. The action finds all five `lcov.info` files, but Codecov rejects the upload (`Token required - not valid tokenless upload`, and on `main` `Token required because branch is protected`). Because of `fail_ci_if_error: false`, CI stays green while nothing reaches Codecov, so the README badge reads "unknown". Fix: store the repository upload token as the `CODECOV_TOKEN` Actions secret and pass `token:` to the action.
+
 **Files:**
 
 - Modify: `.github/workflows/ci.yml`
 - Modify: `README.md`
 
-- [ ] **Step 1: Add the Codecov upload step to the `verify` job**
+- [x] **Step 1: Add the Codecov upload step to the `verify` job**
 
 In `.github/workflows/ci.yml`, the `verify` job's steps end with the `Run ${{ matrix.target }}` step (added in Task 2). Add one more step after it. Indentation below matches the real file exactly (6 spaces before each `-`, matching the other items in this `steps:` list) — shown as plain text rather than a `yaml` fence so it survives untouched:
 
@@ -510,11 +542,11 @@ In `.github/workflows/ci.yml`, the `verify` job's steps end with the `Run ${{ ma
           fail_ci_if_error: false
 ```
 
-No `token:` input — this is a public repo, so Codecov accepts tokenless uploads. No `files:`/`directory:` input either: the action auto-discovers coverage reports across the repo, which sidesteps needing to know the exact per-project output path (see "Verified facts").
+No `token:` input — this is a public repo, so Codecov accepts tokenless uploads (this turned out not to hold; see the note at the top of this task). No `files:`/`directory:` input either: the action auto-discovers coverage reports across the repo, which sidesteps needing to know the exact per-project output path (see "Verified facts").
 
 The `if: matrix.target == 'test'` means this step only runs on the `test` leg of the matrix — `lint` and `build` runs have no coverage to upload.
 
-- [ ] **Step 2: Add the Codecov badge to `README.md`**
+- [x] **Step 2: Add the Codecov badge to `README.md`**
 
 Current badge row:
 
@@ -537,7 +569,7 @@ New:
 
 (The badge will show "unknown" until the first successful upload from a real CI run — expected, resolves itself once Task 7's PR runs.)
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add .github/workflows/ci.yml README.md
@@ -557,12 +589,14 @@ EOF
 
 ## Task 6: CodeQL (Advanced setup)
 
+> **Amended after review.** The workflow below was first written against `github/codeql-action@v3`; review flagged v3 for deprecation (December 2026) and both references were bumped to `@v4`. It is shown at `@v4` here.
+
 **Files:**
 
 - Create: `.github/workflows/codeql.yml`
 - Modify: `README.md`
 
-- [ ] **Step 1: Create the CodeQL workflow**
+- [x] **Step 1: Create the CodeQL workflow**
 
 Create `.github/workflows/codeql.yml`:
 
@@ -589,18 +623,18 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: github/codeql-action/init@v3
+      - uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript
 
-      - uses: github/codeql-action/analyze@v3
+      - uses: github/codeql-action/analyze@v4
         with:
           category: '/language:javascript-typescript'
 ```
 
 JavaScript/TypeScript is interpreted, not compiled, so CodeQL analyzes source directly — no `npm ci`/build step needed here (unlike the `verify`/`typecheck`/`format` jobs).
 
-- [ ] **Step 2: Add the CodeQL badge to `README.md`**
+- [x] **Step 2: Add the CodeQL badge to `README.md`**
 
 Extend the badge row from Task 5's edit:
 
@@ -613,7 +647,7 @@ Extend the badge row from Task 5's edit:
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-db61a2.svg)](https://github.com/sponsors/nguyenan97)
 ```
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add .github/workflows/codeql.yml README.md
@@ -636,12 +670,12 @@ This is the first point in this plan where anything leaves the local worktree. *
 
 **Files:** none (verification checkpoint).
 
-- [ ] **Step 1: Push the branch**
+- [x] **Step 1: Push the branch**
 
 Run: `git push -u origin features/project-purpose-ca3ca3`
 Expected: `remote: Create a pull request ... branch 'features/project-purpose-ca3ca3' set up to track 'origin/features/project-purpose-ca3ca3'.`
 
-- [ ] **Step 2: Open the PR**
+- [x] **Step 2: Open the PR**
 
 Run:
 
@@ -653,7 +687,7 @@ gh pr create --base main --head features/project-purpose-ca3ca3 \
 
 Expected: prints the created PR URL.
 
-- [ ] **Step 3: Watch the checks**
+- [x] **Step 3: Watch the checks**
 
 Run: `gh pr checks --watch`
 Expected: eventually all of `lint`, `test`, `build`, `typecheck`, `format`, and `Analyze` (CodeQL) show as passing. If `format` fails, run `npx prettier --write .` locally, commit, and push again. If `test` fails on the coverage options, re-check Task 3/4's exact JSON/TS against what's in the failing project's files.
@@ -663,7 +697,9 @@ Expected: eventually all of `lint`, `test`, `build`, `typecheck`, `format`, and 
 Run: `gh pr view --comments`
 Expected: a comment from the `codecov` bot showing a coverage percentage (not an error message about missing reports).
 
-- [ ] **Step 5: Confirm CodeQL actually ran and reported**
+**As-built: not achieved.** The bot never commented because Codecov rejected the upload (see the note at the top of Task 5).
+
+- [x] **Step 5: Confirm CodeQL actually ran and reported**
 
 Run: `gh api repos/nguyenan97/angular-saas-kit/commits/$(git rev-parse HEAD)/check-runs --jq '.check_runs[].name'`
 Expected: a list including `lint`, `test`, `build`, `typecheck`, `format`, and a CodeQL check (name may be `Analyze` or `Analyze (javascript-typescript)`). If the CodeQL one is missing entirely, check Settings → Code security and analysis for a conflicting **Default Setup** — GitHub refuses to process an Advanced-setup SARIF upload while Default Setup is also enabled for the same repo. **Task 9 does not need this name recorded** — see its amendment note: CodeQL is deliberately left out of required status checks, so there's no `<CODEQL_CHECK_NAME>` substitution to prepare for anymore.
@@ -678,17 +714,19 @@ No commit in this task — it's verification only.
 
 **Files:** none (repo settings via API).
 
-- [ ] **Step 1: Enable Dependabot vulnerability alerts**
+- [x] **Step 1: Enable Dependabot vulnerability alerts**
 
 Run: `gh api -X PUT repos/nguyenan97/angular-saas-kit/vulnerability-alerts`
 Expected: no output, exit code 0 (this endpoint returns `204 No Content` on success).
 
-- [ ] **Step 2: Enable Dependabot automated security fixes**
+- [x] **Step 2: Enable Dependabot automated security fixes**
 
 Run: `gh api -X PUT repos/nguyenan97/angular-saas-kit/automated-security-fixes`
 Expected: no output, exit code 0.
 
-- [ ] **Step 3: Enable secret scanning and push protection**
+- [x] **Step 3: Enable secret scanning and push protection**
+
+**As-built:** both were already `enabled` on this public repo (GitHub turns them on by default), so this step changed nothing; only Steps 1 and 2 were needed.
 
 Run:
 
@@ -705,7 +743,7 @@ EOF
 
 Expected: JSON response echoing the repo object; `.security_and_analysis.secret_scanning.status` and `.security_and_analysis.secret_scanning_push_protection.status` both read `"enabled"`.
 
-- [ ] **Step 4: Verify**
+- [x] **Step 4: Verify**
 
 Run: `gh api repos/nguyenan97/angular-saas-kit --jq '.security_and_analysis'`
 Expected:
@@ -740,7 +778,7 @@ write`) fails for every fork PR, through no fault of the contributor.
 
 **Files:** none (repo settings via API).
 
-- [ ] **Step 1: Apply branch protection**
+- [x] **Step 1: Apply branch protection**
 
 ```bash
 gh api -X PUT repos/nguyenan97/angular-saas-kit/branches/main/protection --input - <<EOF
@@ -768,10 +806,12 @@ Expected: JSON response describing the new protection rule, including a `require
 
 - [ ] **Step 2: Verify a direct push to `main` is now rejected**
 
+**As-built: not run.** With `enforce_admins: false` the repository admin can still push to `main`, so this push would not be rejected for the maintainer, and if it succeeded it would leave a stray commit. Verified instead with `GET /repos/{owner}/{repo}/branches/main/protection` and by observing that new PRs report `BLOCKED` until the five required checks pass.
+
 From the main worktree (`D:/Projects/nguyenan97/angular-saas-kit`, already on `main`), attempt a trivial no-op push to confirm the rule is live — e.g. `git commit --allow-empty -m "test: confirm branch protection" && git push origin main`.
 Expected: the push is rejected with a message like `remote: error: GH006: Protected branch update failed ... required status check ... is expected.` If it succeeds instead, protection did not apply — re-check Step 1's response for errors. Either way, **do not leave an empty commit **on `main`** — if the push unexpectedly succeeds, revert it (`git revert`, then push) rather than leaving a no-op commit in history.**
 
-- [ ] **Step 3: Verify the PR from Task 7 can still merge**
+- [x] **Step 3: Verify the PR from Task 7 can still merge**
 
 Run: `gh pr checks` (on the Task 7 PR) once more, then, only after the user confirms, `gh pr merge --squash` (or whichever merge strategy the user prefers — this plan does not choose one on their behalf).
 
