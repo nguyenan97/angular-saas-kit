@@ -74,7 +74,7 @@
     "vitest": "^4.0.8"
   },
   "dependencies": {
-    "@angular-devkit/build-angular": "~22.1.9",
+    "@angular-devkit/build-angular": "~22.2.0",
     "@angular/common": "~22.1.7",
     "@angular/compiler": "~22.1.7",
     "@angular/core": "~22.1.7",
