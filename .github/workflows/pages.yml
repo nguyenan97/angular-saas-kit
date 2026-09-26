@@ -1,9 +1,8 @@
 name: Pages
 
-# Builds the demo site: the landing page at the root, the dashboard (running on
-# the in-memory mock API) under /demo/. Every pull request gets the build and
-# the site checks, so a broken base href is caught before it ships; only `main`
-# deploys.
+# Builds the demo site: the landing page at the root, the dashboard demo under
+# /demo/. Every pull request gets the build and the site checks, so a broken
+# base href is caught before it ships; only `main` deploys.
 on:
   push:
     branches: [main]

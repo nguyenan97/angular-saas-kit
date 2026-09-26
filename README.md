@@ -109,7 +109,7 @@ else changes.
 - [x] Nx monorepo, Angular 22 zoneless, Tailwind v4
 - [x] Token system — 3 axes, dark mode, no flash on load
 - [x] CI: lint, typecheck, format, unit tests with coverage, bundle budgets; CodeQL scanning; `main` protected by required checks
-- [x] Live demo on GitHub Pages — landing at the root, dashboard on the mock API under `/demo/`, deployed from `main`
+- [x] Live demo on GitHub Pages — landing at the root, dashboard demo under `/demo/`, deployed from `main`
 - [ ] Component library — ~40 components on the CDK
 - [ ] Dashboard pages — analytics, orders, customers, products, settings, auth
 - [ ] Landing sections — pricing, FAQ, testimonials, blog

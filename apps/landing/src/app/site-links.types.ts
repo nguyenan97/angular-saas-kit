@@ -6,6 +6,6 @@
  * imported from the swapped file would resolve to its replacement.
  */
 export interface SiteLinks {
-  /** The dashboard running against the in-memory mock API. */
+  /** The dashboard demo. */
   readonly demo: string | null;
 }
