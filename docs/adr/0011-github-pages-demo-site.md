@@ -58,6 +58,8 @@ _Amended 2026-09-27:_ the documentation site is built into the same artifact und
   alone and repeats `outputHashing`.
 - The demo shows what exists: static placeholder data. It picks up the mock API when
   a page starts fetching ([0006](0006-in-memory-mock-api-instead-of-a-backend.md)).
+  _Amended 2026-09-27:_ it has: the `pages` configuration keeps the mock backend, and
+  the demo says "Demo data" in its topbar.
 - The site lives under a repository path, which is why every base href is explicit.
   A custom domain would move it to the root and only `SITE_BASE` and the two base
   hrefs would change.

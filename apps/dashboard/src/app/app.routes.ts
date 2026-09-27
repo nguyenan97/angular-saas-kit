@@ -1,12 +1,11 @@
 import type { Routes } from '@angular/router';
 
-// Every route has a `title`: `PageTitle` shows it in the topbar heading and in
-// the document title.
+// The shell is in the initial bundle; everything under it is lazy
+// (pages/pages.routes.ts), including the HTTP client and the mock backend.
 export const appRoutes: Routes = [
   {
     path: '',
-    title: 'Overview',
-    loadComponent: () => import('./pages/overview').then((m) => m.Overview),
+    loadChildren: () =>
+      import('./pages/pages.routes').then((m) => m.pageRoutes),
   },
-  { path: '**', redirectTo: '' },
 ];

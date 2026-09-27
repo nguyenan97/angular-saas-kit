@@ -11,11 +11,17 @@ import { of } from 'rxjs';
 import { describe, expect, it } from 'vitest';
 
 import { App } from './app';
-import { appRoutes } from './app.routes';
 import { providePageTitle } from './page-title';
 
 @Component({ changeDetection: ChangeDetectionStrategy.OnPush, template: '' })
 class Blank {}
+
+// The shell on its own: the real pages fetch data, which is the pages' tests'
+// business, not the shell's.
+const SHELL_ROUTES: Routes = [
+  { path: '', title: 'Overview', component: Blank },
+  { path: '**', redirectTo: '' },
+];
 
 // jsdom has no matchMedia, so the real observer would always report a phone.
 // Each test says which layout it is about instead.
@@ -28,7 +34,7 @@ function viewport(desktop: boolean) {
 
 async function render({
   desktop = true,
-  routes = appRoutes,
+  routes = SHELL_ROUTES,
   url = '/',
 }: { desktop?: boolean; routes?: Routes; url?: string } = {}) {
   await TestBed.configureTestingModule({
@@ -73,10 +79,17 @@ describe('App shell', () => {
     const links = [...el.querySelectorAll('nav a')].map((a) =>
       a.textContent?.trim(),
     );
-    expect(links).toEqual(['Overview']);
+    expect(links).toEqual(['Overview', 'Settings']);
     // The planned pages are listed, marked "soon", and are not links.
     expect(el.querySelector('nav')?.textContent).toContain('Analytics');
     expect(el.querySelector('nav')?.textContent).toContain('soon');
+  });
+
+  it('says the numbers are demo data while the mock backend serves them', async () => {
+    const { query } = await render();
+
+    const label = query('header [title="Served by an in-memory mock API"]');
+    expect(label.textContent?.trim()).toBe('Demo data');
   });
 
   it('marks the current page for assistive tech', async () => {

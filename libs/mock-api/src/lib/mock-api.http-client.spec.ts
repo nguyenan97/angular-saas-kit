@@ -72,6 +72,34 @@ describe('mockApiInterceptor through HttpClient', () => {
     expect(created).toEqual({ total: 5, id: '3' });
   });
 
+  it('hands the handler the query, from the URL or from params alike', async () => {
+    registerMockRoutes({
+      method: 'GET',
+      path: '/api/orders',
+      handler: ({ query }) => ({
+        page: query.get('page'),
+        status: query.get('status'),
+      }),
+    });
+    const http = client();
+
+    const [inUrl, inParams, both] = await Promise.all([
+      firstValueFrom(http.get('/api/orders?page=2&status=paid')),
+      // The way an app usually passes them: HttpClient keeps these out of
+      // `req.url`, so an interceptor that reads only the URL never sees them.
+      firstValueFrom(
+        http.get('/api/orders', { params: { page: 2, status: 'paid' } }),
+      ),
+      firstValueFrom(
+        http.get('/api/orders?page=2', { params: { status: 'paid' } }),
+      ),
+    ]);
+
+    expect(inUrl).toEqual({ page: '2', status: 'paid' });
+    expect(inParams).toEqual({ page: '2', status: 'paid' });
+    expect(both).toEqual({ page: '2', status: 'paid' });
+  });
+
   it('waits at least the minimum latency before answering', async () => {
     registerMockRoutes({
       method: 'GET',

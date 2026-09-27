@@ -36,6 +36,16 @@
               "maximumError": "8kb"
             }
           ],
+          "fileReplacements": [
+            {
+              "replace": "apps/dashboard/src/app/mock-backend.ts",
+              "with": "apps/dashboard/src/app/mock-backend.production.ts"
+            },
+            {
+              "replace": "apps/dashboard/src/app/demo-data.ts",
+              "with": "apps/dashboard/src/app/demo-data.production.ts"
+            }
+          ],
           "outputHashing": "all"
         },
         "development": {

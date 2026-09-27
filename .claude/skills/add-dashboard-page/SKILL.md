@@ -5,18 +5,18 @@ description: Add a page to the admin dashboard (apps/dashboard) - a lazy route, 
 
 # Add a dashboard page
 
-The dashboard is a client-side SPA: `apps/dashboard/src/app`. Today it has one real page,
-`Overview` (`pages/overview.ts`). Five more are listed in the sidebar as "soon": plain text,
-not links.
+The dashboard is a client-side SPA: `apps/dashboard/src/app`. Today it has two real pages,
+`Overview` (`pages/overview.ts`, on live data) and `Settings` (`pages/settings.ts`). Four more
+are listed in the sidebar as "soon": plain text, not links.
 
 ## The pieces
 
 | What              | Where                   | Notes                                                                                                                                         |
 | ----------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | The page          | `pages/<name>.ts`       | Standalone, `OnPush`, selector `ask-<name>`, signals for state.                                                                               |
-| The route         | `app.routes.ts`         | Lazy: `loadComponent: () => import('./pages/<name>').then((m) => m.<Name>)`, and a `title`. Put it before the `**` redirect.                  |
+| The route         | `pages/pages.routes.ts` | Lazy: `loadComponent: () => import('./<name>').then((m) => m.<Name>)`, and a `title`. Put it before the `**` redirect.                        |
 | The sidebar entry | `nav` array in `app.ts` | The planned pages are there with `soon: true`. Remove `soon` when the page is real, and the entry becomes a link; add an item for a new page. |
-| A test            | `pages/<name>.spec.ts`  | Zoneless; see `app.spec.ts` for the setup.                                                                                                    |
+| A test            | `pages/<name>.spec.ts`  | Zoneless. `overview.spec.ts` shows a page that fetches; `settings.spec.ts` one that does not.                                                 |
 
 ## Rules
 
@@ -42,11 +42,22 @@ container rather than the page.
 
 ## Data
 
-Nothing in the dashboard fetches anything yet, and the mock API (`libs/mock-api`) is not wired in.
-If the page needs data, read `docs/guide/mock-api.md`: register routes, install the interceptor
-next to `provideHttpClient` in `app.config.ts`, and keep it out of production builds (a file
-replacement, like `routing-mode.ts`). Do not present fake numbers as real ones; the docs and the
-PR must say the data is mocked.
+Fetch with `httpResource` (stable in Angular 22): a signal for the value, the loading state and
+the error, and no RxJS in the page. `HttpClient` is provided in `pages/pages.routes.ts`, not in
+`app.config.ts`, so it stays out of the initial bundle; keep it there.
+
+- **The API.** Its shapes are in `data/models.ts` (money in cents, dates as ISO strings) and the
+  mock answers them from `mock/routes.ts` over the seeded data in `mock/seed.ts`. A new endpoint
+  goes in `mock/routes.ts` with a test in `mock/routes.spec.ts`; `docs/guide/mock-api.md` lists
+  what exists. The production build has no mock (`mock-backend.production.ts`), so never import
+  from `mock/` in a page.
+- **Every state.** Show placeholders and `aria-busy` while loading, an error with a retry
+  (`resource.reload()`), and an empty state. Read `value()` only outside the error branch: it
+  throws when the resource has failed.
+- **Test it** with `provideHttpClientTesting()` and `HttpTestingController`: `TestBed.tick()` sends
+  the requests, `expectOne(...).flush(...)` answers them. See `overview.spec.ts`.
+- **Say it is demo data.** The topbar's "Demo data" label covers the pages; the PR and the docs
+  must say the numbers are mocked too.
 
 ## The demo site
 

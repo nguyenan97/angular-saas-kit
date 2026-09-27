@@ -34,7 +34,9 @@ export function registerMockRoutes(...routes: MockRoute[]): void {
  * dropping this interceptor into an app that already talks to an API is safe.
  */
 export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
-  const url = new URL(req.url, 'http://localhost');
+  // `urlWithParams`, not `url`: HttpClient keeps `params` out of `url`, and a
+  // handler must see the whole query however the caller passed it.
+  const url = new URL(req.urlWithParams, 'http://localhost');
   const route = MOCK_ROUTES.find(
     (candidate) =>
       candidate.method === req.method &&

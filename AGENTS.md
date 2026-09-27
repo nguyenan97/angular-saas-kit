@@ -57,9 +57,10 @@ rejects an import, the import is wrong; do not loosen the rule. A new project ne
 - **Selectors:** `ask-` prefix, kebab-case for components; `ask` prefix, camelCase for directives.
 - **No new UI-library dependency** (Material, PrimeNG and the like). The CDK and small utilities are fine.
 - **Merge host classes through `cn()`** so a consumer can override a component's defaults.
-- **Do not claim what is not built.** No mock API wiring, no published packages, and a small
-  component library (the list is in `docs/guide/components.md`), not the forty the roadmap plans.
-  Docs and PR text must match the code.
+- **Do not claim what is not built.** The mock API serves the dashboard outside production
+  builds only; no packages are published; and the component library is small (the list is in
+  `docs/guide/components.md`), not the forty the roadmap plans. Docs and PR text must match
+  the code.
 
 ## Commits, PRs and `main`
 

@@ -48,7 +48,9 @@ C4Component
 ## dashboard
 
 A client-side single-page app ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)).
-No server, no hydration, no data layer yet.
+No server and no hydration. The shell loads first; the pages, and the `HttpClient` they fetch
+with, load lazily. In development and in the demo the [mock API](#mock-api) answers `/api`;
+the production build has no mock.
 
 ```mermaid
 %%{init: {"c4": {"c4ShapeMargin": 100}}}%%
@@ -56,39 +58,51 @@ C4Component
   title Components: dashboard
 
   Container_Ext(tokens, "tokens", "Angular library and CSS", "ThemeService and the shared stylesheet")
-  Container_Ext(ui, "ui", "Angular library", "ThemeSwitcher")
+  Container_Ext(ui, "ui", "Angular library", "Card, Table, Badge, Button, ThemeSwitcher")
+  Container_Ext(mockapi, "mock-api", "Angular library", "The interceptor and its route registry")
 
   Container_Boundary(dashboard, "dashboard") {
-    Component(shell, "App", "Standalone component, OnPush, Angular CDK", "Sidebar (a rail from lg up, a modal drawer below), topbar with the menu button, the page title and a dark-mode button, router outlet, theme panel")
+    Component(shell, "App", "Standalone component, OnPush, Angular CDK", "Sidebar (a rail from lg up, a modal drawer below), topbar with the menu button, the page title, a Demo data label and a dark-mode button")
     Component(main, "main.ts", "Bootstrap", "Starts App with appConfig")
     Component(config, "appConfig", "Application providers", "Global error listeners, the router and the title strategy")
     Component(title, "PageTitle", "TitleStrategy, signals", "Turns the title of each route into the topbar heading and the document title")
-    Component(overview, "Overview", "Standalone component, lazy", "Four stat cards with static numbers; exercises the tokens on a real surface")
-    Component(routes, "appRoutes", "Route table", "The empty path lazy-loads Overview; any other path redirects to it")
+    Component(routes, "appRoutes", "Route table", "Lazy-loads the page routes")
+    Component(pages, "pageRoutes", "Route table, lazy", "Provides HttpClient with the backend's interceptors; Overview, Settings, and a redirect for anything else")
+    Component(overview, "Overview", "Standalone component, lazy", "The last 30 days and the latest orders, from /api/stats and /api/orders with httpResource")
+    Component(settings, "Settings", "Standalone component, lazy", "Appearance: the theme switcher")
+    Component(backend, "mock-backend.ts", "fileReplacements", "Registers the demo routes over a seeded dataset. The production build swaps in an empty file")
+    Component(demo, "DEMO_DATA", "demo-data.ts", "True where the mock answers; the production build swaps in false")
     Component(mode, "routerFeatures", "routing-mode.ts", "Empty by default; the Pages build swaps in withHashLocation")
   }
 
-  Rel(shell, tokens, "Toggles the theme")
-  Rel(shell, ui, "Embeds the switcher")
   Rel(main, shell, "Bootstraps")
   Rel(main, config, "Bootstraps with")
-  Rel(shell, overview, "Shows through the outlet")
+  Rel(shell, tokens, "Toggles the theme")
   Rel(shell, title, "Reads the title from")
+  Rel(shell, demo, "Reads")
   Rel(config, routes, "Registers")
   Rel(config, title, "Registers")
   Rel(config, mode, "Spreads")
-  Rel(routes, overview, "Lazy-loads")
+  Rel(routes, pages, "Lazy-loads")
+  Rel(pages, backend, "Provides HttpClient with")
+  Rel(pages, overview, "Lazy-loads")
+  Rel(pages, settings, "Lazy-loads")
+  Rel(overview, ui, "Builds on")
+  Rel(settings, ui, "Embeds the switcher")
+  Rel(backend, mockapi, "Registers routes with")
 
   UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
-| Component        | Source                                                                                                                                           | Notes                                                                                                                                                                                                                                                                                                                                                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `App`            | [`app.ts`](../../apps/dashboard/src/app/app.ts), [`app.html`](../../apps/dashboard/src/app/app.html)                                             | From the `lg` breakpoint up (`BreakpointObserver`) the sidebar is a rail beside the content; below it, a drawer over it. The open drawer traps focus (`CdkTrapFocus`), makes the content column inert and closes on Escape, its Close button, the backdrop or a followed link, handing focus back to the menu button. Widths are the layout tokens. The five planned pages are text with a "soon" badge, not links. |
-| `PageTitle`      | [`page-title.ts`](../../apps/dashboard/src/app/page-title.ts)                                                                                    | A `TitleStrategy`: the router calls it after every navigation. It keeps the title in a signal for the topbar `h1`, so a page starts its own headings at `h2`, and sets the document title.                                                                                                                                                                                                                          |
-| `appRoutes`      | [`app.routes.ts`](../../apps/dashboard/src/app/app.routes.ts)                                                                                    | Every route has a `title`. The `**` redirect sends an unknown path to Overview.                                                                                                                                                                                                                                                                                                                                     |
-| `Overview`       | [`overview.ts`](../../apps/dashboard/src/app/pages/overview.ts)                                                                                  | Placeholder. Nothing here fetches data, so the [mock API](#mock-api) is not involved.                                                                                                                                                                                                                                                                                                                               |
-| `routerFeatures` | [`routing-mode.ts`](../../apps/dashboard/src/app/routing-mode.ts), [`routing-mode.pages.ts`](../../apps/dashboard/src/app/routing-mode.pages.ts) | Swapped at build time by `fileReplacements` in the `pages` configuration, so the Pages demo gets hash URLs and every other build keeps path URLs ([ADR 0011](../adr/0011-github-pages-demo-site.md)).                                                                                                                                                                                                               |
+| Component         | Source                                                                                                                                           | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `App`             | [`app.ts`](../../apps/dashboard/src/app/app.ts), [`app.html`](../../apps/dashboard/src/app/app.html)                                             | From the `lg` breakpoint up (`BreakpointObserver`) the sidebar is a rail beside the content; below it, a drawer over it. The open drawer traps focus (`CdkTrapFocus`), makes the content column inert and closes on Escape, its Close button, the backdrop or a followed link, handing focus back to the menu button. Widths are the layout tokens. The four planned pages are text with a "soon" badge, not links. The Demo data label is a plain span: `ask-badge` would bring `cn()` and tailwind-merge into the initial bundle. |
+| `PageTitle`       | [`page-title.ts`](../../apps/dashboard/src/app/page-title.ts)                                                                                    | A `TitleStrategy`: the router calls it after every navigation. It keeps the title in a signal for the topbar `h1`, so a page starts its own headings at `h2`, and sets the document title.                                                                                                                                                                                                                                                                                                                                          |
+| `pageRoutes`      | [`pages.routes.ts`](../../apps/dashboard/src/app/pages/pages.routes.ts)                                                                          | `provideHttpClient` lives here, not in `appConfig`, so the pages' HTTP code and the mock stay out of the initial bundle. Every route has a `title`.                                                                                                                                                                                                                                                                                                                                                                                 |
+| `Overview`        | [`overview.ts`](../../apps/dashboard/src/app/pages/overview.ts)                                                                                  | Two `httpResource`s, each section with its own loading (placeholders, `aria-busy`), error (a retry) and empty states.                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `Settings`        | [`settings.ts`](../../apps/dashboard/src/app/pages/settings.ts)                                                                                  | The theme switcher, moved here from the shell.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `mock-backend.ts` | [`mock-backend.ts`](../../apps/dashboard/src/app/mock-backend.ts), [`mock/`](../../apps/dashboard/src/app/mock/routes.ts)                        | The dashboard's API from memory: stats, orders (list, read, refund), customers and products, over data seeded deterministically and relative to today. Replaced by `mock-backend.production.ts` in the `production` configuration; the `pages` configuration keeps it, because the demo has no backend.                                                                                                                                                                                                                             |
+| `routerFeatures`  | [`routing-mode.ts`](../../apps/dashboard/src/app/routing-mode.ts), [`routing-mode.pages.ts`](../../apps/dashboard/src/app/routing-mode.pages.ts) | Swapped at build time by `fileReplacements` in the `pages` configuration, so the Pages demo gets hash URLs and every other build keeps path URLs ([ADR 0011](../adr/0011-github-pages-demo-site.md)).                                                                                                                                                                                                                                                                                                                               |
 
 ## landing
 
@@ -183,7 +197,7 @@ points Tailwind at `libs/ui/src` directly. See
 
 ## mock-api
 
-Built and tested, and used by nothing yet ([ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md)).
+Used by the dashboard in development and in the demo; the production build leaves it out ([ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md)).
 
 ```mermaid
 %%{init: {"c4": {"c4ShapeMargin": 100}}}%%
@@ -202,7 +216,9 @@ C4Component
   UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
-A route path may carry `:name` segments, which arrive in the handler as `params`.
+A route path may carry `:name` segments, which arrive in the handler as `params`. The
+handler's `query` is the whole query string, whether the caller wrote it into the URL or
+passed HttpClient `params`.
 A request that matches no route goes to `next(req)`, so the interceptor is safe to add
 to an app that already talks to a real API
 ([source](../../libs/mock-api/src/lib/mock-api.interceptor.ts)).

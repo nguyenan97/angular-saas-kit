@@ -20,7 +20,9 @@ says only that a private report is unanswered, with no details.
 
 This is a UI template with no backend and no authentication implementation.
 The mock API in `libs/mock-api` is for local development only and must never
-be shipped to production. Reports about it will be closed as out of scope
+be shipped to production. The dashboard's production build replaces the file that
+provides it with an empty one; the public demo on GitHub Pages runs on it on
+purpose, because the demo is a static site with no backend, and says so. Reports about it will be closed as out of scope
 unless they describe a way it can be enabled accidentally in a production
 build.
 
