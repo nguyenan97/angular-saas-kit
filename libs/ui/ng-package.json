@@ -4,6 +4,6 @@
   "lib": {
     "entryFile": "src/index.ts"
   },
-  "allowedNonPeerDependencies": ["clsx", "tailwind-merge"],
+  "allowedNonPeerDependencies": ["clsx", "lucide", "tailwind-merge"],
   "assets": [{ "glob": "styles.css", "input": "assets", "output": "/" }]
 }

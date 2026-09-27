@@ -136,7 +136,7 @@ C4Component
 
 ## ui
 
-Two exports, and the reason `ui` depends on `tokens`.
+The components, the switcher and `cn`, and the reason `ui` depends on `tokens`.
 
 ```mermaid
 %%{init: {"c4": {"c4ShapeMargin": 100}}}%%
@@ -145,12 +145,16 @@ C4Component
 
   Container_Ext(dashboard, "dashboard", "Angular app", "Embeds the switcher")
   Component(switcher, "ThemeSwitcher", "Standalone component, OnPush", "Three fieldsets of native radio inputs for mode, accent and radius. Selector ask-theme-switcher")
+  Component(kit, "Badge, Button, Card, Icon, Input, Label, Table, SortHeader", "Components and directives, OnPush", "Semantic tokens only. The ones that style a native element are directives on it")
   Container_Ext(tokens, "tokens", "Angular library and CSS", "ThemeService and the theme constants")
   Component(cn, "cn", "Function", "clsx, then tailwind-merge: the last class wins, so a consumer can override a default")
+  Container_Ext(lucide, "lucide", "npm package", "Icon drawings as data, on a 24 x 24 grid")
 
   Rel(dashboard, switcher, "Embeds")
   Rel(switcher, tokens, "Injects ThemeService")
   Rel(switcher, cn, "Builds classes with")
+  Rel(kit, cn, "Build classes with")
+  Rel(kit, lucide, "SortHeader takes its arrows from")
 
   UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
@@ -158,8 +162,14 @@ C4Component
 `ThemeSwitcher` ([source](../../libs/ui/src/lib/theme-switcher/theme-switcher.ts)) knows no
 colour value: it only calls `ThemeService`, which flips attributes on the html element.
 That makes it the kit's proof that the token layer works. `cn`
-([source](../../libs/ui/src/lib/utils/cn.ts)) is the helper every component is meant to
-funnel its host classes through ([ADR 0005](../adr/0005-angular-cdk-and-tailwind-instead-of-a-ui-library.md)).
+([source](../../libs/ui/src/lib/utils/cn.ts)) is the helper every component funnels its
+host classes through ([ADR 0005](../adr/0005-angular-cdk-and-tailwind-instead-of-a-ui-library.md)).
+
+The other components are listed in the [components guide](../guide/components.md#what-exists),
+each with a README next to its source. `Button`, `Input`, `Label`, `Table` and the card parts are
+directives on the native element they style; `Icon` draws a Lucide icon's data as inline SVG
+([ADR 0017](../adr/0017-icons-from-lucide-data-drawn-by-one-component.md)). Nothing in the
+workspace uses them yet apart from their tests; the dashboard's pages will.
 
 The package also ships a one-line stylesheet, `libs/ui/assets/styles.css`, that points
 Tailwind at the compiled components (`@source './fesm2022'`) so an app that installs the

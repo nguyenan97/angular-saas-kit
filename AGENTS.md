@@ -34,7 +34,7 @@ npm run pages              # the whole Pages site into _site/; then npm run page
 ```text
 apps/dashboard      admin SPA (client-side)          apps/landing   marketing page (prerendered)
 apps/dashboard-e2e  Playwright (CI: Chromium)         libs/tokens    design tokens, ThemeService
-libs/ui             ThemeSwitcher, cn()              libs/mock-api  in-memory HTTP interceptor
+libs/ui             components (a README each), cn() libs/mock-api  in-memory HTTP interceptor
 docs/               guides, C4 diagrams (architecture/), ADRs (adr/), the VitePress site
 scripts/            assemble/preview the Pages site, check the architecture map and the built packages
 ```
@@ -57,8 +57,9 @@ rejects an import, the import is wrong; do not loosen the rule. A new project ne
 - **Selectors:** `ask-` prefix, kebab-case for components; `ask` prefix, camelCase for directives.
 - **No new UI-library dependency** (Material, PrimeNG and the like). The CDK and small utilities are fine.
 - **Merge host classes through `cn()`** so a consumer can override a component's defaults.
-- **Do not claim what is not built.** No mock API wiring, no published packages, no component
-  library yet. Docs and PR text must match the code.
+- **Do not claim what is not built.** No mock API wiring, no published packages, and a small
+  component library (the list is in `docs/guide/components.md`), not the forty the roadmap plans.
+  Docs and PR text must match the code.
 
 ## Commits, PRs and `main`
 

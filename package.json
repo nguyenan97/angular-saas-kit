@@ -94,6 +94,7 @@
     "@angular/ssr": "~22.1.9",
     "clsx": "^2.1.1",
     "express": "^5.2.1",
+    "lucide": "^1.48.0",
     "rxjs": "~7.8.0",
     "tailwind-merge": "^3.7.0"
   },

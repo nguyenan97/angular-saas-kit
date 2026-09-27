@@ -62,7 +62,7 @@ run, never stricter. See [Continuous integration](ci.md) for what each check is 
 | `apps/dashboard` | The admin application: a client-side single-page app.                                                            |
 | `apps/landing`   | The marketing page: prerendered, with an optional Node server build.                                             |
 | `libs/tokens`    | Design tokens, the Tailwind theme mapping and `ThemeService`.                                                    |
-| `libs/ui`        | Shared components. Today: `ThemeSwitcher` and the `cn()` class helper.                                           |
+| `libs/ui`        | Shared components: `Badge`, `Button`, `Card`, `Icon`, `Input`, `Table`, `ThemeSwitcher`, and the `cn()` helper.  |
 | `libs/mock-api`  | An in-memory HTTP interceptor with realistic latency. Built, not yet used.                                       |
 | `docs`           | These docs, the [architecture diagrams](../architecture/README.md) and the [decision records](../adr/README.md). |
 
