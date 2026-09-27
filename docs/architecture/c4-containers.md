@@ -38,14 +38,14 @@ C4Container
 
 ## The containers
 
-| Container       | Kind        | Tags                          | Notes                                                                                                                                                        |
-| --------------- | ----------- | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `landing`       | application | `type:app`, `scope:landing`   | Prerendered, hydrates in the browser ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)).                                             |
-| `dashboard`     | application | `type:app`, `scope:dashboard` | Client-side SPA; hash routing in the Pages build ([ADR 0011](../adr/0011-github-pages-demo-site.md)).                                                        |
-| `tokens`        | library     | `type:lib`, `scope:shared`    | Publishable. Imports no other project; its stylesheet scans `ui` for class names ([ADR 0004](../adr/0004-semantic-design-tokens-and-three-axis-theming.md)). |
-| `ui`            | library     | `type:lib`, `scope:shared`    | Publishable. Imports only `tokens` ([ADR 0005](../adr/0005-angular-cdk-and-tailwind-instead-of-a-ui-library.md)).                                            |
-| `mock-api`      | library     | `type:lib`, `scope:shared`    | Not published, and imported by no app yet ([ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md)).                                              |
-| `dashboard-e2e` | e2e         | none                          | Playwright, on Chromium, Firefox and WebKit, against `nx run dashboard:serve` on port 4200.                                                                  |
+| Container       | Kind        | Tags                          | Notes                                                                                                                                                                                                                              |
+| --------------- | ----------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `landing`       | application | `type:app`, `scope:landing`   | Prerendered, hydrates in the browser ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)).                                                                                                                   |
+| `dashboard`     | application | `type:app`, `scope:dashboard` | Client-side SPA; hash routing in the Pages build ([ADR 0011](../adr/0011-github-pages-demo-site.md)).                                                                                                                              |
+| `tokens`        | library     | `type:lib`, `scope:shared`    | Built as an npm package, but not publish-ready: the package omits its stylesheets. Imports no other project; its stylesheet scans `ui` for class names ([ADR 0004](../adr/0004-semantic-design-tokens-and-three-axis-theming.md)). |
+| `ui`            | library     | `type:lib`, `scope:shared`    | Built as an npm package, but not publish-ready: `clsx`, `tailwind-merge` and `tokens` are not declared as dependencies. Imports only `tokens` ([ADR 0005](../adr/0005-angular-cdk-and-tailwind-instead-of-a-ui-library.md)).       |
+| `mock-api`      | library     | `type:lib`, `scope:shared`    | Not published, and imported by no app yet ([ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md)).                                                                                                                    |
+| `dashboard-e2e` | e2e         | none                          | Playwright, on Chromium, Firefox and WebKit, against `nx run dashboard:serve` on port 4200.                                                                                                                                        |
 
 ## Dependency direction
 

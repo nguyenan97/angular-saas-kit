@@ -24,6 +24,11 @@ the [implementation plan](../superpowers/plans/2026-09-05-ci-security-hardening.
 check (`prettier --check .`). CodeQL analyses the JavaScript and TypeScript on pull
 requests and on a weekly schedule. Tests collect coverage for every project.
 
+_Amended 2026-09-27:_ the `lint` leg also runs
+[`scripts/check-architecture.mjs`](../../scripts/check-architecture.mjs), which fails
+when the C4 container map and the code disagree. It has no dependencies, so it shares
+the `lint` runner instead of adding one.
+
 **Protection on `main`.** The five checks above are required, and the branch must
 be up to date before merging. No review approval is required and administrators are
 not forced through the rules, because there is one maintainer and a required

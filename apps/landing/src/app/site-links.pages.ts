@@ -5,4 +5,4 @@ import type { SiteLinks } from './site-links.types';
  * Relative on purpose: it resolves against the `<base href>` the build sets, so
  * the same link works under `/angular-saas-kit/` and on a custom domain.
  */
-export const SITE_LINKS: SiteLinks = { demo: 'demo/' };
+export const SITE_LINKS: SiteLinks = { demo: 'demo/', docs: 'docs/' };

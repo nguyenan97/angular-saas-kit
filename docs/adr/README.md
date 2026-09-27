@@ -21,6 +21,7 @@ _why_ something is the way it is before changing it. The reasoning for
 | [0010](0010-dependabot-grouping-and-ignored-major-versions.md)   | Dependabot grouping and ignored major versions      | Accepted                     |
 | [0011](0011-github-pages-demo-site.md)                           | A demo site on GitHub Pages                         | Accepted                     |
 | [0012](0012-conventional-commits-and-squash-merges.md)           | Conventional Commits and squash merges              | Accepted                     |
+| [0013](0013-documentation-site-with-vitepress.md)                | A documentation site with VitePress                 | Accepted                     |
 
 Records 0002-0008 were written after the fact, from the code and its history, and
 describe what is true today - including what is unfinished.

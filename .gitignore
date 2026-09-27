@@ -63,3 +63,6 @@ playwright-report
 
 # GitHub Pages output (scripts/assemble-pages.mjs)
 _site
+
+# Docs site (VitePress); its build output is covered by `dist` above
+docs/.vitepress/cache
