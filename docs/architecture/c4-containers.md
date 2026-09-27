@@ -78,10 +78,15 @@ The check makes the map and the code agree, in both directions: a dependency in 
 source that is not drawn fails CI, and so does one drawn that no longer exists. A new
 edge therefore shows up in review as a change to this page.
 
-It does **not** forbid an edge. Nothing stops an app importing another app or a library
-importing an app: the `type:` and `scope:` tags exist, but no
-`@nx/enforce-module-boundaries` rule is configured
-([ADR 0002](../adr/0002-nx-monorepo-with-two-apps-and-shared-libraries.md)).
+The check does **not** forbid an edge; lint does, for TypeScript imports. The `type:` and
+`scope:` tags on each project are turned into rules by `@nx/enforce-module-boundaries`: an
+app may depend only on libraries, a shared library only on shared libraries, the dashboard
+and the landing page only on their own scope and on shared code, and nothing may import
+itself in a circle ([ADR 0015](../adr/0015-enforce-module-boundaries-with-nx-tags.md)).
+
+Lint cannot see a stylesheet. The CSS references, including the `tokens` to `ui`
+`@source`, are covered only by this map and its check, and it is the reason `tokens`
+appears to depend on `ui` here while lint sees no cycle.
 
 ## A coupling the map does not draw
 

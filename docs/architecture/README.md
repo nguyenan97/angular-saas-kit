@@ -46,8 +46,8 @@ dependencies found in the source: TypeScript imports through the
 and `implicitDependencies` in a `project.json`. It fails on an arrow the code does not
 back, on a dependency the map does not show, and on a project missing from the map.
 CI runs it on the lint job, so a new dependency between workspace projects cannot land
-without the map saying so. It checks that the map is true; it does not forbid a
-dependency ([why](c4-containers.md#what-the-map-guarantees-and-what-it-does-not)).
+without the map saying so. It checks that the map is true; forbidding a wrong dependency
+is lint's job ([why](c4-containers.md#what-the-map-guarantees-and-what-it-does-not)).
 
 The components, context and deployment pages are not checked: they are maintained by
 hand, in the same pull request as the change.

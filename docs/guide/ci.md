@@ -21,7 +21,7 @@ CodeQL's weekly run is Monday at 03:17 UTC, and it does not run on pushes to `ma
 
 | Check          | Command to reproduce it | What it catches                                                                               |
 | -------------- | ----------------------- | --------------------------------------------------------------------------------------------- |
-| **lint**       | `npm run lint`          | Rule violations, including template accessibility, which are errors.                          |
+| **lint**       | `npm run lint`          | Rule violations. Template accessibility and module boundaries are errors.                     |
 | **test**       | `npm test`              | Failing unit tests. Collects coverage for every project.                                      |
 | **build**      | `npm run build`         | A build that breaks, or a bundle over its budget.                                             |
 | **typecheck**  | `npm run typecheck`     | Type errors the app builds do not compile, such as in spec files.                             |

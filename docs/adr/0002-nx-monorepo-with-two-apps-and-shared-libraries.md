@@ -42,9 +42,10 @@ One Nx workspace, npm, a single lockfile.
   `smol-toml` to an exact vulnerable version, which needed an npm override) and
   executors get deprecated: `@nx/vitest:test`, used by `mock-api`, is scheduled
   for removal in Nx 24.
-- **The tags are declared but not enforced.** No `@nx/enforce-module-boundaries`
-  rule is configured, so nothing stops an app importing another app or a library
-  importing an app. Turning it on is a known follow-up.
+- **The tags were declared but not enforced.** No `@nx/enforce-module-boundaries`
+  rule was configured, so nothing stopped an app importing another app or a library
+  importing an app. _Amended 2026-09-27:_ lint enforces them now
+  ([0015](0015-enforce-module-boundaries-with-nx-tags.md)).
 - **The packages are not publish-ready.** The ng-packagr builds succeed, but the
   built `ui` manifest does not declare `clsx`, `tailwind-merge` or
   `@angular-saas-kit/tokens`, which its code imports, and the built `tokens` package
