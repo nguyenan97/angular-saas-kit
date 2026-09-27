@@ -11,7 +11,7 @@ apps/
   landing/          Marketing page: prerendered, with an optional Node server build
 libs/
   tokens/           Design tokens, Tailwind theme mapping, ThemeService
-  ui/               Shared components: ThemeSwitcher and the cn() helper
+  ui/               Shared components (Button, Badge, Card, Icon, Input, Table, ...) and cn()
   mock-api/         In-memory HTTP interceptor with realistic latency
 docs/
   guide/            The guides on this site

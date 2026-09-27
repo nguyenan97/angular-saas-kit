@@ -1,11 +1,25 @@
 # Components
 
-> [!WARNING]
-> **Early.** `libs/ui` is small on purpose today. It exports the `ThemeSwitcher` component
-> and the `cn()` class helper. A component library of around forty components on the
-> Angular CDK is the main item on the
+> [!NOTE]
+> **Early.** `libs/ui` has the basics a dashboard page needs, listed below. A library of
+> around forty components on the Angular CDK is the main item on the
 > [roadmap](https://github.com/nguyenan97/angular-saas-kit#roadmap), and this page is the
-> contract those components will be held to.
+> contract every one of them is held to.
+
+## What exists
+
+| Component                                                     | Selector                             | What it is                                       |
+| ------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------ |
+| [Badge](../../libs/ui/src/lib/badge/README.md)                | `ask-badge`                          | A short status or count                          |
+| [Button](../../libs/ui/src/lib/button/README.md)              | `button[askButton]`, `a[askButton]`  | Styles a native button or link                   |
+| [Card](../../libs/ui/src/lib/card/README.md)                  | `ask-card` and its parts             | A raised surface; the parts are directives       |
+| [Icon](../../libs/ui/src/lib/icon/README.md)                  | `ask-icon`                           | An inline SVG icon, from Lucide's data           |
+| [Input and Label](../../libs/ui/src/lib/input/README.md)      | `input[askInput]`, `label[askLabel]` | Style native text fields, selects and labels     |
+| [Table and SortHeader](../../libs/ui/src/lib/table/README.md) | `table[askTable]`, `ask-sort-header` | Styles a native table; a sortable column header  |
+| ThemeSwitcher                                                 | `ask-theme-switcher`                 | The three theme axes, as groups of native radios |
+
+Each has a README next to its source with usage, an API table and accessibility notes. The
+`cn()` helper is exported too.
 
 ## The rules
 
@@ -55,6 +69,12 @@ A component in `libs/ui` is done when it has:
 - unit tests for the behaviour and the accessibility contract, not just "it renders"
 - a short README next to it: usage, an API table, accessibility notes
 
+**Styling a native element? Make it a directive on that element.** `Button`, `Input` and
+`Table` are directives (`button[askButton]`, `input[askInput]`, `table[askTable]`), so the
+button keeps its keyboard behaviour, the field keeps working with forms and autofill, and the
+table keeps its semantics. A component that wraps the element would have to rebuild all of
+that.
+
 ### Why `cn()`
 
 Plain string concatenation does not work with Tailwind: `"p-2" + "p-4"` leaves both classes
@@ -64,7 +84,8 @@ can always override a component's default.
 
 ### A worked example
 
-A badge, in `libs/ui/src/lib/badge/badge.ts`:
+The kit's `Badge`, in `libs/ui/src/lib/badge/badge.ts`, shortened here to three of its
+seven variants:
 
 ```ts
 import {
@@ -106,7 +127,7 @@ export class Badge {
 }
 ```
 
-Export it from `libs/ui/src/index.ts`:
+It is exported from `libs/ui/src/index.ts`, as every component must be:
 
 ```ts
 export * from './lib/badge/badge';

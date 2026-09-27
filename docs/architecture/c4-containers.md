@@ -18,7 +18,7 @@ C4Container
     Container(dashboard, "dashboard", "Angular 22, zoneless SPA", "Admin shell with a theme panel and an overview page; five more sections are stubs")
     Container(e2e, "dashboard-e2e", "Playwright", "Browser tests for theming, the sidebar and the theme switcher's keyboard behaviour. Run in CI on Chromium")
     Container(tokens, "tokens", "Angular library and CSS", "Design tokens, Tailwind v4 theme mapping, ThemeService, anti-flash script")
-    Container(ui, "ui", "Angular library", "cn() class merging and the ThemeSwitcher component")
+    Container(ui, "ui", "Angular library", "Components on the semantic tokens: Button, Card, Table, Icon and the rest, the ThemeSwitcher, and cn()")
     Container(mockapi, "mock-api", "Angular library", "HTTP interceptor serving registered routes from memory. Not wired into an app yet")
   }
 

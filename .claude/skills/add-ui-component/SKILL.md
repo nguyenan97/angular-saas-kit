@@ -6,8 +6,10 @@ description: Add a component to the shared library (libs/ui) the way this kit re
 # Add a component to `libs/ui`
 
 The contract is in `docs/guide/components.md` (worked example included) and `CONTRIBUTING.md`. Read
-the guide first. `libs/ui` is small today (`ThemeSwitcher`, `cn()`), so there is little to copy;
-`libs/ui/src/lib/theme-switcher/theme-switcher.ts` is the closest existing example.
+the guide first, then copy the closest existing component in `libs/ui/src/lib`: `badge` for a small
+component, `button` or `input` for a directive that styles a native element, `table` (its
+`SortHeader`) for a component with a `model()` and an icon, `theme-switcher` for native form
+controls.
 
 ## Before you write anything
 
