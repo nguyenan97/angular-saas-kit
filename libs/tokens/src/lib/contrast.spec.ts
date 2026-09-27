@@ -135,6 +135,11 @@ const NON_TEXT: readonly (readonly [string, string])[] = [
   ['ring', 'card'],
   ['input', 'background'],
   ['input', 'card'],
+  // A chart's lines and bars: 1.4.11 asks 3:1 of the marks it is read from.
+  ...[1, 2, 3, 4, 5].flatMap((n) => [
+    [`chart-${n}`, 'background'] as const,
+    [`chart-${n}`, 'card'] as const,
+  ]),
 ];
 
 function failures(
@@ -167,7 +172,7 @@ describe('token contrast', () => {
     });
 
     it.each(ACCENTS)(
-      'gives the focus ring and input borders 3:1 with the %s accent',
+      'gives the focus ring, input borders and chart colours 3:1 with the %s accent',
       (accent) => {
         expect(failures(tokensFor(mode, accent), NON_TEXT, 3)).toEqual([]);
       },

@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import {
   Badge,
@@ -8,6 +8,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  Chart,
+  type ChartPoint,
   Table,
 } from '@angular-saas-kit/ui';
 
@@ -40,6 +42,7 @@ import type { Order, OverviewStats, Page } from '../data/models';
     CardHeader,
     CardTitle,
     CardContent,
+    Chart,
     RouterLink,
     Table,
   ],
@@ -97,6 +100,24 @@ import type { Order, OverviewStats, Page } from '../data/models';
             }
           }
         </div>
+
+        @if (revenue().length) {
+          <ask-card class="mt-4">
+            <div askCardContent>
+              <ask-chart
+                type="line"
+                label="Revenue per day"
+                valueLabel="Revenue"
+                [height]="200"
+                [data]="revenue()"
+                [format]="dollars"
+              />
+              <a askButton variant="link" routerLink="/analytics" class="mt-2">
+                See the analytics
+              </a>
+            </div>
+          </ask-card>
+        }
       }
     </section>
 
@@ -185,6 +206,22 @@ export class Overview {
     url: '/api/orders',
     params: { sort: 'placedAt', dir: 'desc', pageSize: 5 },
   }));
+
+  /** The daily revenue behind the figures, for the chart; none until they load. */
+  protected readonly revenue = computed<ChartPoint[]>(() =>
+    this.stats.hasValue()
+      ? this.stats.value().daily.map((day) => ({
+          label: formatDate(day.date),
+          value: day.revenueCents,
+        }))
+      : [],
+  );
+  protected readonly dollars = (cents: number) =>
+    new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(cents / 100);
 
   protected readonly placeholders = [1, 2, 3, 4];
   protected readonly badge = STATUS_BADGE;

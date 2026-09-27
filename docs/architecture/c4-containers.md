@@ -15,7 +15,7 @@ C4Container
 
   System_Boundary(kit, "Angular SaaS Kit (one Nx workspace)") {
     Container(landing, "landing", "Angular 22, prerendered", "Marketing page. Static output on Pages; a Node server build is also configured")
-    Container(dashboard, "dashboard", "Angular 22, zoneless SPA", "Admin shell with overview, orders, customers, products and settings pages on the API; analytics is planned")
+    Container(dashboard, "dashboard", "Angular 22, zoneless SPA", "Admin shell with overview, analytics, orders, customers, products and settings pages on the API")
     Container(e2e, "dashboard-e2e", "Playwright", "Browser tests for theming, the shell, the pages' data, and the keyboard behaviour of the switcher, menus and dialogs. Run in CI on Chromium")
     Container(tokens, "tokens", "Angular library and CSS", "Design tokens, Tailwind v4 theme mapping, ThemeService, anti-flash script")
     Container(ui, "ui", "Angular library", "Components on the semantic tokens: Button, Card, Table, Icon and the rest, the ThemeSwitcher, and cn()")

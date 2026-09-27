@@ -3,6 +3,7 @@ export * from './lib/theme-switcher/theme-switcher';
 export * from './lib/badge/badge';
 export * from './lib/button/button';
 export * from './lib/card/card';
+export * from './lib/chart/chart';
 export * from './lib/dialog/dialog';
 export * from './lib/icon/icon';
 export * from './lib/input/input';

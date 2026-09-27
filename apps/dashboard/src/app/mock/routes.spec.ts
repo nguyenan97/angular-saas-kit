@@ -3,6 +3,7 @@ import type { MockRoute } from '@angular-saas-kit/mock-api';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import type {
+  Analytics,
   Customer,
   NotificationSettings,
   Order,
@@ -270,5 +271,42 @@ describe('GET and PUT /api/notifications', () => {
       productNews: true,
     });
     expect(call('GET', '/api/notifications')).toEqual(saved);
+  });
+});
+
+describe('GET /api/analytics', () => {
+  it('gives one total per day of the period asked for', () => {
+    for (const days of [7, 30, 90]) {
+      const result = call<Analytics>('GET', '/api/analytics', {
+        query: `days=${days}`,
+      });
+      expect(result.days).toBe(days);
+      expect(result.daily).toHaveLength(days);
+    }
+  });
+
+  it('falls back to 30 days for a period it does not offer', () => {
+    expect(
+      call<Analytics>('GET', '/api/analytics', { query: 'days=12' }).days,
+    ).toBe(30);
+  });
+
+  it('adds the categories and statuses up to the same totals as the days', () => {
+    const result = call<Analytics>('GET', '/api/analytics', {
+      query: 'days=90',
+    });
+    const revenue = result.daily.reduce(
+      (sum, day) => sum + day.revenueCents,
+      0,
+    );
+    const orders = result.daily.reduce((sum, day) => sum + day.orders, 0);
+
+    expect(result.byCategory.reduce((sum, c) => sum + c.revenueCents, 0)).toBe(
+      revenue,
+    );
+    expect(result.byStatus.reduce((sum, s) => sum + s.orders, 0)).toBe(orders);
+    expect(result.topProducts.length).toBeLessThanOrEqual(5);
+    const top = result.topProducts.map((p) => p.revenueCents);
+    expect(top).toEqual([...top].sort((a, b) => b - a));
   });
 });
