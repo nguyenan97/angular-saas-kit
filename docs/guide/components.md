@@ -17,6 +17,7 @@
 | [Icon](../../libs/ui/src/lib/icon/README.md)                  | `ask-icon`                           | An inline SVG icon, from Lucide's data           |
 | [Input and Label](../../libs/ui/src/lib/input/README.md)      | `input[askInput]`, `label[askLabel]` | Style native text fields, selects and labels     |
 | [Menu](../../libs/ui/src/lib/menu/README.md)                  | `[askMenuTrigger]`, `[askMenu]`, ... | A menu of actions, on the CDK's menu             |
+| [Pagination](../../libs/ui/src/lib/pagination/README.md)      | `ask-pagination`                     | Previous and next for a paged list               |
 | [Table and SortHeader](../../libs/ui/src/lib/table/README.md) | `table[askTable]`, `ask-sort-header` | Styles a native table; a sortable column header  |
 | [Tabs](../../libs/ui/src/lib/tabs/README.md)                  | `ask-tabs`, `ask-tab`                | Tabs, with the CDK's roving focus                |
 | ThemeSwitcher                                                 | `ask-theme-switcher`                 | The three theme axes, as groups of native radios |

@@ -23,6 +23,21 @@ export const pageRoutes: Routes = [
         loadComponent: () => import('./overview').then((m) => m.Overview),
       },
       {
+        path: 'orders',
+        title: 'Orders',
+        loadComponent: () => import('./orders/orders').then((m) => m.Orders),
+      },
+      {
+        path: 'customers',
+        title: 'Customers',
+        loadComponent: () => import('./customers').then((m) => m.Customers),
+      },
+      {
+        path: 'products',
+        title: 'Products',
+        loadComponent: () => import('./products').then((m) => m.Products),
+      },
+      {
         path: 'settings',
         title: 'Settings',
         loadComponent: () => import('./settings').then((m) => m.Settings),
