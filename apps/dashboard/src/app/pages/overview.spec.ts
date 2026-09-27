@@ -5,6 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { Order, OverviewStats, Page } from '../data/models';
@@ -57,6 +58,7 @@ async function render() {
       provideZonelessChangeDetection(),
       provideHttpClient(),
       provideHttpClientTesting(),
+      provideRouter([]),
     ],
   });
   const fixture = TestBed.createComponent(Overview);

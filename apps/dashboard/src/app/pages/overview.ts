@@ -1,5 +1,6 @@
 import { httpResource } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   Badge,
   Button,
@@ -32,7 +33,16 @@ import type { Order, OverviewStats, Page } from '../data/models';
 @Component({
   selector: 'ask-overview',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Badge, Button, Card, CardHeader, CardTitle, CardContent, Table],
+  imports: [
+    Badge,
+    Button,
+    Card,
+    CardHeader,
+    CardTitle,
+    CardContent,
+    RouterLink,
+    Table,
+  ],
   template: `
     <section aria-labelledby="kpis-heading">
       <h2 id="kpis-heading" class="text-sm font-medium text-muted-foreground">
@@ -91,8 +101,9 @@ import type { Order, OverviewStats, Page } from '../data/models';
     </section>
 
     <ask-card class="mt-8">
-      <header askCardHeader>
+      <header askCardHeader class="flex-row items-center justify-between">
         <h2 askCardTitle>Latest orders</h2>
+        <a askButton variant="link" routerLink="/orders">View all orders</a>
       </header>
       <div askCardContent>
         @if (latest.error()) {

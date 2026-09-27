@@ -21,6 +21,7 @@
        drawer over it below. Its widths are the layout tokens, which the
        content column's offset uses too, so the two cannot drift apart. -->
   <aside
+    #sidebar
     id="app-sidebar"
     class="fixed inset-y-0 left-0 z-40 flex-col border-r border-border bg-card transition-[width] duration-200"
     [class.flex]="isDesktop() || drawerOpen()"
@@ -28,8 +29,6 @@
     [class.w-sidebar]="labelsVisible()"
     [class.w-sidebar-collapsed]="!labelsVisible()"
     [class.shadow-lg]="drawerVisible()"
-    [cdkTrapFocus]="drawerVisible()"
-    [cdkTrapFocusAutoCapture]="drawerVisible()"
   >
     <div class="flex h-topbar items-center gap-2 border-b border-border px-4">
       <span class="size-6 shrink-0 rounded-md bg-primary" aria-hidden="true"></span>

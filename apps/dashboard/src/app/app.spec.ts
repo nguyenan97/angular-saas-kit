@@ -79,7 +79,13 @@ describe('App shell', () => {
     const links = [...el.querySelectorAll('nav a')].map((a) =>
       a.textContent?.trim(),
     );
-    expect(links).toEqual(['Overview', 'Settings']);
+    expect(links).toEqual([
+      'Overview',
+      'Orders',
+      'Customers',
+      'Products',
+      'Settings',
+    ]);
     // The planned pages are listed, marked "soon", and are not links.
     expect(el.querySelector('nav')?.textContent).toContain('Analytics');
     expect(el.querySelector('nav')?.textContent).toContain('soon');

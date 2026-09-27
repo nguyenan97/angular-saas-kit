@@ -7,5 +7,6 @@ export * from './lib/dialog/dialog';
 export * from './lib/icon/icon';
 export * from './lib/input/input';
 export * from './lib/menu/menu';
+export * from './lib/pagination/pagination';
 export * from './lib/table/table';
 export * from './lib/tabs/tabs';
