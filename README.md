@@ -70,6 +70,17 @@ resolution bug on this tree.
 | `libs/ui`        | Shared component library (publishable to npm)         |
 | `libs/mock-api`  | In-memory backend with realistic latency              |
 
+## Architecture
+
+The shape of the workspace is drawn with the [C4 model](./docs/architecture/README.md)
+
+- [context](./docs/architecture/c4-context.md),
+  [containers](./docs/architecture/c4-containers.md),
+  [components](./docs/architecture/c4-components.md) and
+  [deployment](./docs/architecture/c4-deployment.md) - and the reasoning behind it is
+  in the [architecture decision records](./docs/adr/README.md). CI checks that the
+  container map matches the code.
+
 ## Theming
 
 Every colour in the kit resolves through a semantic token, so restyling never

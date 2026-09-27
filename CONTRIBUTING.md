@@ -21,13 +21,14 @@ tree has a real conflict - don't paper over it with `--legacy-peer-deps`.
 ```bash
 npx nx run-many -t lint test build
 npm run typecheck
+npm run check:architecture
 npm run format:check
 ```
 
 CI runs the same lint, test and build (through `nx affected`, so only the
-projects your change touches), a workspace typecheck, a Prettier check and
-CodeQL scanning. Tests collect coverage for every project. A green local run
-is a green CI run.
+projects your change touches), a workspace typecheck, the architecture check, a
+Prettier check and CodeQL scanning. Tests collect coverage for every project. A
+green local run is a green CI run.
 
 `main` is protected: changes land through a pull request, `lint`, `test`,
 `build`, `typecheck` and `format` must pass, and the branch has to be up to
@@ -45,6 +46,21 @@ npm run pages:preview   # serves _site the way Pages does, at http://localhost:8
 
 Every pull request also runs this build (the **Pages / Build site** check) and
 uploads the result as a downloadable `github-pages` artifact on the run.
+
+## Architecture and decisions
+
+How the kit is put together is drawn in [`docs/architecture`](./docs/architecture/README.md)
+(C4 diagrams), and why it is that way is recorded in
+[`docs/adr`](./docs/adr/README.md) (architecture decision records). Read them
+before changing a shape.
+
+- **Adding a project, or a dependency between projects?** Update the `Container`
+  and `Rel` lines in [`c4-containers.md`](./docs/architecture/c4-containers.md) in
+  the same PR. `npm run check:architecture` compares that map with the imports and
+  stylesheet references in the source, and CI runs it.
+- **Making a decision that is expensive to reverse?** Write an ADR: copy
+  [`docs/adr/template.md`](./docs/adr/template.md), open the PR with it as
+  `Proposed`, and it becomes `Accepted` when the PR merges.
 
 ## The rules that are not negotiable
 
