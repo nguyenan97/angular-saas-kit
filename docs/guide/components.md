@@ -13,13 +13,20 @@
 | [Badge](../../libs/ui/src/lib/badge/README.md)                | `ask-badge`                          | A short status or count                          |
 | [Button](../../libs/ui/src/lib/button/README.md)              | `button[askButton]`, `a[askButton]`  | Styles a native button or link                   |
 | [Card](../../libs/ui/src/lib/card/README.md)                  | `ask-card` and its parts             | A raised surface; the parts are directives       |
+| [Dialog](../../libs/ui/src/lib/dialog/README.md)              | `DialogService` and the parts        | A modal dialog, on the CDK's `Dialog`            |
 | [Icon](../../libs/ui/src/lib/icon/README.md)                  | `ask-icon`                           | An inline SVG icon, from Lucide's data           |
 | [Input and Label](../../libs/ui/src/lib/input/README.md)      | `input[askInput]`, `label[askLabel]` | Style native text fields, selects and labels     |
+| [Menu](../../libs/ui/src/lib/menu/README.md)                  | `[askMenuTrigger]`, `[askMenu]`, ... | A menu of actions, on the CDK's menu             |
 | [Table and SortHeader](../../libs/ui/src/lib/table/README.md) | `table[askTable]`, `ask-sort-header` | Styles a native table; a sortable column header  |
+| [Tabs](../../libs/ui/src/lib/tabs/README.md)                  | `ask-tabs`, `ask-tab`                | Tabs, with the CDK's roving focus                |
 | ThemeSwitcher                                                 | `ask-theme-switcher`                 | The three theme axes, as groups of native radios |
 
 Each has a README next to its source with usage, an API table and accessibility notes. The
 `cn()` helper is exported too.
+
+The keyboard behaviour of `Dialog`, `Menu` and `Tabs` (focus traps, arrow keys, roving focus)
+comes from the Angular CDK and is unit-tested; it is proved in a real browser as the dashboard
+pages start to use them.
 
 ## The rules
 

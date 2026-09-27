@@ -4,16 +4,18 @@ Accessible Angular components for the
 [Angular SaaS Kit](https://github.com/nguyenan97/angular-saas-kit), styled only through the
 semantic tokens of `@angular-saas-kit/tokens`. Signals-first, `OnPush`, no `zone.js`.
 
-> **Pre-1.0.** It has the basics a dashboard page needs: `Badge`, `Button`, `Card`, `Icon`,
-> `Input` and `Label`, `Table` and `SortHeader`, the `ThemeSwitcher`, and the `cn()` class helper.
-> The rest of the component library is on the roadmap. Nothing is published to npm yet, so `0.0.x`
-> may change without notice.
+> **Pre-1.0.** It has the basics a dashboard page needs: `Badge`, `Button`, `Card`, `Dialog`,
+> `Icon`, `Input` and `Label`, `Menu`, `Table` and `SortHeader`, `Tabs`, the `ThemeSwitcher`, and
+> the `cn()` class helper. The rest of the component library is on the roadmap. Nothing is
+> published to npm yet, so `0.0.x` may change without notice.
 
 ## Requirements
 
 Angular 22, Tailwind CSS 4.3 or newer, and `@angular-saas-kit/tokens` (a peer dependency, so the app
-and the components share one `ThemeService`). Icons are drawn from the data in
-[`lucide`](https://lucide.dev), a dependency of this package: import the icons you use from it.
+and the components share one `ThemeService`). `@angular/cdk` is a peer dependency too: `Dialog`,
+`Menu` and `Tabs` are built on it, and it loads its own overlay styles. Icons are drawn from the
+data in [`lucide`](https://lucide.dev), a dependency of this package: import the icons you use
+from it.
 
 ## Use
 

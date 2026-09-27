@@ -145,16 +145,18 @@ C4Component
 
   Container_Ext(dashboard, "dashboard", "Angular app", "Embeds the switcher")
   Component(switcher, "ThemeSwitcher", "Standalone component, OnPush", "Three fieldsets of native radio inputs for mode, accent and radius. Selector ask-theme-switcher")
-  Component(kit, "Badge, Button, Card, Icon, Input, Label, Table, SortHeader", "Components and directives, OnPush", "Semantic tokens only. The ones that style a native element are directives on it")
+  Component(kit, "Badge, Button, Card, Dialog, Icon, Input, Menu, Table, Tabs and the rest", "Components and directives, OnPush", "Semantic tokens only. The ones that style a native element are directives on it")
   Container_Ext(tokens, "tokens", "Angular library and CSS", "ThemeService and the theme constants")
   Component(cn, "cn", "Function", "clsx, then tailwind-merge: the last class wins, so a consumer can override a default")
   Container_Ext(lucide, "lucide", "npm package", "Icon drawings as data, on a 24 x 24 grid")
+  Container_Ext(cdk, "Angular CDK", "npm package", "Dialog, menu, focus key manager, directionality")
 
   Rel(dashboard, switcher, "Embeds")
   Rel(switcher, tokens, "Injects ThemeService")
   Rel(switcher, cn, "Builds classes with")
   Rel(kit, cn, "Build classes with")
   Rel(kit, lucide, "SortHeader takes its arrows from")
+  Rel(kit, cdk, "Dialog, Menu and Tabs are built on")
 
   UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
@@ -168,8 +170,10 @@ host classes through ([ADR 0005](../adr/0005-angular-cdk-and-tailwind-instead-of
 The other components are listed in the [components guide](../guide/components.md#what-exists),
 each with a README next to its source. `Button`, `Input`, `Label`, `Table` and the card parts are
 directives on the native element they style; `Icon` draws a Lucide icon's data as inline SVG
-([ADR 0017](../adr/0017-icons-from-lucide-data-drawn-by-one-component.md)). Nothing in the
-workspace uses them yet apart from their tests; the dashboard's pages will.
+([ADR 0017](../adr/0017-icons-from-lucide-data-drawn-by-one-component.md)); `Dialog`, `Menu`
+and `Tabs` take their focus handling and keyboard behaviour from the CDK, which is a peer
+dependency of the package. Nothing in the workspace uses them yet apart from their tests; the
+dashboard's pages will.
 
 The package also ships a one-line stylesheet, `libs/ui/assets/styles.css`, that points
 Tailwind at the compiled components (`@source './fesm2022'`) so an app that installs the

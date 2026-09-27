@@ -9,7 +9,8 @@ The contract is in `docs/guide/components.md` (worked example included) and `CON
 the guide first, then copy the closest existing component in `libs/ui/src/lib`: `badge` for a small
 component, `button` or `input` for a directive that styles a native element, `table` (its
 `SortHeader`) for a component with a `model()` and an icon, `theme-switcher` for native form
-controls.
+controls, `tabs` for roving focus with the CDK's `FocusKeyManager`, `menu` for wrapping CDK
+directives with `hostDirectives`, and `dialog` for an overlay opened from a service.
 
 ## Before you write anything
 
