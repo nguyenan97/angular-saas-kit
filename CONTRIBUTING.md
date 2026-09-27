@@ -75,6 +75,15 @@ npm run docs:build    # what CI builds; fails on a dead link
 Write links relative and end them in `.md`, so they work on GitHub and on the site.
 [`docs/README.md`](./docs/README.md) has the rest of the conventions.
 
+## Working with AI coding agents
+
+[`AGENTS.md`](./AGENTS.md) tells coding agents how this repository works, and
+[`.claude/skills`](./.claude/skills) holds step-by-step skills for the recurring jobs: verifying a
+change, adding a component or a dashboard page, writing an ADR, updating the architecture map,
+writing docs, opening a pull request and triaging Dependabot. The rules are the same for everyone.
+A change made with an agent goes through the same checks, and you are responsible for what you
+submit.
+
 ## The rules that are not negotiable
 
 These are the things the kit is _for_. A PR that breaks one of them will be
