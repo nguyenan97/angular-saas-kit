@@ -24,6 +24,7 @@ in each project's `test` target. Each target declares its `outputs`
 (`coverage/<project>`) so an Nx cache hit restores the report. End-to-end tests
 use Playwright (`dashboard-e2e`); they were not part of CI. _Amended 2026-09-27:_ an
 `e2e` job runs them on Chromium for every pull request; it is not a required check yet.
+_Amended 2026-09-28:_ it is a required check now ([ADR 0009](0009-strict-ci-gates-and-a-protected-main.md)).
 
 ## Alternatives considered
 
