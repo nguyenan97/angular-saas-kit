@@ -117,7 +117,8 @@ C4Component
 ## landing
 
 The marketing page. It is built two ways from one source: static files for GitHub
-Pages, or a server output that runs behind Node ([deployment](c4-deployment.md)).
+Pages, or a server output that runs behind Node ([deployment](c4-deployment.md)). Its
+sections are components of their own, built on the kit's `Button`, `Card` and `Icon`.
 
 ```mermaid
 %%{init: {"c4": {"c4ShapeMargin": 100}}}%%
@@ -125,11 +126,13 @@ C4Component
   title Components: landing
 
   Container_Ext(tokens, "tokens", "Angular library and CSS", "ThemeService and the shared stylesheet")
+  Container_Ext(ui, "ui", "Angular library", "Button, Card and Icon")
 
   Container_Boundary(landing, "landing") {
     Component(config, "appConfig", "Application providers", "Client hydration with event replay, global error listeners, an empty router")
     Component(main, "main.ts", "Browser entry", "Starts App with appConfig")
-    Component(shell, "App", "Standalone component, OnPush", "Header with GitHub link and dark-mode button, hero with call-to-action links, footer")
+    Component(shell, "App", "Standalone component, OnPush", "Skip link, header with links to the sections, GitHub and a dark-mode button, hero with call-to-action links, footer")
+    Component(sections, "Features, Pricing, Faq", "Standalone components, OnPush", "The page's sections. Each keeps its copy at the top of its file")
     Component(links, "SITE_LINKS", "site-links.ts", "The demo link: none by default; the Pages build swaps in demo/")
     Component(serverroutes, "serverRoutes", "Server route table", "Every path is prerendered")
     Component(serverconfig, "app.config.server.ts", "Application providers", "appConfig plus server rendering and the server routes")
@@ -139,6 +142,9 @@ C4Component
   }
 
   Rel(shell, tokens, "Toggles the theme")
+  Rel(shell, ui, "Styles its links and buttons with")
+  Rel(shell, sections, "Renders")
+  Rel(sections, ui, "Build on")
   Rel(main, config, "Bootstraps with")
   Rel(main, shell, "Bootstraps")
   Rel(shell, links, "Reads")
@@ -151,12 +157,13 @@ C4Component
   UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
 ```
 
-| Component    | Source                                                                                                                                                                                                        | Notes                                                                                                                                                                                                               |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `App`        | [`app.ts`](../../apps/landing/src/app/app.ts), [`app.html`](../../apps/landing/src/app/app.html)                                                                                                              | The router has no routes: the page is the shell. The "Live demo" button renders only when `SITE_LINKS.demo` is set.                                                                                                 |
-| `SITE_LINKS` | [`site-links.ts`](../../apps/landing/src/app/site-links.ts), [`site-links.pages.ts`](../../apps/landing/src/app/site-links.pages.ts), [`site-links.types.ts`](../../apps/landing/src/app/site-links.types.ts) | Swapped at build time like the dashboard's `routerFeatures`; the shared type lives in its own file so neither variant imports the other.                                                                            |
-| `server.ts`  | [`server.ts`](../../apps/landing/src/server.ts)                                                                                                                                                               | Express 5 rejects a bare `/**` route, so the catch-all is `app.use` with no path. Refuses every request until `NG_ALLOWED_HOSTS` is set ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)). |
-| `404.html`   | [`404.html`](../../apps/landing/public/404.html)                                                                                                                                                              | Self-contained, with absolute links under `/angular-saas-kit/`.                                                                                                                                                     |
+| Component              | Source                                                                                                                                                                                                        | Notes                                                                                                                                                                                                                                                                                                                                                            |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `App`                  | [`app.ts`](../../apps/landing/src/app/app.ts), [`app.html`](../../apps/landing/src/app/app.html)                                                                                                              | The router has no routes: the page is the shell. The "Live demo" and "Docs" buttons render only when `SITE_LINKS` sets them. The skip link and the header's links to the sections are plain fragment links, so they work before the page hydrates.                                                                                                               |
+| Features, Pricing, Faq | [`sections/`](../../apps/landing/src/app/sections/features.ts)                                                                                                                                                | Each is a `section` named by its `h2`, with the id the header links to; `scroll-mt-topbar` keeps its heading clear of the sticky header. The copy is a typed constant at the top of each file (`FEATURES`, `PLANS`, `QUESTIONS`), and every claim in it is true of the code. The questions are native `details` elements, which open and close before hydration. |
+| `SITE_LINKS`           | [`site-links.ts`](../../apps/landing/src/app/site-links.ts), [`site-links.pages.ts`](../../apps/landing/src/app/site-links.pages.ts), [`site-links.types.ts`](../../apps/landing/src/app/site-links.types.ts) | Swapped at build time like the dashboard's `routerFeatures`; the shared type lives in its own file so neither variant imports the other.                                                                                                                                                                                                                         |
+| `server.ts`            | [`server.ts`](../../apps/landing/src/server.ts)                                                                                                                                                               | Express 5 rejects a bare `/**` route, so the catch-all is `app.use` with no path. Refuses every request until `NG_ALLOWED_HOSTS` is set ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)).                                                                                                                                              |
+| `404.html`             | [`404.html`](../../apps/landing/public/404.html)                                                                                                                                                              | Self-contained, with absolute links under `/angular-saas-kit/`.                                                                                                                                                                                                                                                                                                  |
 
 ## ui
 
@@ -196,13 +203,13 @@ each with a README next to its source. `Button`, `Input`, `Label`, `Table` and t
 directives on the native element they style; `Icon` draws a Lucide icon's data as inline SVG
 ([ADR 0017](../adr/0017-icons-from-lucide-data-drawn-by-one-component.md)); `Dialog`, `Menu`
 and `Tabs` take their focus handling and keyboard behaviour from the CDK, which is a peer
-dependency of the package. Nothing in the workspace uses them yet apart from their tests; the
-dashboard's pages will.
+dependency of the package. The dashboard's pages use them, and the landing page uses `Button`,
+`Card` and `Icon`.
 
 The package also ships a one-line stylesheet, `libs/ui/assets/styles.css`, that points
 Tailwind at the compiled components (`@source './fesm2022'`) so an app that installs the
-package gets the utilities they use. Nothing in the workspace imports it: the dashboard
-points Tailwind at `libs/ui/src` directly. See
+package gets the utilities they use. Nothing in the workspace imports it: both apps point
+Tailwind at `libs/ui/src` directly. See
 [ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md).
 
 ## mock-api
