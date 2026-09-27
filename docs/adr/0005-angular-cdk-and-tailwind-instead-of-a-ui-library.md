@@ -1,6 +1,6 @@
 # 0005. Angular CDK and Tailwind instead of a UI library
 
-- **Status:** Accepted, partly implemented
+- **Status:** Accepted
 - **Date:** 2026-09-26 (recorded after the fact)
 - **Deciders:** @nguyenan97
 
@@ -46,6 +46,10 @@ single-purpose utilities are fine after an issue.
   and follows the `lg` breakpoint with `BreakpointObserver`. A component in `libs/ui`
   that uses the CDK declares it as a peer dependency of the package
   ([0016](0016-packages-declare-and-ship-what-they-need.md)).
+  _Amended again the same day:_ `libs/ui` now builds `Dialog` on the CDK's `Dialog`, `Menu`
+  on its menu and `Tabs` on its `FocusKeyManager`, and declares `@angular/cdk` as a peer
+  dependency, so the status drops "partly implemented". The library is still far from the
+  forty components the roadmap plans.
 
 ## References
 
