@@ -61,6 +61,12 @@ import), and `theme-init.spec.ts` fails if the copies drift.
 - The duplicated inline script is a drift risk that a test, not the compiler,
   guards.
 - OKLCH needs a current browser; that is acceptable for a kit that targets Angular 22.
+- _Amended 2026-09-27:_ contrast is part of the token contract. Text pairs meet WCAG AA
+  (4.5:1) and the focus ring and input borders 3:1, in both modes and with every accent,
+  and `contrast.spec.ts` checks it. Meeting it darkened the light-mode `success` and
+  `warning` (which now carries white text), the light emerald and orange accents,
+  `muted-foreground` and `input`, and lightened the dark violet accent
+  ([Theming](../guide/theming.md#contrast)).
 
 ## References
 

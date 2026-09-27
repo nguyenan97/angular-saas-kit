@@ -12,6 +12,12 @@
  * Components must only ever reference the SEMANTIC tokens below
  * (--background, --primary, --border, ...). Never reference a raw palette
  * step from a component - that is what makes retheming possible.
+ *
+ * Contrast is part of the contract, in both modes and with every accent:
+ * text on its surface, a colour's -foreground on the colour, and a status
+ * colour used as text all meet WCAG AA (4.5:1); the focus ring and input
+ * borders meet 3:1. contrast.spec.ts fails when a change breaks that, so
+ * a new value is chosen against the test, not by eye.
  * ---------------------------------------------------------------------- */
 
 :root {
@@ -29,23 +35,27 @@
   --secondary-foreground: oklch(0.205 0 0);
 
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: oklch(0.54 0 0);
 
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
 
+  /* A border that only decorates (a card, a divider) can be faint. An input
+     border is how a field is found at all, so it has to reach 3:1. */
   --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  --input: oklch(0.66 0 0);
 
   /* ---- status ---------------------------------------------------------- */
+  /* Dark enough to be text on the page and to carry white text: one value
+     serves a badge and a line of coloured text. */
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
 
-  --success: oklch(0.596 0.145 163.225);
+  --success: oklch(0.508 0.118 165.612);
   --success-foreground: oklch(0.985 0 0);
 
-  --warning: oklch(0.681 0.162 75.834);
-  --warning-foreground: oklch(0.145 0 0);
+  --warning: oklch(0.555 0.163 48.998);
+  --warning-foreground: oklch(0.985 0 0);
 
   --info: oklch(0.546 0.245 262.881);
   --info-foreground: oklch(0.985 0 0);
@@ -86,7 +96,7 @@
   --accent-foreground: oklch(0.985 0 0);
 
   --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 18%);
+  --input: oklch(0.51 0 0);
 
   --destructive: oklch(0.704 0.191 22.216);
   --destructive-foreground: oklch(0.145 0 0);
@@ -137,15 +147,15 @@
 
 .dark[data-accent='violet'],
 .dark [data-accent='violet'] {
-  --primary: oklch(0.606 0.25 292.717);
+  --primary: oklch(0.702 0.183 293.541);
   --primary-foreground: oklch(0.145 0 0);
-  --ring: oklch(0.606 0.25 292.717);
+  --ring: oklch(0.702 0.183 293.541);
 }
 
 [data-accent='emerald'] {
-  --primary: oklch(0.596 0.145 163.225);
+  --primary: oklch(0.508 0.118 165.612);
   --primary-foreground: oklch(0.985 0 0);
-  --ring: oklch(0.596 0.145 163.225);
+  --ring: oklch(0.508 0.118 165.612);
 }
 
 .dark[data-accent='emerald'],
@@ -156,9 +166,9 @@
 }
 
 [data-accent='orange'] {
-  --primary: oklch(0.646 0.222 41.116);
+  --primary: oklch(0.553 0.195 38.402);
   --primary-foreground: oklch(0.985 0 0);
-  --ring: oklch(0.646 0.222 41.116);
+  --ring: oklch(0.553 0.195 38.402);
 }
 
 .dark[data-accent='orange'],
