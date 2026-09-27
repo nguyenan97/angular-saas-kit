@@ -38,11 +38,11 @@ C4Context
 
 ## External systems
 
-| System           | Role                                                                                                                    | State                                                                                          |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **GitHub**       | Hosts the source; runs CI and CodeQL; Dependabot proposes updates; Pages serves the demo.                               | In use; `main` is protected ([ADR 0009](../adr/0009-strict-ci-gates-and-a-protected-main.md)). |
-| **npm registry** | Source of every third-party dependency. `libs/tokens` and `libs/ui` have package builds, but are not publish-ready yet. | Consumed today; nothing is published yet.                                                      |
-| **Codecov**      | Would show coverage on pull requests and in the README badge.                                                           | Rejected (`Token required`) until a `CODECOV_TOKEN` secret exists; the workflow passes it.     |
+| System           | Role                                                                                                                        | State                                                                                          |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **GitHub**       | Hosts the source; runs CI and CodeQL; Dependabot proposes updates; Pages serves the demo.                                   | In use; `main` is protected ([ADR 0009](../adr/0009-strict-ci-gates-and-a-protected-main.md)). |
+| **npm registry** | Source of every third-party dependency. `libs/tokens` and `libs/ui` have package builds that pass `npm run check:packages`. | Consumed today; nothing is published yet.                                                      |
+| **Codecov**      | Would show coverage on pull requests and in the README badge.                                                               | Rejected (`Token required`) until a `CODECOV_TOKEN` secret exists; the workflow passes it.     |
 
 ## Left out on purpose
 

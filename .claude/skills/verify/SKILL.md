@@ -11,12 +11,13 @@ a green CI run, so run them here first.
 ## Run
 
 ```bash
-npm run verify          # lint + test + build for every project, then typecheck, then the architecture check
+npm run verify          # lint + test + build for every project, then typecheck, then the architecture and package checks
 npm run format:check    # Prettier
 ```
 
 `verify` stops at the first failing step. To see everything that fails, run the steps separately
-(`npm run lint`, `npm test`, `npm run build`, `npm run typecheck`, `npm run check:architecture`).
+(`npm run lint`, `npm test`, `npm run build`, `npm run typecheck`, `npm run check:architecture`,
+`npm run check:packages`; the last one needs a build first).
 CI only runs lint, test and build for the projects a change touches (`nx affected`); running all of
 them locally is stricter, never looser.
 
@@ -32,6 +33,7 @@ the Pages site is built, run `npm run pages`.
 | `build`              | A type error in a template, or a bundle over budget (warning 350 kB, error 500 kB initial).                                | Fix the code; do not raise the budget to hide growth.                                                             |
 | `typecheck`          | A type error that only a spec file has: the app builds do not compile specs.                                               | Fix the spec. `tsc -p tsconfig.base.json --noEmit` shows the same error.                                          |
 | `check:architecture` | You added or removed a project or a dependency between projects, and `docs/architecture/c4-containers.md` was not updated. | Update the `Container` and `Rel` lines to match; the message names the edge. See the `update-architecture` skill. |
+| `check:packages`     | A built package imports something its manifest does not declare, or a file it promises is not shipped.                     | Declare it in `libs/<name>/package.json` and `ng-package.json`, or add the asset; the message names the file.     |
 | `format`             | Unformatted files.                                                                                                         | `npx prettier --write <files>`. The commit hook formats staged files; files you did not stage are not.            |
 
 ## Install problems

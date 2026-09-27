@@ -36,7 +36,7 @@ running app at once, with no build step in between.
 | `npm test`              | Runs every project's unit tests, with coverage.                                   |
 | `npm run lint`          | Lints every project. Template accessibility rules are errors.                     |
 | `npm run build`         | Builds everything into `dist/`.                                                   |
-| `npm run verify`        | Lint, test, build, workspace typecheck and the architecture check, in that order. |
+| `npm run verify`        | Lint, test, build, workspace typecheck, then the architecture and package checks. |
 | `npm run format:check`  | Checks formatting with Prettier. Commits are formatted for you by a hook.         |
 | `npm run pages`         | Builds the whole demo site (landing, dashboard demo, these docs) into `_site/`.   |
 | `npm run docs:dev`      | Serves these docs with live reload.                                               |

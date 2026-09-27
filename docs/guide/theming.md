@@ -127,15 +127,45 @@ sets `--radius-base`.
 
 ## Using the tokens in a new app or library
 
-A stylesheet that wants the theme imports the shared entry file and tells Tailwind where its
-own templates are. This is the whole of the dashboard's `styles.css`:
+A stylesheet that wants the theme imports the shared entry file and tells Tailwind where the
+classes it has to generate are: the app's own templates, and the components it uses. This is
+the dashboard's `styles.css`:
 
 ```css
 @import '../../../libs/tokens/src/styles.css';
 
 @source './';
+@source '../../../libs/ui/src';
+
+/* Tests are not part of the app; their strings must not become utilities. */
+@source not './**/*.spec.ts';
+@source not '../../../libs/ui/src/**/*.spec.ts';
 ```
 
 The shared entry switches off Tailwind's automatic file scanning (`source(none)`), so that
-each app ships only its own utilities. That is why every app declares its own `@source`. The
-shared entry declares one for `libs/ui` on behalf of everyone.
+each app ships only its own utilities, and it declares no sources of its own. That is why every
+app declares its `@source`s, and why the landing page, which uses no shared component, does
+not carry the dashboard's utilities.
+
+The `@source not` lines matter more than they look. Without them, a string in a spec file, such
+as the `bg-white` in a test of class merging, is picked up as a class name and ends up in the
+production CSS.
+
+### From an installed package
+
+Once the packages are published, an app outside this workspace imports the same things by name.
+`@angular-saas-kit/tokens` is the tokens stylesheet, and `@angular-saas-kit/ui/styles.css` is a
+one-line stylesheet that points Tailwind at the compiled components:
+
+```css
+@import '@angular-saas-kit/tokens/styles.css';
+@import '@angular-saas-kit/ui/styles.css';
+
+@source './';
+```
+
+Tailwind CSS 4.3 or newer is a peer dependency of the tokens package, because the stylesheet
+imports it. This setup was checked once by building the dashboard from the packed packages
+instead of the workspace sources: every utility the components use was generated, and the
+result matched the workspace build
+([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)).

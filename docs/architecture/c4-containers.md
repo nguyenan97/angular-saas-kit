@@ -28,24 +28,21 @@ C4Container
   Rel(dashboard, tokens, "Imports")
   Rel(dashboard, ui, "Imports")
   Rel(ui, tokens, "Imports")
-  Rel(tokens, ui, "Scans for classes", "CSS @source")
   Rel(e2e, dashboard, "Drives")
 
-  UpdateRelStyle(ui, tokens, $offsetY="-24")
-  UpdateRelStyle(tokens, ui, $offsetY="24")
   UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
 ## The containers
 
-| Container       | Kind        | Tags                          | Notes                                                                                                                                                                                                                              |
-| --------------- | ----------- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `landing`       | application | `type:app`, `scope:landing`   | Prerendered, hydrates in the browser ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)).                                                                                                                   |
-| `dashboard`     | application | `type:app`, `scope:dashboard` | Client-side SPA; hash routing in the Pages build ([ADR 0011](../adr/0011-github-pages-demo-site.md)).                                                                                                                              |
-| `tokens`        | library     | `type:lib`, `scope:shared`    | Built as an npm package, but not publish-ready: the package omits its stylesheets. Imports no other project; its stylesheet scans `ui` for class names ([ADR 0004](../adr/0004-semantic-design-tokens-and-three-axis-theming.md)). |
-| `ui`            | library     | `type:lib`, `scope:shared`    | Built as an npm package, but not publish-ready: `clsx`, `tailwind-merge` and `tokens` are not declared as dependencies. Imports only `tokens` ([ADR 0005](../adr/0005-angular-cdk-and-tailwind-instead-of-a-ui-library.md)).       |
-| `mock-api`      | library     | `type:lib`, `scope:shared`    | Not published, and imported by no app yet ([ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md)).                                                                                                                    |
-| `dashboard-e2e` | e2e         | none                          | Playwright, on Chromium, Firefox and WebKit, against `nx run dashboard:serve` on port 4200.                                                                                                                                        |
+| Container       | Kind        | Tags                          | Notes                                                                                                                                                                                                                                                                                                                            |
+| --------------- | ----------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `landing`       | application | `type:app`, `scope:landing`   | Prerendered, hydrates in the browser ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)).                                                                                                                                                                                                                 |
+| `dashboard`     | application | `type:app`, `scope:dashboard` | Client-side SPA; hash routing in the Pages build ([ADR 0011](../adr/0011-github-pages-demo-site.md)).                                                                                                                                                                                                                            |
+| `tokens`        | library     | `type:lib`, `scope:shared`    | Built as an npm package that ships its stylesheets and passes `npm run check:packages`; nothing is published yet ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)). Imports no other project, and its stylesheet references none ([ADR 0004](../adr/0004-semantic-design-tokens-and-three-axis-theming.md)). |
+| `ui`            | library     | `type:lib`, `scope:shared`    | Built as an npm package that declares what it imports and passes `npm run check:packages`; nothing is published yet. Imports only `tokens` ([ADR 0005](../adr/0005-angular-cdk-and-tailwind-instead-of-a-ui-library.md)).                                                                                                        |
+| `mock-api`      | library     | `type:lib`, `scope:shared`    | Not published, and imported by no app yet ([ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md)).                                                                                                                                                                                                                  |
+| `dashboard-e2e` | e2e         | none                          | Playwright, on Chromium, Firefox and WebKit, against `nx run dashboard:serve` on port 4200.                                                                                                                                                                                                                                      |
 
 ## Dependency direction
 
@@ -54,8 +51,7 @@ C4Container
 ```
 landing ───┐
            ├──► tokens ◄── ui ◄── dashboard
-dashboard ─┘       │        ▲
-                   └────────┘   tokens' stylesheet scans ui (CSS only)
+dashboard ─┘
 mock-api   (nothing depends on it yet)
 ```
 
@@ -64,10 +60,10 @@ Two kinds of edge are drawn on purpose, because `npx nx graph` shows only the fi
 - **Imports**: TypeScript imports through the `@angular-saas-kit/*` path aliases.
 - **Stylesheet references**: CSS `@import` and `@source` across project folders. Both
   apps get their design system through `@import '../../../libs/tokens/src/styles.css'`,
-  and that entry file declares `@source '../../ui/src'` so Tailwind emits the utilities
-  the `ui` templates use. That is the `tokens` to `ui` arrow: `ui` imports `tokens` in
-  code, and `tokens` scans `ui` in CSS. It also means the entry stylesheet only works
-  inside this workspace, because the path is relative to the monorepo.
+  and the dashboard also declares `@source '../../../libs/ui/src'` so that Tailwind emits
+  the utilities the `ui` templates use. Each consumer declares its own sources: the
+  tokens entry stylesheet declares none, which is what lets it work from anywhere,
+  installed under `node_modules` included ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)).
 
 `dashboard-e2e` reaches `dashboard` through `implicitDependencies` in its
 `project.json`.
@@ -84,9 +80,9 @@ app may depend only on libraries, a shared library only on shared libraries, the
 and the landing page only on their own scope and on shared code, and nothing may import
 itself in a circle ([ADR 0015](../adr/0015-enforce-module-boundaries-with-nx-tags.md)).
 
-Lint cannot see a stylesheet. The CSS references, including the `tokens` to `ui`
-`@source`, are covered only by this map and its check, and it is the reason `tokens`
-appears to depend on `ui` here while lint sees no cycle.
+Lint cannot see a stylesheet. The CSS references, such as the apps importing the tokens
+stylesheet and the dashboard's `@source` for `ui`, are covered only by this map and its
+check.
 
 ## A coupling the map does not draw
 

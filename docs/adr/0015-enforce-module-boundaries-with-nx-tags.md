@@ -42,9 +42,12 @@ Turn the tags into rules with **`@nx/enforce-module-boundaries`**, configured on
   involved. Before this change, no existing import violated it; three deliberate violations
   (a buildable library importing a non-buildable one, a cycle, and an app importing another app by
   a relative path) and a wrong tag were each rejected.
-- **Lint cannot see a stylesheet.** The tokens stylesheet scanning `libs/ui` (`@source`) is a real
-  dependency in the other direction, and it stays covered only by the architecture map and its
-  check. The two are complements: lint forbids, the check records.
+- **Lint cannot see a stylesheet.** CSS references between projects, such as the apps importing
+  the tokens stylesheet and the dashboard's `@source` for `ui`, are covered only by the
+  architecture map and its check. The two are complements: lint forbids, the check records.
+  (When this was written the tokens stylesheet itself scanned `libs/ui`, a dependency in the
+  other direction that lint could not see. [0016](0016-packages-declare-and-ship-what-they-need.md)
+  removed it.)
 - A new project must be tagged, or it is outside the rules. Untagged projects (today only
   `dashboard-e2e`) are not constrained; give a new one both tags.
 - Loosening a constraint to make an import pass defeats the point. If an import is rejected, the

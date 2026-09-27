@@ -1,25 +1,25 @@
 /* -------------------------------------------------------------------------
  * @angular-saas-kit/tokens - shared stylesheet entry
  * -------------------------------------------------------------------------
- * Both apps import this file. It pulls in Tailwind, the token definitions
- * and the theme mapping in the one order that works:
+ * Every consumer imports this file. It pulls in Tailwind, the token
+ * definitions and the theme mapping in the one order that works:
  *
  *   1. tailwindcss   - registers @theme / @custom-variant / @source
  *   2. tokens.css    - declares the raw CSS variables
  *   3. theme.css     - maps those variables onto Tailwind utilities
  *
- * `@source` tells Tailwind v4 where to look for class names. The shared UI
- * library is declared here so every consuming app picks it up automatically;
- * each app adds its own source in its local styles.css.
+ * `@source` tells Tailwind v4 where to look for class names, and this file
+ * declares none on purpose: it must work from wherever it is installed,
+ * inside this workspace or under node_modules, and a path to another package
+ * cannot. Each consumer declares its own sources next to the import, an app
+ * for its templates and for the libraries it uses, `@angular-saas-kit/ui`
+ * for its compiled components.
  * ---------------------------------------------------------------------- */
 
 /* `source(none)` switches off Tailwind's automatic file scanning. Without
  * it every app in the monorepo scans the whole repo and ships the other
- * app's utilities. Sources are declared explicitly instead - here for the
- * shared UI library, and in each app's own styles.css for its templates. */
+ * app's utilities. Sources are declared explicitly instead, by the consumer. */
 @import 'tailwindcss' source(none);
 
 @import './lib/styles/tokens.css';
 @import './lib/styles/theme.css';
-
-@source '../../ui/src';

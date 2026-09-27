@@ -23,7 +23,7 @@ C4Component
 
   Component(init, "THEME_INIT_SCRIPT", "TypeScript string", "Source text of the blocking script that applies the stored theme before first paint")
   Container_Ext(apps, "landing and dashboard", "Angular apps", "Inject the service, import the stylesheet, keep a copy of the script in index.html")
-  Component(entry, "styles.css", "CSS entry", "Imports Tailwind with scanning off and the two stylesheets, then scans ui for class names")
+  Component(entry, "styles.css", "CSS entry", "Imports Tailwind with scanning off, then the two stylesheets. Declares no sources: each consumer does")
   Component(types, "Theme types", "TypeScript", "COLOR_MODES, ACCENTS, RADII, DEFAULT_THEME and the storage key ask.theme.v1")
   Component(service, "ThemeService", "Angular service, signals", "Holds mode, accent and radius. Effects apply them to the html element and save them to localStorage")
   Component(sheets, "tokens.css and theme.css", "CSS", "Semantic tokens as OKLCH custom properties with the dark, accent and radius rules; and their mapping onto Tailwind utilities")
@@ -38,12 +38,12 @@ C4Component
   UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
-| Component           | Source                                                                                                                                                                   | Notes                                                                                                                                                                                                |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ThemeService`      | [`theme.service.ts`](../../libs/tokens/src/lib/theme.service.ts)                                                                                                         | `providedIn: 'root'`. Constructed on the server too, so every DOM and storage access is behind a platform check. The server renders the default theme; the browser corrects it on hydration.         |
-| Theme types         | [`theme.types.ts`](../../libs/tokens/src/lib/theme.types.ts)                                                                                                             | The axes are `const` tuples, so a picker iterates the same list the types come from.                                                                                                                 |
-| `THEME_INIT_SCRIPT` | [`theme-init.ts`](../../libs/tokens/src/lib/theme-init.ts)                                                                                                               | An inline script cannot import, so each app's `index.html` holds a hand-kept copy. `theme-init.spec.ts` fails when a copy drifts. Change all three together.                                         |
-| Stylesheets         | [`styles.css`](../../libs/tokens/src/styles.css), [`tokens.css`](../../libs/tokens/src/lib/styles/tokens.css), [`theme.css`](../../libs/tokens/src/lib/styles/theme.css) | Order matters: Tailwind, then the raw variables, then the mapping. `source(none)` switches off Tailwind's automatic scan, so each app ships only its own utilities; sources are declared explicitly. |
+| Component           | Source                                                                                                                                                                   | Notes                                                                                                                                                                                                                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ThemeService`      | [`theme.service.ts`](../../libs/tokens/src/lib/theme.service.ts)                                                                                                         | `providedIn: 'root'`. Constructed on the server too, so every DOM and storage access is behind a platform check. The server renders the default theme; the browser corrects it on hydration.                                                                                     |
+| Theme types         | [`theme.types.ts`](../../libs/tokens/src/lib/theme.types.ts)                                                                                                             | The axes are `const` tuples, so a picker iterates the same list the types come from.                                                                                                                                                                                             |
+| `THEME_INIT_SCRIPT` | [`theme-init.ts`](../../libs/tokens/src/lib/theme-init.ts)                                                                                                               | An inline script cannot import, so each app's `index.html` holds a hand-kept copy. `theme-init.spec.ts` fails when a copy drifts. Change all three together.                                                                                                                     |
+| Stylesheets         | [`styles.css`](../../libs/tokens/src/styles.css), [`tokens.css`](../../libs/tokens/src/lib/styles/tokens.css), [`theme.css`](../../libs/tokens/src/lib/styles/theme.css) | Order matters: Tailwind, then the raw variables, then the mapping. `source(none)` switches off Tailwind's automatic scan, so each app ships only its own utilities: it declares its own `@source`s, and the entry declares none, so it works installed under `node_modules` too. |
 
 ## dashboard
 
@@ -156,6 +156,12 @@ colour value: it only calls `ThemeService`, which flips attributes on the html e
 That makes it the kit's proof that the token layer works. `cn`
 ([source](../../libs/ui/src/lib/utils/cn.ts)) is the helper every component is meant to
 funnel its host classes through ([ADR 0005](../adr/0005-angular-cdk-and-tailwind-instead-of-a-ui-library.md)).
+
+The package also ships a one-line stylesheet, `libs/ui/assets/styles.css`, that points
+Tailwind at the compiled components (`@source './fesm2022'`) so an app that installs the
+package gets the utilities they use. Nothing in the workspace imports it: the dashboard
+points Tailwind at `libs/ui/src` directly. See
+[ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md).
 
 ## mock-api
 

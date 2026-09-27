@@ -1,6 +1,15 @@
 /* Dashboard global styles.
  * Tokens, Tailwind and the theme mapping all arrive through the shared
- * stylesheet; this file only declares what is specific to this app. */
+ * stylesheet; this file only declares what is specific to this app: where
+ * Tailwind should look for the classes it has to generate. */
 @import '../../../libs/tokens/src/styles.css';
 
+/* This app's own templates... */
 @source './';
+/* ...and the components it uses from the shared library. */
+@source '../../../libs/ui/src';
+
+/* Tests are not part of the app. Their strings (a `bg-white` in a test of
+ * class merging, say) must not turn into utilities in the production CSS. */
+@source not './**/*.spec.ts';
+@source not '../../../libs/ui/src/**/*.spec.ts';

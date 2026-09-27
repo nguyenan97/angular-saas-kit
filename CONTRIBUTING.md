@@ -22,12 +22,13 @@ tree has a real conflict - don't paper over it with `--legacy-peer-deps`.
 npx nx run-many -t lint test build
 npm run typecheck
 npm run check:architecture
+npm run check:packages     # after the build: what the tokens and ui packages would ship
 npm run format:check
 ```
 
 CI runs the same lint, test and build (through `nx affected`, so only the
-projects your change touches), a workspace typecheck, the architecture check, a
-Prettier check and CodeQL scanning. Tests collect coverage for every project. A
+projects your change touches), a workspace typecheck, the architecture check, the
+package check, a Prettier check and CodeQL scanning. Tests collect coverage for every project. A
 green local run is a green CI run.
 
 `main` is protected: changes land through a pull request, `lint`, `test`,

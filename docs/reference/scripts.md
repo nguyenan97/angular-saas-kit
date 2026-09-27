@@ -4,22 +4,23 @@
 
 Run from the repository root with `npm run <name>`. Most of them are thin wrappers over Nx.
 
-| Script               | Runs                                                                        | Use it to                                               |
-| -------------------- | --------------------------------------------------------------------------- | ------------------------------------------------------- |
-| `start`              | `nx serve dashboard`                                                        | Develop the dashboard.                                  |
-| `start:landing`      | `nx serve landing`                                                          | Develop the landing page.                               |
-| `build`              | `nx run-many -t build`                                                      | Build every project into `dist/`.                       |
-| `test`               | `nx run-many -t test`                                                       | Run every project's unit tests with coverage.           |
-| `lint`               | `nx run-many -t lint`                                                       | Lint every project.                                     |
-| `typecheck`          | `tsc -p tsconfig.base.json --noEmit`                                        | Type-check the whole workspace, spec files included.    |
-| `check:architecture` | `node scripts/check-architecture.mjs`                                       | Check the C4 container map against the code.            |
-| `format:check`       | `prettier --check .`                                                        | Check formatting.                                       |
-| `verify`             | lint, test and build, then `typecheck`, then `check:architecture`           | Run what CI runs, except the format check.              |
-| `docs:dev`           | `vitepress dev docs`                                                        | Write these docs with live reload.                      |
-| `docs:build`         | `vitepress build docs`                                                      | Build these docs into `docs/.vitepress/dist`.           |
-| `pages`              | builds landing and dashboard with `-c pages`, then the docs, then assembles | Build the whole demo site into `_site/` and check it.   |
-| `pages:preview`      | `node scripts/preview-pages.mjs`                                            | Serve `_site/` the way GitHub Pages does, on port 8123. |
-| `prepare`            | `husky`                                                                     | Install the git hooks. Runs on `npm ci`.                |
+| Script               | Runs                                                                           | Use it to                                               |
+| -------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| `start`              | `nx serve dashboard`                                                           | Develop the dashboard.                                  |
+| `start:landing`      | `nx serve landing`                                                             | Develop the landing page.                               |
+| `build`              | `nx run-many -t build`                                                         | Build every project into `dist/`.                       |
+| `test`               | `nx run-many -t test`                                                          | Run every project's unit tests with coverage.           |
+| `lint`               | `nx run-many -t lint`                                                          | Lint every project.                                     |
+| `typecheck`          | `tsc -p tsconfig.base.json --noEmit`                                           | Type-check the whole workspace, spec files included.    |
+| `check:architecture` | `node scripts/check-architecture.mjs`                                          | Check the C4 container map against the code.            |
+| `check:packages`     | `node scripts/check-packages.mjs`                                              | Check what the built `tokens` and `ui` packages ship.   |
+| `format:check`       | `prettier --check .`                                                           | Check formatting.                                       |
+| `verify`             | lint, test and build, then `typecheck`, `check:architecture`, `check:packages` | Run what CI runs, except the format check.              |
+| `docs:dev`           | `vitepress dev docs`                                                           | Write these docs with live reload.                      |
+| `docs:build`         | `vitepress build docs`                                                         | Build these docs into `docs/.vitepress/dist`.           |
+| `pages`              | builds landing and dashboard with `-c pages`, then the docs, then assembles    | Build the whole demo site into `_site/` and check it.   |
+| `pages:preview`      | `node scripts/preview-pages.mjs`                                               | Serve `_site/` the way GitHub Pages does, on port 8123. |
+| `prepare`            | `husky`                                                                        | Install the git hooks. Runs on `npm ci`.                |
 
 ## Nx targets
 
@@ -69,8 +70,9 @@ commit on `main`, so it follows the same rules. See
 
 ## Scripts in `scripts/`
 
-| File                     | What it is                                                                                           |
-| ------------------------ | ---------------------------------------------------------------------------------------------------- |
-| `assemble-pages.mjs`     | Assembles `_site/` from the three builds and fails on a wrong base href or a missing file.           |
-| `preview-pages.mjs`      | A small server that behaves like GitHub Pages under a repository path.                               |
-| `check-architecture.mjs` | Compares the arrows in the container diagram with the imports and stylesheet references in the code. |
+| File                     | What it is                                                                                                                          |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `assemble-pages.mjs`     | Assembles `_site/` from the three builds and fails on a wrong base href or a missing file.                                          |
+| `preview-pages.mjs`      | A small server that behaves like GitHub Pages under a repository path.                                                              |
+| `check-architecture.mjs` | Compares the arrows in the container diagram with the imports and stylesheet references in the code.                                |
+| `check-packages.mjs`     | Reads the built `tokens` and `ui` packages and fails when one imports what it does not declare or does not ship a file it promises. |

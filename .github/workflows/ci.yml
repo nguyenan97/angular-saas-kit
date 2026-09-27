@@ -60,6 +60,13 @@ jobs:
         if: matrix.target == 'lint' && !cancelled()
         run: node scripts/check-architecture.mjs
 
+      # The built libraries have to install and work on their own: every import
+      # declared, every promised file shipped. It only means something after a
+      # build, and says so when a change reaches no library and nothing was built.
+      - name: Check the built packages
+        if: matrix.target == 'build'
+        run: node scripts/check-packages.mjs
+
       # Codecov rejects an upload to a protected branch without a token. The
       # secret is passed through so that adding it is all that is left to do:
       # while it does not exist this is an empty string, which is what the

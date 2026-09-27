@@ -3,3 +3,7 @@
 @import '../../../libs/tokens/src/styles.css';
 
 @source './';
+
+/* Tests are not part of the page. Their strings must not turn into utilities
+ * in the production CSS. */
+@source not './**/*.spec.ts';
