@@ -39,9 +39,19 @@ Every project carries a `type:` and a `scope:` tag.
 | `mock-api`      | `type:lib`, `scope:shared`    | none; nothing depends on it yet         |
 | `dashboard-e2e` | none                          | `dashboard`                             |
 
-The tags are declared but no `@nx/enforce-module-boundaries` rule enforces them yet.
-`npm run check:architecture` keeps the table above true to the code, in CI, but it does not
-forbid a dependency.
+Lint turns the tags into rules with `@nx/enforce-module-boundaries`, so a wrong import fails
+`npm run lint`:
+
+- an app may depend only on libraries (`type:lib`), and nothing imports an app;
+- a shared library may depend only on shared libraries;
+- the dashboard and the landing page may depend on their own scope and on shared code, never
+  on each other;
+- a buildable library (`tokens`, `ui`) may depend only on other buildable libraries;
+- projects may not depend on each other in a circle.
+
+`npm run check:architecture` keeps the table above true to the code, including the stylesheet
+references that lint cannot see. See
+[ADR 0015](../adr/0015-enforce-module-boundaries-with-nx-tags.md).
 
 ## Import aliases
 

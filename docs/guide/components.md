@@ -36,6 +36,9 @@ exists to avoid. Small, single-purpose utilities are fine; open an issue first. 
 - Component selectors are elements with the `ask-` prefix in kebab-case: `ask-badge`.
 - Directive selectors are attributes with the `ask` prefix in camelCase: `askTooltip`.
 - `any` is an error, and a type-only import must be written as one.
+- Module boundaries are errors: an app imports libraries, a shared library imports only shared
+  libraries, nothing imports an app, and there are no cycles
+  ([ADR 0015](../adr/0015-enforce-module-boundaries-with-nx-tags.md)).
 - Template accessibility rules (`alt-text`, `valid-aria`, `label-has-associated-control`,
   `click-events-have-key-events`, `interactive-supports-focus`) are errors.
 
