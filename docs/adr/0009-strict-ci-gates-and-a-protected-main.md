@@ -33,6 +33,11 @@ _Amended 2026-09-27:_ the Pages workflow's `Build site` job is required as well,
 documentation site is built from `main` on every merge and a dead link in it fails the build.
 `Deploy site` is skipped on pull requests, so it is not required.
 
+_Amended 2026-09-27:_ an `e2e` job runs the browser tests in Chromium on every pull request
+and push (about a minute). It is **not** required yet: it is new, and a flaky required check
+blocks every merge. It becomes required after a run of clean results, with the same
+no-path-filter reasoning as the rest.
+
 **Protection on `main`.** The five checks above are required, and the branch must
 be up to date before merging. No review approval is required and administrators are
 not forced through the rules, because there is one maintainer and a required

@@ -72,13 +72,19 @@ unit test cannot prove them.
 
 ```bash
 npx playwright install      # once, to download the browsers
-npx nx e2e dashboard-e2e
+npx nx e2e dashboard-e2e    # Chromium, Firefox and WebKit
+
+# or, from apps/dashboard-e2e, the one engine CI uses
+npx playwright test --project=chromium
 ```
 
 Playwright starts `nx run dashboard:serve` on port 4200 and reuses a server that is already
-running. Set `BASE_URL` to test a deployed build instead. The tests run on Chromium, Firefox
-and WebKit.
+running. Set `BASE_URL` to test a deployed build instead.
 
 > [!NOTE]
-> Browser tests are not part of CI yet. Run them locally before changing anything the theme
-> or the dashboard shell depends on.
+> The `e2e` job in CI runs them on Chromium for every pull request and push, in about a
+> minute, and keeps the report and traces when one fails. It is **not a required check yet**:
+> it is new, and a flaky required check blocks every merge, so it earns that after a run of
+> clean results. Firefox and WebKit are configured for a local run, and CI does not run them.
+> Run the browser tests yourself before changing anything the theme or the dashboard shell
+> depends on.
