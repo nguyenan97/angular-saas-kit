@@ -95,8 +95,9 @@ jobs:
 
   # The browser tests. They prove what jsdom cannot, such as the keyboard
   # behaviour of a radio group, and the theme surviving a reload with no flash.
-  # Not a required check yet: it is new, and a flaky required check blocks every
-  # merge, so it earns that after a run of clean results.
+  # A required check since 2026-09-28, after passing on all 13 pull requests
+  # from #35, which added it, to #47: a flaky required check blocks every merge,
+  # so it had to earn the place.
   e2e:
     name: e2e
     runs-on: ubuntu-latest

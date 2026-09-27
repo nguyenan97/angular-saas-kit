@@ -31,13 +31,13 @@ If you touched the theme or the dashboard shell, also run the browser tests
 
 CI runs the same lint, test and build (through `nx affected`, so only the
 projects your change touches), a workspace typecheck, the architecture check, the
-package check, a Prettier check, the browser tests (in Chromium; not a required check
-yet) and CodeQL scanning. Tests collect coverage for every project. A
+package check, a Prettier check, the browser tests (in Chromium) and CodeQL
+scanning. Tests collect coverage for every project. A
 green local run is a green CI run.
 
 `main` is protected: changes land through a pull request, `lint`, `test`,
-`build`, `typecheck`, `format` and the site build (`Build site`, which also
-catches a dead documentation link) must pass, and the branch has to be up to
+`build`, `typecheck`, `format`, the browser tests (`e2e`) and the site build
+(`Build site`, which also catches a dead documentation link) must pass, and the branch has to be up to
 date with `main` before it can merge.
 
 ## Reviewing the demo site

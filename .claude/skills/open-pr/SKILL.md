@@ -40,8 +40,8 @@ Add **How it was checked** and **Not covered**. Say what you did not verify, pla
 
 ## 5. Checks
 
-Six are required and the branch must be up to date with `main`: `lint`, `test`, `build`,
-`typecheck`, `format` and the Pages workflow's `Build site`. `CodeQL` runs too but is not required. Look at the
+Seven are required and the branch must be up to date with `main`: `lint`, `test`, `build`,
+`typecheck`, `format`, `e2e` and the Pages workflow's `Build site`. `CodeQL` runs too but is not required. Look at the
 result with `gh pr checks <number>`; do not poll it in a loop. A red required check is fixed with a
 new commit, not bypassed. If `main` moved, `gh pr update-branch <number>` and wait for a fresh run.
 

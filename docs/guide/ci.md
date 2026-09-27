@@ -19,23 +19,24 @@ CodeQL's weekly run is Monday at 03:17 UTC, and it does not run on pushes to `ma
 
 ## What a pull request must pass
 
-| Check          | Command to reproduce it | What it catches                                                                               |
-| -------------- | ----------------------- | --------------------------------------------------------------------------------------------- |
-| **lint**       | `npm run lint`          | Rule violations. Template accessibility and module boundaries are errors.                     |
-| **test**       | `npm test`              | Failing unit tests. Collects coverage for every project.                                      |
-| **build**      | `npm run build`         | A build that breaks, or a bundle over its budget.                                             |
-| **typecheck**  | `npm run typecheck`     | Type errors the app builds do not compile, such as in spec files.                             |
-| **format**     | `npm run format:check`  | Code that Prettier would change.                                                              |
-| **Build site** | `npm run pages`         | A dead documentation link, a wrong base href, a page that points at a file that is not there. |
+| Check          | Command to reproduce it    | What it catches                                                                               |
+| -------------- | -------------------------- | --------------------------------------------------------------------------------------------- |
+| **lint**       | `npm run lint`             | Rule violations. Template accessibility and module boundaries are errors.                     |
+| **test**       | `npm test`                 | Failing unit tests. Collects coverage for every project.                                      |
+| **build**      | `npm run build`            | A build that breaks, or a bundle over its budget.                                             |
+| **typecheck**  | `npm run typecheck`        | Type errors the app builds do not compile, such as in spec files.                             |
+| **format**     | `npm run format:check`     | Code that Prettier would change.                                                              |
+| **e2e**        | `npx nx e2e dashboard-e2e` | Keyboard and layout behaviour jsdom cannot see, in a real browser.                            |
+| **Build site** | `npm run pages`            | A dead documentation link, a wrong base href, a page that points at a file that is not there. |
 
 `Build site` is the Pages workflow's build job. It is required because the site is built from
 `main` on every merge: a broken docs page would otherwise pass review and then fail the deploy.
 
-One more job runs but is **not required yet**: `e2e`, which runs the [browser tests](testing.md#browser-tests)
-in Chromium (`npx playwright test --project=chromium`, about a minute, with the report and
-traces kept when it fails). It proves what jsdom cannot, such as the keyboard behaviour of the
-theme switcher. It is new, and a flaky required check blocks every merge, so it earns that
-after a run of clean results.
+`e2e` runs the [browser tests](testing.md#browser-tests) in Chromium
+(`npx playwright test --project=chromium`, about a minute, with the report and traces kept when
+it fails). It proves what jsdom cannot, such as the keyboard behaviour of the theme switcher. It
+became required on 2026-09-28, after passing on all 13 pull requests since it was added: a
+flaky required check blocks every merge, so it had to earn the place.
 
 The `lint` job also runs `npm run check:architecture`, which fails when the container map in
 [Architecture](../architecture/c4-containers.md) and the imports in the source disagree. The
@@ -65,7 +66,7 @@ change reaches. `typecheck` and `format` always cover the whole workspace.
 
 ## How `main` is protected
 
-- The six checks above are **required**, and the branch must be **up to date** with `main`
+- The seven checks above are **required**, and the branch must be **up to date** with `main`
   before it can merge.
 - **No review approval is required**, and administrators are not forced through the rules.
   There is one maintainer, and a required approval would lock them out of merging their own
