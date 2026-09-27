@@ -49,4 +49,4 @@ its own state. This is a contributor rule in [`CONTRIBUTING.md`](../../CONTRIBUT
 ## References
 
 - [`libs/tokens/src/lib/theme.service.ts`](../../libs/tokens/src/lib/theme.service.ts) - an all-signal service
-- [`apps/dashboard/src/app/app.spec.ts`](../../apps/dashboard/src/app/app.spec.ts) - the zoneless test setup
+- [`apps/dashboard/src/app/layout/shell.spec.ts`](../../apps/dashboard/src/app/layout/shell.spec.ts) - the zoneless test setup

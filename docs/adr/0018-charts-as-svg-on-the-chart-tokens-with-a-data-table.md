@@ -1,6 +1,6 @@
 # 0018. Charts: SVG on the chart tokens, with the data as a table
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-09-27
 - **Deciders:** @nguyenan97
 

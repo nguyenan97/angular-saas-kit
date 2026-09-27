@@ -14,12 +14,12 @@ request.
 
 ## The pieces
 
-| What              | Where                   | Notes                                                                                                                                         |
-| ----------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| The page          | `pages/<name>.ts`       | Standalone, `OnPush`, selector `ask-<name>`, signals for state.                                                                               |
-| The route         | `pages/pages.routes.ts` | Lazy: `loadComponent: () => import('./<name>').then((m) => m.<Name>)`, and a `title`. Put it before the `**` redirect.                        |
-| The sidebar entry | `nav` array in `app.ts` | The planned pages are there with `soon: true`. Remove `soon` when the page is real, and the entry becomes a link; add an item for a new page. |
-| A test            | `pages/<name>.spec.ts`  | Zoneless. `overview.spec.ts` shows a page that fetches; `settings.spec.ts` one that does not.                                                 |
+| What              | Where                            | Notes                                                                                                                                         |
+| ----------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| The page          | `pages/<name>.ts`                | Standalone, `OnPush`, selector `ask-<name>`, signals for state.                                                                               |
+| The route         | `pages/pages.routes.ts`          | Lazy: `loadComponent: () => import('./<name>').then((m) => m.<Name>)`, and a `title`. Put it before the `**` redirect.                        |
+| The sidebar entry | `nav` array in `layout/shell.ts` | The planned pages are there with `soon: true`. Remove `soon` when the page is real, and the entry becomes a link; add an item for a new page. |
+| A test            | `pages/<name>.spec.ts`           | Zoneless. `overview.spec.ts` shows a page that fetches; `settings.spec.ts` one that does not.                                                 |
 
 ## Rules
 
