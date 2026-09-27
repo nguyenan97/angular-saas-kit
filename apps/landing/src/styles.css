@@ -2,8 +2,12 @@
  * that shared design system is the point of the monorepo. */
 @import '../../../libs/tokens/src/styles.css';
 
+/* This app's own templates... */
 @source './';
+/* ...and the components it uses from the shared library. */
+@source '../../../libs/ui/src';
 
 /* Tests are not part of the page. Their strings must not turn into utilities
  * in the production CSS. */
 @source not './**/*.spec.ts';
+@source not '../../../libs/ui/src/**/*.spec.ts';
