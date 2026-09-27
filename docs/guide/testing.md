@@ -126,8 +126,9 @@ running. Set `BASE_URL` to test a deployed build instead.
 
 > [!NOTE]
 > The `e2e` job in CI runs them on Chromium for every pull request and push, in about a
-> minute, and keeps the report and traces when one fails. It is **not a required check yet**:
-> it is new, and a flaky required check blocks every merge, so it earns that after a run of
-> clean results. Firefox and WebKit are configured for a local run, and CI does not run them.
+> minute, and keeps the report and traces when one fails. It is a **required check**: a pull
+> request whose browser tests fail cannot merge. A flaky test therefore blocks every merge, so
+> fix or remove a test that fails at random rather than re-running until it passes. Firefox and
+> WebKit are configured for a local run, and CI does not run them.
 > Run the browser tests yourself before changing anything the theme or the dashboard shell
 > depends on.

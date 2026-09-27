@@ -38,6 +38,11 @@ and push (about a minute). It is **not** required yet: it is new, and a flaky re
 blocks every merge. It becomes required after a run of clean results, with the same
 no-path-filter reasoning as the rest.
 
+_Amended 2026-09-28:_ `e2e` is required now, after passing on all 13 pull requests from
+[#35](https://github.com/nguyenan97/angular-saas-kit/pull/35), which added it, to
+[#47](https://github.com/nguyenan97/angular-saas-kit/pull/47). That makes seven required checks:
+the five CI checks, `e2e` and `Build site`.
+
 **Protection on `main`.** The five checks above are required, and the branch must
 be up to date before merging. No review approval is required and administrators are
 not forced through the rules, because there is one maintainer and a required
