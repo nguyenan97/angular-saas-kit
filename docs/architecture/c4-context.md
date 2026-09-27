@@ -16,14 +16,12 @@ C4Context
   System_Ext(npm, "npm registry", "Third-party dependencies; planned home of the tokens and ui packages")
   System(kit, "Angular SaaS Kit", "Admin dashboard, marketing landing page and the design system they share")
   System_Ext(github, "GitHub", "Source, pull requests, Actions CI, CodeQL, Dependabot and Pages")
-  System_Ext(codecov, "Codecov", "Coverage reporting; uploads are rejected until a token is configured")
 
   Rel(adopter, kit, "Clones and extends")
   Rel(contributor, github, "Opens pull requests")
   Rel(visitor, github, "Opens the demo")
   Rel(kit, github, "Built and hosted on")
   Rel(kit, npm, "Installs from")
-  Rel(kit, codecov, "Uploads coverage to")
 
   UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
@@ -42,7 +40,6 @@ C4Context
 | ---------------- | --------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | **GitHub**       | Hosts the source; runs CI and CodeQL; Dependabot proposes updates; Pages serves the demo.                                   | In use; `main` is protected ([ADR 0009](../adr/0009-strict-ci-gates-and-a-protected-main.md)). |
 | **npm registry** | Source of every third-party dependency. `libs/tokens` and `libs/ui` have package builds that pass `npm run check:packages`. | Consumed today; nothing is published yet.                                                      |
-| **Codecov**      | Would show coverage on pull requests and in the README badge.                                                               | Rejected (`Token required`) until a `CODECOV_TOKEN` secret exists; the workflow passes it.     |
 
 ## Left out on purpose
 

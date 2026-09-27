@@ -21,9 +21,7 @@ that still uses an older executor, are in
 
 Every project's `test` target collects coverage with the V8 provider and writes `lcov` and a
 text summary, to `coverage/<project>` (`coverage/libs/mock-api` for the mock API). `coverage/`
-is not committed. CI hands the reports to Codecov, which is not active yet: the upload is
-rejected until a `CODECOV_TOKEN` secret exists (see
-[Continuous integration](ci.md#codecov)).
+is not committed and nothing uploads it; read the report locally when you need it.
 
 ### Testing a component
 

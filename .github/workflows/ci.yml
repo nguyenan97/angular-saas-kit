@@ -67,18 +67,6 @@ jobs:
         if: matrix.target == 'build'
         run: node scripts/check-packages.mjs
 
-      # Codecov rejects an upload to a protected branch without a token. The
-      # secret is passed through so that adding it is all that is left to do:
-      # while it does not exist this is an empty string, which is what the
-      # action gets today, and a pull request from a fork (which cannot read
-      # secrets) still uploads tokenless.
-      - name: Upload coverage to Codecov
-        if: matrix.target == 'test'
-        uses: codecov/codecov-action@v7
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
-
   typecheck:
     name: typecheck
     runs-on: ubuntu-latest

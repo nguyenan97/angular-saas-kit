@@ -41,8 +41,9 @@ use Playwright (`dashboard-e2e`); they were not part of CI. _Amended 2026-09-27:
   file, which broke a test that climbed "four levels from here". Specs take the
   workspace root from `@nx/devkit` instead ([#6](https://github.com/nguyenan97/angular-saas-kit/pull/6)).
 - The Angular builders expose no coverage output directory, so `outputs` names the
-  default location (`coverage/<project>`) explicitly, and the Codecov step finds
-  reports by search rather than by path.
+  default location (`coverage/<project>`) explicitly. _Amended 2026-09-27:_ nothing
+  uploads these reports; a Codecov step was tried and removed
+  ([0009](0009-strict-ci-gates-and-a-protected-main.md)).
 - **Vitest 5 is not supported yet** by `@angular/build` (peer `^4.0.8`),
   `@nx/vitest` (`^3 || ^4`) or `@analogjs/vitest-angular` (up to `^4`), so major
   bumps are ignored ([0010](0010-dependabot-grouping-and-ignored-major-versions.md)).
