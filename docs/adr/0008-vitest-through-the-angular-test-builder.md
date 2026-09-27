@@ -22,7 +22,8 @@ Unit tests run on **Vitest** with **jsdom**, driven by:
 Coverage uses the `v8` provider with `lcov` and `text-summary` reporters, enabled
 in each project's `test` target. Each target declares its `outputs`
 (`coverage/<project>`) so an Nx cache hit restores the report. End-to-end tests
-use Playwright (`dashboard-e2e`); they are not part of CI yet.
+use Playwright (`dashboard-e2e`); they were not part of CI. _Amended 2026-09-27:_ an
+`e2e` job runs them on Chromium for every pull request; it is not a required check yet.
 
 ## Alternatives considered
 

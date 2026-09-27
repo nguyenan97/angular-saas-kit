@@ -8,12 +8,12 @@ not do redundant work when commits arrive in bursts. The reasoning is in
 
 ## The workflows
 
-| Workflow       | Runs on                                        | What it does                                                                   |
-| -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
-| **CI**         | every pull request to `main`, and pushes to it | Lint, test, build, typecheck, format, and the architecture and package checks. |
-| **CodeQL**     | every pull request to `main`, and weekly       | Static analysis of the JavaScript and TypeScript for vulnerabilities.          |
-| **Pages**      | every pull request to `main`, and pushes to it | Builds the demo site and these docs. Deploys only from `main`.                 |
-| **Dependabot** | weekly for npm, monthly for GitHub Actions     | Opens pull requests for dependency updates.                                    |
+| Workflow       | Runs on                                        | What it does                                                                                      |
+| -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| **CI**         | every pull request to `main`, and pushes to it | Lint, test, build, typecheck, format, the architecture and package checks, and the browser tests. |
+| **CodeQL**     | every pull request to `main`, and weekly       | Static analysis of the JavaScript and TypeScript for vulnerabilities.                             |
+| **Pages**      | every pull request to `main`, and pushes to it | Builds the demo site and these docs. Deploys only from `main`.                                    |
+| **Dependabot** | weekly for npm, monthly for GitHub Actions     | Opens pull requests for dependency updates.                                                       |
 
 CodeQL's weekly run is Monday at 03:17 UTC, and it does not run on pushes to `main`.
 
@@ -30,6 +30,12 @@ CodeQL's weekly run is Monday at 03:17 UTC, and it does not run on pushes to `ma
 
 `Build site` is the Pages workflow's build job. It is required because the site is built from
 `main` on every merge: a broken docs page would otherwise pass review and then fail the deploy.
+
+One more job runs but is **not required yet**: `e2e`, which runs the [browser tests](testing.md#browser-tests)
+in Chromium (`npx playwright test --project=chromium`, about a minute, with the report and
+traces kept when it fails). It proves what jsdom cannot, such as the keyboard behaviour of the
+theme switcher. It is new, and a flaky required check blocks every merge, so it earns that
+after a run of clean results.
 
 The `lint` job also runs `npm run check:architecture`, which fails when the container map in
 [Architecture](../architecture/c4-containers.md) and the imports in the source disagree. The

@@ -33,7 +33,7 @@ npm run pages              # the whole Pages site into _site/; then npm run page
 
 ```text
 apps/dashboard      admin SPA (client-side)          apps/landing   marketing page (prerendered)
-apps/dashboard-e2e  Playwright, not run in CI yet    libs/tokens    design tokens, ThemeService
+apps/dashboard-e2e  Playwright (CI: Chromium)         libs/tokens    design tokens, ThemeService
 libs/ui             ThemeSwitcher, cn()              libs/mock-api  in-memory HTTP interceptor
 docs/               guides, C4 diagrams (architecture/), ADRs (adr/), the VitePress site
 scripts/            assemble/preview the Pages site, check the architecture map and the built packages

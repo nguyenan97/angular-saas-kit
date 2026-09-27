@@ -72,7 +72,7 @@ the build options) names the host it is served on
 
 ```mermaid
 flowchart LR
-  pr["Pull request to main"] --> ci["CI: lint, test, build, typecheck, format"]
+  pr["Pull request to main"] --> ci["CI: lint, test, build, typecheck, format, e2e"]
   pr --> codeql["CodeQL scan"]
   pr --> site["Pages: build and check the site"]
   ci --> merge["Squash merge into main"]
@@ -85,7 +85,7 @@ flowchart LR
 
 The five CI checks and the Pages site build are required, and the branch must be up to
 date before a merge ([ADR 0009](../adr/0009-strict-ci-gates-and-a-protected-main.md)).
-CodeQL runs on every pull request but is not required.
+CodeQL and the browser tests (`e2e`) run on every pull request but are not required.
 
 ## Running it locally
 
