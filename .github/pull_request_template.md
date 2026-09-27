@@ -14,6 +14,8 @@
 - [ ] ARIA attributes match the WAI-ARIA pattern for this component
 - [ ] Works in both light and dark, and with all four accents
 - [ ] Tests cover the behaviour, not just that it renders
+- [ ] New project or dependency between projects: `docs/architecture/c4-containers.md` updated (`npm run check:architecture`)
+- [ ] Hard-to-reverse decision: an ADR in `docs/adr/`
 - [ ] Commits follow Conventional Commits
 
 ## Screenshots

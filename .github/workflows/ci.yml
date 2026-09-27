@@ -52,6 +52,14 @@ jobs:
       - name: Run ${{ matrix.target }}
         run: npx nx affected -t ${{ matrix.target }} --output-style=static
 
+      # The C4 container map in docs/architecture must match the code. It has no
+      # dependencies and takes well under a second, so it rides on the lint leg
+      # instead of getting a runner of its own. `!cancelled()` reports it even
+      # when lint failed, so one run shows both problems.
+      - name: Check the architecture map
+        if: matrix.target == 'lint' && !cancelled()
+        run: node scripts/check-architecture.mjs
+
       - name: Upload coverage to Codecov
         if: matrix.target == 'test'
         uses: codecov/codecov-action@v7
