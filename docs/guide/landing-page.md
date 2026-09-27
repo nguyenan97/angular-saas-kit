@@ -9,10 +9,15 @@ front. The reasoning is in
 
 Every route is prerendered at build time (`RenderMode.Prerender`), and the browser hydrates
 the page with event replay, so a click that lands before hydration finishes is replayed
-instead of lost. The page is a single shell with no routes of its own: a header with links to
-the sections, the hero and its call-to-action links, three [sections](#the-sections) and a
-footer. The skip link and the header's links are plain fragment links, so they work before the
-page hydrates.
+instead of lost. The shell, `App`, is a header, the routed page and a footer. The routes are
+the home page (`Home`: the hero, its call-to-action links and three
+[sections](#the-sections)), which is in the initial bundle, and the [blog](#the-blog), which is
+lazy.
+
+The skip link and the header's links to the sections are plain links, so they work before the
+page hydrates. A bare fragment such as `#features` resolves against the base href, which is the
+home page, so from the blog the section links lead home, as they should. For the same reason
+the skip link names the page it is on (`blog#main-content`), or it would lead home too.
 
 `ThemeService` is constructed on the server too, so it guards every DOM and storage access.
 The server renders the default theme, and the inline script in `index.html` plus hydration
@@ -30,7 +35,7 @@ file as a typed constant:
 | FAQ      | `faq.ts`      | `QUESTIONS`: a native `details` element each, open before hydration |
 
 To change what the page says, change the constants. To drop a section, remove its element
-from `app.html` and its entry from `sections` in `app.ts`, where the header's links come from.
+from `home.ts` and its entry from `sections` in `app.ts`, where the header's links come from.
 To add one, give it a `section` with an id and an `aria-labelledby` that points at its `h2`, and
 add the id to `sections`; a unit test checks that every header link finds its section.
 
@@ -41,6 +46,34 @@ because the kit has no real testimonials yet.
 The sections are built on the kit's own `Button`, `Card` and `Icon`, which is the point of one
 design system for both apps. That has a cost: `cn()` brings tailwind-merge into the page's
 JavaScript, about 28 kB before compression.
+
+## The blog
+
+`/blog` lists the posts, newest first, and each post has a page at `/blog/<slug>`. Every post is
+prerendered, and its code loads with its own page and nowhere else. Why posts are components
+rather than Markdown is in [ADR 0019](../adr/0019-blog-posts-as-prerendered-components.md).
+
+To add a post:
+
+1. Write its article as a component in `apps/landing/src/app/blog/posts/`, with the article
+   in plain HTML inside `<ask-post-layout>`. The layout supplies the title, the date, a link
+   back to the index and the styles for headings, paragraphs, lists, links and code.
+2. Add an entry at the top of `POSTS` in `blog/posts.ts`: a slug, the title, the date as
+   `yyyy-mm-dd`, a summary for the index, and a `load` that imports the component.
+
+The route follows from the entry, and so does the prerendered page. A post's article starts
+its headings at `h2`, because the layout's title is the page's `h1`. Angular template syntax
+applies, so write `{`, `}` and `@` in text as `&#123;`, `&#125;` and `&#64;`. Give a `pre` a
+`tabindex="0"`, so that a keyboard can scroll it.
+
+A post shows the day its date names, in any time zone: the date is taken as a UTC date and
+written in UTC. Everything a post says should be true of the code on that day, like the rest
+of the page.
+
+The landing page's initial bundle is about 4 kB under its 350 kB warning. Some things that
+would be natural here stay out, because their shared module files would put code into the
+initial bundle: `DatePipe`, `NgComponentOutlet`, `RouterLinkActive` and router input binding.
+The ADR has the measurements.
 
 ## Run and build
 

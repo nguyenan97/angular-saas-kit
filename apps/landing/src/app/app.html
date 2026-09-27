@@ -1,7 +1,7 @@
-<!-- A plain fragment link: it works before the page hydrates, and main's
-     tabindex lets the browser move focus there. -->
+<!-- A plain link to this page's main (see skipLink): it works before the page
+     hydrates, and main's tabindex lets the browser move focus there. -->
 <a
-  href="#main-content"
+  [href]="skipLink()"
   class="sr-only rounded-md border border-border bg-background px-3 py-2 text-sm font-medium focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
   >Skip to content</a
 >
@@ -9,12 +9,15 @@
 <div class="flex min-h-dvh flex-col bg-background text-foreground">
   <header class="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur">
     <div class="mx-auto flex h-topbar max-w-6xl items-center gap-3 px-6">
-      <span class="size-6 rounded-md bg-primary"></span>
-      <span class="text-sm font-semibold">Angular SaaS Kit</span>
+      <a routerLink="/" class="flex items-center gap-3 rounded-md text-sm font-semibold">
+        <span class="size-6 rounded-md bg-primary"></span>
+        Angular SaaS Kit
+      </a>
 
       <nav class="ml-auto flex items-center gap-1" aria-label="Main">
-        <!-- The sections are one scroll away on a phone, so their links
-             start at the sm breakpoint, where the header has room. -->
+        <!-- The sections are one scroll away on a phone, and the footer links
+             to the blog, so these links start at the sm breakpoint, where the
+             header has room. -->
         @for (section of sections; track section.id) {
           <a
             askButton
@@ -25,6 +28,15 @@
             >{{ section.label }}</a
           >
         }
+        <a
+          askButton
+          variant="ghost"
+          size="sm"
+          class="hidden text-muted-foreground aria-[current=page]:text-foreground sm:inline-flex"
+          routerLink="/blog"
+          [attr.aria-current]="onBlogIndex() ? 'page' : null"
+          >Blog</a
+        >
         <a
           askButton
           variant="ghost"
@@ -41,46 +53,22 @@
   </header>
 
   <main id="main-content" tabindex="-1" class="flex-1 focus-visible:outline-none">
-    <section class="mx-auto max-w-6xl px-6 py-24 text-center">
-      <p
-        class="mx-auto w-fit rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground"
-      >
-        Angular 22 · zoneless · Tailwind v4
-      </p>
-
-      <h1 class="mx-auto mt-6 max-w-3xl text-balance text-5xl font-semibold tracking-tight">
-        A free admin dashboard and landing page for Angular
-      </h1>
-
-      <p class="mx-auto mt-5 max-w-xl text-pretty text-muted-foreground">
-        Signals-first components on a token-driven design system. No UI library to fight, no theme
-        to reverse-engineer &mdash; swap an attribute and the whole kit reskins.
-      </p>
-
-      <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <a askButton size="lg" href="https://github.com/nguyenan97/angular-saas-kit">Get started</a>
-        @if (links.demo) {
-          <a askButton variant="outline" size="lg" [href]="links.demo">Live demo</a>
-        }
-        @if (links.docs) {
-          <a askButton variant="outline" size="lg" [href]="links.docs">Docs</a>
-        }
-        <a askButton variant="outline" size="lg" href="https://github.com/sponsors/nguyenan97"
-          >Sponsor</a
-        >
-      </div>
-    </section>
-
-    <ask-features />
-    <ask-pricing />
-    <ask-faq />
-
     <router-outlet />
   </main>
 
   <footer class="border-t border-border">
-    <div class="mx-auto flex max-w-6xl flex-col gap-1 px-6 py-8 text-xs text-muted-foreground">
+    <div
+      class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-xs text-muted-foreground"
+    >
       <p>MIT licensed. Built with Angular {{ angularVersion }}.</p>
+      <nav class="flex gap-4" aria-label="Footer">
+        <a routerLink="/blog" class="rounded-sm hover:text-foreground">Blog</a>
+        <a
+          href="https://github.com/nguyenan97/angular-saas-kit"
+          class="rounded-sm hover:text-foreground"
+          >GitHub</a
+        >
+      </nav>
     </div>
   </footer>
 </div>

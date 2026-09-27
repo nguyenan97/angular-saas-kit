@@ -117,8 +117,10 @@ C4Component
 ## landing
 
 The marketing page. It is built two ways from one source: static files for GitHub
-Pages, or a server output that runs behind Node ([deployment](c4-deployment.md)). Its
-sections are components of their own, built on the kit's `Button`, `Card` and `Icon`.
+Pages, or a server output that runs behind Node ([deployment](c4-deployment.md)). The home
+page's sections are components of their own, built on the kit's `Button`, `Card` and `Icon`,
+and the blog is lazy, each post a prerendered page of its own
+([ADR 0019](../adr/0019-blog-posts-as-prerendered-components.md)).
 
 ```mermaid
 %%{init: {"c4": {"c4ShapeMargin": 100}}}%%
@@ -129,10 +131,13 @@ C4Component
   Container_Ext(ui, "ui", "Angular library", "Button, Card and Icon")
 
   Container_Boundary(landing, "landing") {
-    Component(config, "appConfig", "Application providers", "Client hydration with event replay, global error listeners, an empty router")
+    Component(config, "appConfig", "Application providers", "Client hydration with event replay, global error listeners, the router")
     Component(main, "main.ts", "Browser entry", "Starts App with appConfig")
-    Component(shell, "App", "Standalone component, OnPush", "Skip link, header with links to the sections, GitHub and a dark-mode button, hero with call-to-action links, footer")
-    Component(sections, "Features, Pricing, Faq", "Standalone components, OnPush", "The page's sections. Each keeps its copy at the top of its file")
+    Component(shell, "App", "Standalone component, OnPush", "Skip link, header with links to the sections, the blog, GitHub and a dark-mode button, the routed page, footer")
+    Component(routes, "appRoutes", "Route table", "The home page, the blog's index, and a static route for each post")
+    Component(home, "Home", "Standalone component, OnPush", "The hero with its call-to-action links, then the sections")
+    Component(sections, "Features, Pricing, Faq", "Standalone components, OnPush", "The home page's sections. Each keeps its copy at the top of its file")
+    Component(blog, "BlogIndex, PostLayout and the posts", "Standalone components, lazy", "The list of POSTS, and each post's article in plain HTML inside the layout")
     Component(links, "SITE_LINKS", "site-links.ts", "The demo link: none by default; the Pages build swaps in demo/")
     Component(serverroutes, "serverRoutes", "Server route table", "Every path is prerendered")
     Component(serverconfig, "app.config.server.ts", "Application providers", "appConfig plus server rendering and the server routes")
@@ -143,11 +148,14 @@ C4Component
 
   Rel(shell, tokens, "Toggles the theme")
   Rel(shell, ui, "Styles its links and buttons with")
-  Rel(shell, sections, "Renders")
+  Rel(config, routes, "Registers")
+  Rel(routes, home, "Shows")
+  Rel(routes, blog, "Lazy-loads")
+  Rel(home, sections, "Renders")
+  Rel(home, links, "Reads")
   Rel(sections, ui, "Build on")
   Rel(main, config, "Bootstraps with")
   Rel(main, shell, "Bootstraps")
-  Rel(shell, links, "Reads")
   Rel(servermain, serverconfig, "Bootstraps with")
   Rel(servermain, shell, "Bootstraps")
   Rel(serverconfig, config, "Extends")
@@ -157,13 +165,15 @@ C4Component
   UpdateLayoutConfig($c4ShapeInRow="4", $c4BoundaryInRow="1")
 ```
 
-| Component              | Source                                                                                                                                                                                                        | Notes                                                                                                                                                                                                                                                                                                                                                            |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `App`                  | [`app.ts`](../../apps/landing/src/app/app.ts), [`app.html`](../../apps/landing/src/app/app.html)                                                                                                              | The router has no routes: the page is the shell. The "Live demo" and "Docs" buttons render only when `SITE_LINKS` sets them. The skip link and the header's links to the sections are plain fragment links, so they work before the page hydrates.                                                                                                               |
-| Features, Pricing, Faq | [`sections/`](../../apps/landing/src/app/sections/features.ts)                                                                                                                                                | Each is a `section` named by its `h2`, with the id the header links to; `scroll-mt-topbar` keeps its heading clear of the sticky header. The copy is a typed constant at the top of each file (`FEATURES`, `PLANS`, `QUESTIONS`), and every claim in it is true of the code. The questions are native `details` elements, which open and close before hydration. |
-| `SITE_LINKS`           | [`site-links.ts`](../../apps/landing/src/app/site-links.ts), [`site-links.pages.ts`](../../apps/landing/src/app/site-links.pages.ts), [`site-links.types.ts`](../../apps/landing/src/app/site-links.types.ts) | Swapped at build time like the dashboard's `routerFeatures`; the shared type lives in its own file so neither variant imports the other.                                                                                                                                                                                                                         |
-| `server.ts`            | [`server.ts`](../../apps/landing/src/server.ts)                                                                                                                                                               | Express 5 rejects a bare `/**` route, so the catch-all is `app.use` with no path. Refuses every request until `NG_ALLOWED_HOSTS` is set ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)).                                                                                                                                              |
-| `404.html`             | [`404.html`](../../apps/landing/public/404.html)                                                                                                                                                              | Self-contained, with absolute links under `/angular-saas-kit/`.                                                                                                                                                                                                                                                                                                  |
+| Component              | Source                                                                                                                                                                                                        | Notes                                                                                                                                                                                                                                                                                                                                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `App`                  | [`app.ts`](../../apps/landing/src/app/app.ts), [`app.html`](../../apps/landing/src/app/app.html)                                                                                                              | The shell around every page. The skip link and the header's links to the sections are plain links, so they work before the page hydrates; the skip link names the current page, because a bare fragment resolves against the base href, which is home. The blog link's `aria-current` comes from a signal, not `RouterLinkActive`, whose content query would grow the initial bundle. |
+| `Home`, `appRoutes`    | [`home.ts`](../../apps/landing/src/app/home.ts), [`app.routes.ts`](../../apps/landing/src/app/app.routes.ts)                                                                                                  | The home page is in the initial bundle; the blog is lazy. The "Live demo" and "Docs" buttons render only when `SITE_LINKS` sets them. Each post has a static route, so it is prerendered with no list of parameters, and a slug with no post is a 404.                                                                                                                                |
+| Blog                   | [`blog/`](../../apps/landing/src/app/blog/posts.ts)                                                                                                                                                           | `POSTS` lists the posts, newest first. A post is a component whose template is its article inside `ask-post-layout`, which reads the post from the route's data. Dates are formatted with `Intl` from a UTC date, so a post shows the day it names in any time zone.                                                                                                                  |
+| Features, Pricing, Faq | [`sections/`](../../apps/landing/src/app/sections/features.ts)                                                                                                                                                | Each is a `section` named by its `h2`, with the id the header links to; `scroll-mt-topbar` keeps its heading clear of the sticky header. The copy is a typed constant at the top of each file (`FEATURES`, `PLANS`, `QUESTIONS`), and every claim in it is true of the code. The questions are native `details` elements, which open and close before hydration.                      |
+| `SITE_LINKS`           | [`site-links.ts`](../../apps/landing/src/app/site-links.ts), [`site-links.pages.ts`](../../apps/landing/src/app/site-links.pages.ts), [`site-links.types.ts`](../../apps/landing/src/app/site-links.types.ts) | Swapped at build time like the dashboard's `routerFeatures`; the shared type lives in its own file so neither variant imports the other.                                                                                                                                                                                                                                              |
+| `server.ts`            | [`server.ts`](../../apps/landing/src/server.ts)                                                                                                                                                               | Express 5 rejects a bare `/**` route, so the catch-all is `app.use` with no path. Refuses every request until `NG_ALLOWED_HOSTS` is set ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)).                                                                                                                                                                   |
+| `404.html`             | [`404.html`](../../apps/landing/public/404.html)                                                                                                                                                              | Self-contained, with absolute links under `/angular-saas-kit/`.                                                                                                                                                                                                                                                                                                                       |
 
 ## ui
 
