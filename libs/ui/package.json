@@ -1,9 +1,39 @@
 {
   "name": "@angular-saas-kit/ui",
   "version": "0.0.1",
+  "description": "Accessible Angular components for the Angular SaaS Kit, styled only through semantic tokens.",
+  "keywords": [
+    "angular",
+    "components",
+    "tailwindcss",
+    "accessibility",
+    "signals"
+  ],
+  "license": "MIT",
+  "author": "Nguyen An",
+  "homepage": "https://nguyenan97.github.io/angular-saas-kit/docs/",
+  "bugs": "https://github.com/nguyenan97/angular-saas-kit/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nguyenan97/angular-saas-kit.git",
+    "directory": "libs/ui"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^3.7.0"
+  },
   "peerDependencies": {
+    "@angular-saas-kit/tokens": "^0.0.1",
     "@angular/common": "^22.1.0",
     "@angular/core": "^22.1.0"
   },
-  "sideEffects": false
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "exports": {
+    "./styles.css": "./styles.css"
+  }
 }

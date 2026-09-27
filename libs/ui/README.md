@@ -1,7 +1,51 @@
-# ui
+# @angular-saas-kit/ui
 
-This library was generated with [Nx](https://nx.dev).
+Accessible Angular components for the
+[Angular SaaS Kit](https://github.com/nguyenan97/angular-saas-kit), styled only through the
+semantic tokens of `@angular-saas-kit/tokens`. Signals-first, `OnPush`, no `zone.js`.
 
-## Running unit tests
+> **Pre-1.0, and small on purpose.** It exports the `ThemeSwitcher` component and the `cn()` class
+> helper today; the rest of the component library is on the roadmap. Nothing is published to npm
+> yet, so `0.0.x` may change without notice.
 
-Run `nx test ui` to execute the unit tests.
+## Requirements
+
+Angular 22, Tailwind CSS 4.3 or newer, and `@angular-saas-kit/tokens` (a peer dependency, so the app
+and the components share one `ThemeService`).
+
+## Use
+
+In your global stylesheet, import the tokens and then this package's stylesheet, which tells
+Tailwind where the components' classes are:
+
+```css
+@import '@angular-saas-kit/tokens/styles.css';
+@import '@angular-saas-kit/ui/styles.css';
+
+@source './';
+```
+
+Then use a component:
+
+```ts
+import { Component } from '@angular/core';
+import { ThemeSwitcher } from '@angular-saas-kit/ui';
+
+@Component({
+  selector: 'app-settings',
+  imports: [ThemeSwitcher],
+  template: `<ask-theme-switcher />`,
+})
+export class Settings {}
+```
+
+`cn()` merges Tailwind classes with last-one-wins semantics (`clsx` then `tailwind-merge`), which
+is how every component lets a consumer override its defaults.
+
+## Documentation
+
+The guides, the architecture and the decision records are at
+<https://nguyenan97.github.io/angular-saas-kit/docs/>. Start with
+[components](https://nguyenan97.github.io/angular-saas-kit/docs/guide/components.html).
+
+MIT licensed.

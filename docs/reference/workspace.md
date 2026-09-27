@@ -19,7 +19,7 @@ docs/
   architecture/     C4 diagrams
   adr/              Architecture decision records
   .vitepress/       Configuration and theme of this site
-scripts/            Build and check scripts for the demo site and the architecture map
+scripts/            Build and check scripts: the demo site, the architecture map, the built packages
 .github/
   workflows/        ci.yml, codeql.yml, pages.yml
   ISSUE_TEMPLATE/   Bug, component request and accessibility forms
@@ -30,14 +30,14 @@ scripts/            Build and check scripts for the demo site and the architectu
 
 Every project carries a `type:` and a `scope:` tag.
 
-| Project         | Tags                          | Depends on                              |
-| --------------- | ----------------------------- | --------------------------------------- |
-| `landing`       | `type:app`, `scope:landing`   | `tokens`                                |
-| `dashboard`     | `type:app`, `scope:dashboard` | `tokens`, `ui`                          |
-| `tokens`        | `type:lib`, `scope:shared`    | none in code; its stylesheet scans `ui` |
-| `ui`            | `type:lib`, `scope:shared`    | `tokens`                                |
-| `mock-api`      | `type:lib`, `scope:shared`    | none; nothing depends on it yet         |
-| `dashboard-e2e` | none                          | `dashboard`                             |
+| Project         | Tags                          | Depends on                      |
+| --------------- | ----------------------------- | ------------------------------- |
+| `landing`       | `type:app`, `scope:landing`   | `tokens`                        |
+| `dashboard`     | `type:app`, `scope:dashboard` | `tokens`, `ui`                  |
+| `tokens`        | `type:lib`, `scope:shared`    | none                            |
+| `ui`            | `type:lib`, `scope:shared`    | `tokens`                        |
+| `mock-api`      | `type:lib`, `scope:shared`    | none; nothing depends on it yet |
+| `dashboard-e2e` | none                          | `dashboard`                     |
 
 Lint turns the tags into rules with `@nx/enforce-module-boundaries`, so a wrong import fails
 `npm run lint`:

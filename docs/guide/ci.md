@@ -8,12 +8,12 @@ not do redundant work when commits arrive in bursts. The reasoning is in
 
 ## The workflows
 
-| Workflow       | Runs on                                        | What it does                                                          |
-| -------------- | ---------------------------------------------- | --------------------------------------------------------------------- |
-| **CI**         | every pull request to `main`, and pushes to it | Lint, test, build, typecheck, format, and the architecture check.     |
-| **CodeQL**     | every pull request to `main`, and weekly       | Static analysis of the JavaScript and TypeScript for vulnerabilities. |
-| **Pages**      | every pull request to `main`, and pushes to it | Builds the demo site and these docs. Deploys only from `main`.        |
-| **Dependabot** | weekly for npm, monthly for GitHub Actions     | Opens pull requests for dependency updates.                           |
+| Workflow       | Runs on                                        | What it does                                                                   |
+| -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------ |
+| **CI**         | every pull request to `main`, and pushes to it | Lint, test, build, typecheck, format, and the architecture and package checks. |
+| **CodeQL**     | every pull request to `main`, and weekly       | Static analysis of the JavaScript and TypeScript for vulnerabilities.          |
+| **Pages**      | every pull request to `main`, and pushes to it | Builds the demo site and these docs. Deploys only from `main`.                 |
+| **Dependabot** | weekly for npm, monthly for GitHub Actions     | Opens pull requests for dependency updates.                                    |
 
 CodeQL's weekly run is Monday at 03:17 UTC, and it does not run on pushes to `main`.
 
@@ -32,7 +32,11 @@ CodeQL's weekly run is Monday at 03:17 UTC, and it does not run on pushes to `ma
 `main` on every merge: a broken docs page would otherwise pass review and then fail the deploy.
 
 The `lint` job also runs `npm run check:architecture`, which fails when the container map in
-[Architecture](../architecture/c4-containers.md) and the imports in the source disagree.
+[Architecture](../architecture/c4-containers.md) and the imports in the source disagree. The
+`build` job then runs `npm run check:packages` on what it built: it fails when the `tokens` or
+`ui` package imports something its manifest does not declare, or does not ship a file it
+promises ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)). A change that
+reaches no library builds none, and the check says there is nothing to check.
 
 `lint`, `test` and `build` go through `nx affected`, so they only run for the projects your
 change reaches. `typecheck` and `format` always cover the whole workspace.
@@ -49,8 +53,9 @@ change reaches. `typecheck` and `format` always cover the whole workspace.
   push trigger.
 - **The Pages site deploys only from `main`.** A pull request builds and checks it, and
   attaches the result as a downloadable artifact.
-- **Small checks ride on an existing job.** The architecture check has no dependencies of
-  its own, so it shares the `lint` runner instead of starting one.
+- **Small checks ride on an existing job.** The architecture and package checks have no
+  dependencies of their own, so they share the `lint` and `build` runners instead of starting
+  one each.
 
 ## How `main` is protected
 
@@ -105,6 +110,6 @@ Coverage is uploaded to Codecov from the `test` job, with `fail_ci_if_error: fal
 ## When a check fails
 
 Reproduce it locally first: the commands are in the table above, and `npm run verify` runs
-the first three, the typecheck and the architecture check in one go. Installs must resolve
+the first three, the typecheck and the architecture and package checks in one go. Installs must resolve
 peer dependencies the way CI does. A user-level `legacy-peer-deps=true` once hid a conflict
 that failed `npm ci` in CI, so the repository `.npmrc` pins `legacy-peer-deps=false`.

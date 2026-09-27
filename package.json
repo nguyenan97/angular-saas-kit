@@ -14,8 +14,9 @@
     "lint": "nx run-many -t lint",
     "typecheck": "tsc -p tsconfig.base.json --noEmit",
     "check:architecture": "node scripts/check-architecture.mjs",
+    "check:packages": "node scripts/check-packages.mjs",
     "format:check": "prettier --check .",
-    "verify": "nx run-many -t lint test build && npm run typecheck && npm run check:architecture",
+    "verify": "nx run-many -t lint test build && npm run typecheck && npm run check:architecture && npm run check:packages",
     "prepare": "husky"
   },
   "private": true,

@@ -21,7 +21,7 @@ dependency. The repo `.npmrc` resolves peer dependencies strictly, like CI; do n
 npm start                  # dashboard dev server, http://localhost:4200
 npm run start:landing      # landing dev server
 npx nx test <project>      # one project: dashboard, landing, tokens, ui, mock-api
-npm run verify             # lint + test + build + typecheck + architecture check
+npm run verify             # lint + test + build + typecheck + architecture and package checks
 npm run format:check       # Prettier; a commit hook formats staged files for you
 npm run docs:dev           # the docs site, live reload
 npm run pages              # the whole Pages site into _site/; then npm run pages:preview
@@ -36,7 +36,7 @@ apps/dashboard      admin SPA (client-side)          apps/landing   marketing pa
 apps/dashboard-e2e  Playwright, not run in CI yet    libs/tokens    design tokens, ThemeService
 libs/ui             ThemeSwitcher, cn()              libs/mock-api  in-memory HTTP interceptor
 docs/               guides, C4 diagrams (architecture/), ADRs (adr/), the VitePress site
-scripts/            assemble/preview the Pages site, check the architecture map
+scripts/            assemble/preview the Pages site, check the architecture map and the built packages
 ```
 
 Import a library through its alias: `@angular-saas-kit/tokens`, `/ui`, `/mock-api`. Lint enforces
@@ -72,7 +72,7 @@ rejects an import, the import is wrong; do not loosen the rule. A new project ne
 
 - **New project or a dependency between projects:** update `docs/architecture/c4-containers.md`.
   `npm run check:architecture` compares it with the code (imports, CSS `@import`/`@source`,
-  `implicitDependencies`), and CI runs it. The tokens stylesheet scanning `libs/ui` (`@source`) is a real edge.
+  `implicitDependencies`), and CI runs it. A stylesheet's `@import` and `@source` count, and lint cannot see them.
 - **Build-specific behaviour** goes through `fileReplacements`, as the `pages` configuration does
   (`routing-mode.ts`, `site-links.ts`). Put shared types in their own file, or the replacement
   file becomes their source.
@@ -82,8 +82,11 @@ rejects an import, the import is wrong; do not loosen the rule. A new project ne
   `index.html`); `theme-init.spec.ts` fails when they drift. Change all three.
 - **Coverage instrumentation breaks `__dirname`** in specs; use `workspaceRoot` from `@nx/devkit`.
 - **The landing Node server answers 400 to everything** until `NG_ALLOWED_HOSTS` is set.
-- **`libs/ui` and `libs/tokens` are not publish-ready**: `ui` does not declare `clsx`,
-  `tailwind-merge` or `tokens`, and the `tokens` package ships no stylesheets.
+- **`libs/ui` and `libs/tokens` build as npm packages** (not published yet). A runtime dependency of a
+  component goes in `libs/ui/package.json` and in `allowedNonPeerDependencies` in its
+  `ng-package.json`; a file a package promises must ship. `npm run check:packages` checks the built
+  output, after a build. The tokens stylesheet declares no `@source`: each app declares its own,
+  and excludes `*.spec.ts` with `@source not`, or test strings become utilities.
 - **Docs links are relative and end in `.md`**, so they work on GitHub and on the site. A
   folder's `README.md` becomes its index page. `docs/superpowers` is working material, not published.
 - **Dependency changes:** keep `package-lock.json` in sync with npm 11, and run `npm audit`. A

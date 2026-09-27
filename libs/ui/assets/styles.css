@@ -1,0 +1,20 @@
+/* -------------------------------------------------------------------------
+ * @angular-saas-kit/ui - stylesheet
+ * -------------------------------------------------------------------------
+ * A consumer imports this after the tokens stylesheet, in its global styles:
+ *
+ *   @import '@angular-saas-kit/tokens/styles.css';
+ *   @import '@angular-saas-kit/ui/styles.css';
+ *   @source './';
+ *
+ * Its one job is to tell Tailwind where the components' classes are, so that
+ * the utilities they use are generated in the consumer's stylesheet.
+ *
+ * This file is shipped at the root of the published package (see the assets
+ * in ng-package.json), and the components are compiled to fesm2022/ next to
+ * it. The path below is relative to that place in the package, not to where
+ * this file sits in the workspace, so nothing in the workspace imports it:
+ * the apps point Tailwind at libs/ui/src directly.
+ * ---------------------------------------------------------------------- */
+
+@source './fesm2022';

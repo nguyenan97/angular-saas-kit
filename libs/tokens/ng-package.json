@@ -3,5 +3,9 @@
   "dest": "../../dist/libs/tokens",
   "lib": {
     "entryFile": "src/index.ts"
-  }
+  },
+  "assets": [
+    { "glob": "styles.css", "input": "src", "output": "/" },
+    { "glob": "*.css", "input": "src/lib/styles", "output": "/lib/styles" }
+  ]
 }

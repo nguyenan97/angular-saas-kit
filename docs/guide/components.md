@@ -163,9 +163,18 @@ Inside this workspace, import from the path alias:
 import { ThemeSwitcher, cn } from '@angular-saas-kit/ui';
 ```
 
-> [!WARNING]
-> **Not published yet.** `@angular-saas-kit/ui` and `@angular-saas-kit/tokens` build as
-> npm packages with ng-packagr, but they are not publish-ready: the built `ui` manifest
-> does not declare `clsx`, `tailwind-merge` or `@angular-saas-kit/tokens`, and the built
-> `tokens` package contains no stylesheets. Until that is fixed, adopt the kit by cloning
-> it, which is what [getting started](getting-started.md) does.
+> [!NOTE]
+> **Built as packages, not published yet.** `@angular-saas-kit/ui` and
+> `@angular-saas-kit/tokens` build as npm packages with ng-packagr. Each declares what its
+> code imports, ships its stylesheets and a license, and `npm run check:packages` fails when
+> that stops being true ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)).
+> No release workflow publishes them yet, and both are `0.0.x`, so adopt the kit by cloning it,
+> which is what [getting started](getting-started.md) does. For the day they are published,
+> [Theming](theming.md#from-an-installed-package) shows how an app imports them.
+
+### If your component needs a new package
+
+A runtime dependency of a component in `libs/ui` (the way `cn()` needs `clsx` and
+`tailwind-merge`) has to be declared in `libs/ui/package.json`, and named in
+`allowedNonPeerDependencies` in `libs/ui/ng-package.json`, or the built package would import
+something it does not declare. `npm run check:packages` catches the omission after a build.
