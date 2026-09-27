@@ -89,6 +89,18 @@
         }
       </ul>
     </nav>
+
+    <!-- The kit has no session to end: in the demo this goes to the sign-in page. -->
+    <div class="border-t border-border p-2">
+      <a
+        routerLink="/sign-in"
+        class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+        [attr.title]="labelsVisible() ? null : 'Sign out'"
+      >
+        <span class="size-2 shrink-0 rounded-full bg-current opacity-40" aria-hidden="true"></span>
+        <span class="truncate" [class.sr-only]="!labelsVisible()">Sign out</span>
+      </a>
+    </div>
   </aside>
 
   <div

@@ -36,16 +36,15 @@ import { provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it } from 'vitest';
 
-import { App } from './app';
-import { appRoutes } from './app.routes';
+import { Shell } from './shell';
 
-describe('App shell', () => {
+describe('Shell', () => {
   it('points the menu button at the sidebar', async () => {
     await TestBed.configureTestingModule({
-      imports: [App],
+      imports: [Shell],
       providers: [
         provideZonelessChangeDetection(),
-        provideRouter(appRoutes),
+        provideRouter([]),
         // jsdom has no matchMedia: say which layout the test is about.
         {
           provide: BreakpointObserver,
@@ -54,7 +53,7 @@ describe('App shell', () => {
       ],
     }).compileComponents();
 
-    const fixture = TestBed.createComponent(App);
+    const fixture = TestBed.createComponent(Shell);
     await fixture.whenStable();
 
     const toggle = fixture.nativeElement.querySelector('[aria-controls]');
@@ -65,7 +64,7 @@ describe('App shell', () => {
 });
 ```
 
-That is a shortened test from `apps/dashboard/src/app/app.spec.ts`. Note what it asserts: an
+That is a shortened test from `apps/dashboard/src/app/layout/shell.spec.ts`. Note what it asserts: an
 accessibility contract, not that the component rendered. Test what a user or a consumer relies
 on: keyboard operation, announced state, and the behaviour of inputs. A test that only proves
 the component exists proves nothing.
@@ -81,7 +80,8 @@ shell has its own file (`shell.spec.ts`): the rail collapses to its token width,
 moves focus to the content, and at phone width the content gets the whole screen while the
 drawer holds focus until Escape and closes from its backdrop. `analytics.spec.ts` checks the charts fill their width, open their table from the
 keyboard and follow the period. `settings.spec.ts` moves between tabs with the arrow keys, Home and End, and checks the
-profile form focuses the field to fix. `orders.spec.ts` drives a row menu by keyboard, keeps
+profile form focuses the field to fix. `auth.spec.ts` signs in from the keyboard alone, and follows
+the links between the sign-in pages and from the shell's Sign out. `orders.spec.ts` drives a row menu by keyboard, keeps
 Tab inside the refund dialog and checks focus comes back to the row. `overview.spec.ts` follows the
 data from the page through the mock API and back. These are here because jsdom lays nothing out,
 applies no stylesheet and implements no Tab order or radio-group keys, so a unit test cannot

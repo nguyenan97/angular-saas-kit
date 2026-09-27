@@ -7,7 +7,6 @@ import {
   signal,
 } from '@angular/core';
 import {
-  type FieldTree,
   FormField,
   email,
   form,
@@ -18,6 +17,11 @@ import { Button, Input, Label } from '@angular-saas-kit/ui';
 import { firstValueFrom } from 'rxjs';
 
 import { type Profile, TIME_ZONES } from '../../data/models';
+import {
+  errorMessage,
+  errorShown,
+  focusFirstInvalid,
+} from '../../forms/field-errors';
 
 const EMPTY: Profile = { name: '', email: '', company: '', timeZone: 'UTC' };
 
@@ -130,6 +134,8 @@ export class ProfileSettings {
   protected readonly saving = signal(false);
   protected readonly status = signal('');
   protected readonly timeZones = TIME_ZONES;
+  protected readonly shown = errorShown;
+  protected readonly message = errorMessage;
 
   constructor() {
     // What the API has becomes what the form edits.
@@ -138,15 +144,6 @@ export class ProfileSettings {
         this.model.set(this.stored.value());
       }
     });
-  }
-
-  /** An error is shown once the field has been left, or the form submitted. */
-  protected shown(field: FieldTree<string>): boolean {
-    return field().touched() && field().invalid();
-  }
-
-  protected message(field: FieldTree<string>): string {
-    return field().errors()[0]?.message ?? '';
   }
 
   protected async save(event: Event): Promise<void> {
@@ -174,13 +171,8 @@ export class ProfileSettings {
         }
         return undefined;
       },
-      onInvalid: () => {
-        // Take the user to the first thing to fix.
-        const first = [this.profile.name, this.profile.email].find((field) =>
-          field().invalid(),
-        );
-        first?.().focusBoundControl();
-      },
+      onInvalid: () =>
+        focusFirstInvalid([this.profile.name, this.profile.email]),
     });
   }
 }

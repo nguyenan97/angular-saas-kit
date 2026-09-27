@@ -10,8 +10,8 @@ import { Router, type Routes, provideRouter } from '@angular/router';
 import { of } from 'rxjs';
 import { describe, expect, it } from 'vitest';
 
-import { App } from './app';
-import { providePageTitle } from './page-title';
+import { Shell } from './shell';
+import { providePageTitle } from '../page-title';
 
 @Component({ changeDetection: ChangeDetectionStrategy.OnPush, template: '' })
 class Blank {}
@@ -38,7 +38,7 @@ async function render({
   url = '/',
 }: { desktop?: boolean; routes?: Routes; url?: string } = {}) {
   await TestBed.configureTestingModule({
-    imports: [App],
+    imports: [Shell],
     providers: [
       provideZonelessChangeDetection(),
       provideRouter(routes),
@@ -47,7 +47,7 @@ async function render({
     ],
   }).compileComponents();
 
-  const fixture = TestBed.createComponent(App);
+  const fixture = TestBed.createComponent(Shell);
   await TestBed.inject(Router).navigateByUrl(url);
   await fixture.whenStable();
 
@@ -72,7 +72,7 @@ async function render({
   };
 }
 
-describe('App shell', () => {
+describe('Shell', () => {
   it('links every page', async () => {
     const { el } = await render();
 
