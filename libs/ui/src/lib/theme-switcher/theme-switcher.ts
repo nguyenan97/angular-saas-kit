@@ -11,11 +11,34 @@ import {
 
 import { cn } from '../utils/cn';
 
+/** Gives each instance its own radio groups, so two on a page do not merge. */
+let nextId = 0;
+
+/**
+ * The keyboard focus ring. The radio input is invisible (see `INPUT`), so its
+ * own outline cannot be seen; the label around it shows the ring instead.
+ */
+const FOCUS_RING =
+  'has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring';
+
+/**
+ * Covers its label and is transparent. It stays the real, focusable radio, so
+ * a click lands on it, and the browser supplies the behaviour of a radio
+ * group: one tab stop per group, arrow keys that move the selection, and the
+ * state announced by assistive technology. Nothing here re-implements any of
+ * that.
+ */
+const INPUT = 'absolute inset-0 m-0 size-full cursor-pointer opacity-0';
+
 /**
  * Exercises all three theme axes.
  *
  * Doubles as the kit's proof that the token layer works: nothing here knows
  * a single colour value, it only flips attributes on <html>.
+ *
+ * Each axis is a `fieldset` of native radio inputs. A `button` with
+ * `role="radio"` promises the arrow-key behaviour of a radio group and leaves
+ * it to the component to build; an `input type="radio"` gets it for free.
  */
 @Component({
   selector: 'ask-theme-switcher',
@@ -24,53 +47,61 @@ import { cn } from '../utils/cn';
   template: `
     <fieldset class="flex flex-col gap-2">
       <legend class="text-xs font-medium text-muted-foreground">Mode</legend>
-      <div role="radiogroup" aria-label="Colour mode" class="flex gap-1">
+      <div class="flex gap-1">
         @for (mode of modes; track mode) {
-          <button
-            type="button"
-            role="radio"
-            [attr.aria-checked]="theme.mode() === mode"
-            [class]="optionClass(theme.mode() === mode)"
-            (click)="theme.setMode(mode)"
-          >
+          <label [class]="optionClass(theme.mode() === mode)">
+            <input
+              type="radio"
+              [class]="inputClass"
+              [name]="groupName('mode')"
+              [value]="mode"
+              [checked]="theme.mode() === mode"
+              (change)="theme.setMode(mode)"
+            />
             {{ mode }}
-          </button>
+          </label>
         }
       </div>
     </fieldset>
 
     <fieldset class="flex flex-col gap-2">
       <legend class="text-xs font-medium text-muted-foreground">Accent</legend>
-      <div role="radiogroup" aria-label="Accent colour" class="flex gap-1">
+      <div class="flex gap-1">
         @for (accent of accents; track accent) {
-          <button
-            type="button"
-            role="radio"
-            [attr.aria-checked]="theme.accent() === accent"
-            [attr.aria-label]="accent"
-            [attr.data-accent]="accent"
+          <label
             [class]="swatchClass(theme.accent() === accent)"
-            (click)="theme.setAccent(accent)"
+            [attr.data-accent]="accent"
           >
+            <input
+              type="radio"
+              [class]="inputClass"
+              [name]="groupName('accent')"
+              [value]="accent"
+              [attr.aria-label]="accent"
+              [checked]="theme.accent() === accent"
+              (change)="theme.setAccent(accent)"
+            />
             <span class="size-4 rounded-full bg-primary"></span>
-          </button>
+          </label>
         }
       </div>
     </fieldset>
 
     <fieldset class="flex flex-col gap-2">
       <legend class="text-xs font-medium text-muted-foreground">Radius</legend>
-      <div role="radiogroup" aria-label="Corner radius" class="flex gap-1">
+      <div class="flex gap-1">
         @for (radius of radii; track radius) {
-          <button
-            type="button"
-            role="radio"
-            [attr.aria-checked]="theme.radius() === radius"
-            [class]="optionClass(theme.radius() === radius)"
-            (click)="theme.setRadius(radius)"
-          >
+          <label [class]="optionClass(theme.radius() === radius)">
+            <input
+              type="radio"
+              [class]="inputClass"
+              [name]="groupName('radius')"
+              [value]="radius"
+              [checked]="theme.radius() === radius"
+              (change)="theme.setRadius(radius)"
+            />
             {{ radius }}
-          </button>
+          </label>
         }
       </div>
     </fieldset>
@@ -83,10 +114,20 @@ export class ThemeSwitcher {
   protected readonly accents: readonly Accent[] = ACCENTS;
   protected readonly radii: readonly Radius[] = RADII;
 
+  protected readonly inputClass = INPUT;
+
+  private readonly id = `ask-theme-switcher-${nextId++}`;
+
+  /** Radios that share a `name` are one group: that is what the browser uses. */
+  protected groupName(axis: 'mode' | 'accent' | 'radius'): string {
+    return `${this.id}-${axis}`;
+  }
+
   protected optionClass(selected: boolean): string {
     return cn(
-      'rounded-md border px-2.5 py-1 text-xs capitalize transition-colors',
+      'relative cursor-pointer rounded-md border px-2.5 py-1 text-xs capitalize transition-colors',
       'hover:bg-accent hover:text-accent-foreground',
+      FOCUS_RING,
       selected
         ? 'border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
         : 'border-border bg-background text-foreground',
@@ -95,7 +136,8 @@ export class ThemeSwitcher {
 
   protected swatchClass(selected: boolean): string {
     return cn(
-      'grid size-8 place-items-center rounded-md border transition-colors',
+      'relative grid size-8 cursor-pointer place-items-center rounded-md border transition-colors',
+      FOCUS_RING,
       selected ? 'border-primary' : 'border-border hover:border-foreground/30',
     );
   }

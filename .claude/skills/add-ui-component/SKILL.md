@@ -29,7 +29,10 @@ the guide first. `libs/ui` is small today (`ThemeSwitcher`, `cn()`), so there is
 4. Merge host classes through `cn()` from `../utils/cn`, with a `class` input last so the consumer
    wins (see the `Badge` example in the guide).
 5. Keyboard and ARIA: reachable, operable, visible focus, state announced. Template a11y lint rules
-   are errors.
+   are errors. Prefer a native element to an ARIA role: `input type="radio"` in a `fieldset` gets the
+   arrow keys and one tab stop from the browser; `button role="radio"` needs all of it built by
+   hand. If you must build it, use the CDK, and prove the keys in a browser test, since jsdom does
+   not implement them (`apps/dashboard-e2e`).
 6. Export it from `libs/ui/src/index.ts`.
 7. If it imports a new runtime package, add that package to `libs/ui/package.json` (`dependencies`,
    or `peerDependencies` for a framework) **and** to `allowedNonPeerDependencies` in

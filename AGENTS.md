@@ -50,7 +50,9 @@ rejects an import, the import is wrong; do not loosen the rule. A new project ne
   Use semantic tokens: `bg-card`, `text-muted-foreground`, `border-border`. Missing token: add it
   to `libs/tokens` in the same change and say why.
 - **Accessibility is a gate.** Keyboard operable, visible focus, announced state. Template a11y
-  lint rules are errors. Reach for the Angular CDK before hand-rolling a focus trap.
+  lint rules are errors. Prefer a native element to an ARIA role (`input type="radio"`, not
+  `button role="radio"`: the browser supplies the arrow keys and the single tab stop). Reach for the
+  Angular CDK before hand-rolling a focus trap.
 - **Signals, not RxJS state.** `signal`/`computed`; every component is `OnPush`; no `zone.js`.
 - **Selectors:** `ask-` prefix, kebab-case for components; `ask` prefix, camelCase for directives.
 - **No new UI-library dependency** (Material, PrimeNG and the like). The CDK and small utilities are fine.
