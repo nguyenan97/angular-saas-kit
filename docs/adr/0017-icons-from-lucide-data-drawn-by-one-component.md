@@ -1,6 +1,6 @@
 # 0017. Icons: Lucide's data, drawn by one component
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-09-27
 - **Deciders:** @nguyenan97
 
