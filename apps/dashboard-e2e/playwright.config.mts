@@ -1,15 +1,22 @@
+import { resolve } from 'node:path';
+
 import { defineConfig, devices } from '@playwright/test';
-import { nxE2EPreset } from '@nx/playwright/preset';
-import { workspaceRoot } from '@nx/devkit';
 
 // For CI, you may want to set BASE_URL to the deployed application.
 const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import 'dotenv/config';
+const CI = !!process.env['CI'];
+
+// The workspace root and the places Playwright writes to. These used to come
+// from `@nx/devkit` and `@nx/playwright/preset`. Importing either loads Nx's
+// native module, and inside Playwright's config loader on Node 22 that throws
+// ("Cannot convert undefined or null to object", from a `delete require.cache`
+// in nx/dist/src/native), so `nx e2e` and `playwright test` could not even
+// load this file. Everything the preset contributed is a handful of plain
+// values, written out below.
+const workspaceRoot = resolve(import.meta.dirname, '..', '..');
+const output = (name: string): string =>
+  resolve(workspaceRoot, 'dist', '.playwright', 'apps', 'dashboard-e2e', name);
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -22,7 +29,29 @@ const baseURL = process.env['BASE_URL'] || 'http://localhost:4200';
  * (.ts/.js/.mts/.mjs/.cts/.cjs).
  */
 export default defineConfig({
-  ...nxE2EPreset(import.meta.dirname, { testDir: './src' }),
+  testDir: './src',
+  outputDir: output('test-output'),
+  /* Run tests in files in parallel */
+  fullyParallel: true,
+  /* Fail the build on CI if you accidentally left test.only in the source code. */
+  forbidOnly: CI,
+  /* Retry on CI only */
+  retries: CI ? 2 : 0,
+  /* Opt out of parallel tests on CI. */
+  workers: CI ? 1 : undefined,
+  /* Reporter to use. See https://playwright.dev/docs/test-reporters */
+  reporter: [
+    ...(CI ? [['list'] as const] : []),
+    [
+      'html',
+      {
+        outputFolder: output('playwright-report'),
+        // Locally, open the report when something fails. On a runner there is
+        // nobody to look at it, and opening it would wait for someone.
+        open: CI ? 'never' : 'on-failure',
+      },
+    ],
+  ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     baseURL,

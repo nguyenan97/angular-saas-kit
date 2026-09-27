@@ -22,7 +22,9 @@ CI only runs lint, test and build for the projects a change touches (`nx affecte
 them locally is stricter, never looser.
 
 If you changed the docs, also run `npm run docs:build`: it fails on a dead link. If you changed how
-the Pages site is built, run `npm run pages`.
+the Pages site is built, run `npm run pages`. If you changed the theme or the dashboard shell, run the
+browser tests (`npx playwright install` once, then `npx nx e2e dashboard-e2e`; CI runs the `e2e` job in
+Chromium, not yet as a required check): they prove what jsdom cannot, such as radio-group keyboard behaviour.
 
 ## When a check fails
 

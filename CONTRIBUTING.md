@@ -26,9 +26,13 @@ npm run check:packages     # after the build: what the tokens and ui packages wo
 npm run format:check
 ```
 
+If you touched the theme or the dashboard shell, also run the browser tests
+(`npx playwright install` once, then `npx nx e2e dashboard-e2e`).
+
 CI runs the same lint, test and build (through `nx affected`, so only the
 projects your change touches), a workspace typecheck, the architecture check, the
-package check, a Prettier check and CodeQL scanning. Tests collect coverage for every project. A
+package check, a Prettier check, the browser tests (in Chromium; not a required check
+yet) and CodeQL scanning. Tests collect coverage for every project. A
 green local run is a green CI run.
 
 `main` is protected: changes land through a pull request, `lint`, `test`,

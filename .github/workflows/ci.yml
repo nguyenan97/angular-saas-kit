@@ -104,3 +104,37 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx prettier --check .
+
+  # The browser tests. They prove what jsdom cannot, such as the keyboard
+  # behaviour of a radio group, and the theme surviving a reload with no flash.
+  # Not a required check yet: it is new, and a flaky required check blocks every
+  # merge, so it earns that after a run of clean results.
+  e2e:
+    name: e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+
+      # One engine is enough for what these tests prove, and each extra one adds
+      # about a minute. The config lists Firefox and WebKit for a local run.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      # Playwright starts the dashboard dev server itself (see the config).
+      - name: Run the browser tests
+        working-directory: apps/dashboard-e2e
+        run: npx playwright test --project=chromium
+
+      - name: Keep the report and traces of a failure
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: dist/.playwright/apps/dashboard-e2e
+          retention-days: 7
