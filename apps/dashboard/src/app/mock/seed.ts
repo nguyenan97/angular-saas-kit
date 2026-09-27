@@ -1,10 +1,12 @@
 import type {
   Customer,
+  NotificationSettings,
   Order,
   OrderLine,
   OrderStatus,
   Product,
   ProductStatus,
+  Profile,
 } from '../data/models';
 
 /**
@@ -19,6 +21,9 @@ export interface Dataset {
   readonly customers: Customer[];
   readonly products: Product[];
   readonly orders: Order[];
+  /** The signed-in person. Writable: the Settings page saves over it. */
+  profile: Profile;
+  notifications: NotificationSettings;
 }
 
 const DAY = 24 * 60 * 60 * 1000;
@@ -179,5 +184,16 @@ export function createDataset(today: Date, seed = 20260927): Dataset {
     };
   });
 
-  return { customers: withTotals, products, orders };
+  return {
+    customers: withTotals,
+    products,
+    orders,
+    profile: {
+      name: 'Alex Morgan',
+      email: 'alex.morgan@example.com',
+      company: 'Northwind Studio',
+      timeZone: 'UTC',
+    },
+    notifications: { orders: true, weeklySummary: true, productNews: false },
+  };
 }

@@ -89,3 +89,29 @@ export interface OverviewStats {
   readonly kpis: readonly Kpi[];
   readonly daily: readonly DailyTotal[];
 }
+
+/** The signed-in person, as the Settings page edits it. */
+export interface Profile {
+  readonly name: string;
+  readonly email: string;
+  readonly company: string;
+  readonly timeZone: string;
+}
+
+export const TIME_ZONES: readonly string[] = [
+  'UTC',
+  'America/New_York',
+  'America/Sao_Paulo',
+  'Europe/London',
+  'Europe/Berlin',
+  'Asia/Ho_Chi_Minh',
+  'Asia/Tokyo',
+  'Australia/Sydney',
+];
+
+/** Which emails the signed-in person wants. */
+export interface NotificationSettings {
+  readonly orders: boolean;
+  readonly weeklySummary: boolean;
+  readonly productNews: boolean;
+}

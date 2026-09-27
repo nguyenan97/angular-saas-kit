@@ -1,4 +1,10 @@
-import { expect, test } from '@playwright/test';
+import { type Page, expect, test } from '@playwright/test';
+
+/** The theme switcher lives in the Appearance tab of the Settings page. */
+async function openAppearance(page: Page): Promise<void> {
+  await page.goto('/settings');
+  await page.getByRole('tab', { name: 'Appearance' }).click();
+}
 
 /**
  * The theme system is the kit's central claim, so it gets the first e2e
@@ -28,7 +34,7 @@ test.describe('theme', () => {
   test('persists the accent across a reload with no flash', async ({
     page,
   }) => {
-    await page.goto('/settings');
+    await openAppearance(page);
     await page.getByRole('radio', { name: 'emerald' }).click();
     await expect(page.locator('html')).toHaveAttribute(
       'data-accent',
@@ -49,7 +55,7 @@ test.describe('theme', () => {
   // keyboard behaviour of a radio group. jsdom implements none of it, so it is
   // proved here, in a real browser.
   test('moves between accents with the arrow keys', async ({ page }) => {
-    await page.goto('/settings');
+    await openAppearance(page);
 
     await page.getByRole('radio', { name: 'blue', exact: true }).focus();
     await page.keyboard.press('ArrowRight');
@@ -61,7 +67,7 @@ test.describe('theme', () => {
   });
 
   test('has one tab stop for each group', async ({ page }) => {
-    await page.goto('/settings');
+    await openAppearance(page);
 
     // From the checked mode, Tab leaves the group for the checked accent, and
     // then the checked radius, instead of walking every option in between.
@@ -80,7 +86,7 @@ test.describe('theme', () => {
   test('shows a focus ring on the option that has keyboard focus', async ({
     page,
   }) => {
-    await page.goto('/settings');
+    await openAppearance(page);
 
     await page.getByRole('radio', { name: 'system', exact: true }).focus();
     await page.keyboard.press('Tab');

@@ -61,6 +61,21 @@ the error, and no RxJS in the page. `HttpClient` is provided in `pages/pages.rou
 - **Say it is demo data.** The topbar's "Demo data" label covers the pages; the PR and the docs
   must say the numbers are mocked too.
 
+## Forms
+
+Use Signal Forms (`@angular/forms/signals`, stable in Angular 22), as
+`pages/settings/profile-settings.ts` does: `form(model, rules)` with `required`, `email` and a
+`message` each, and `[formField]` on the native input.
+
+- Put `novalidate` on the `<form>`: the errors are the kit's text, not the browser's bubbles.
+- Show an error once the field is touched and invalid, as text under the field, with
+  `aria-invalid` and `aria-describedby` pointing at it.
+- Save with `submit(form, { action, onInvalid })`: it marks every field touched and runs the action
+  only when the form is valid. In `onInvalid`, focus the first field in error
+  (`focusBoundControl()`).
+- Say the outcome in a `role="status"` line next to the button. A 400 from the API names the field
+  at fault in `error.field`.
+
 ## The demo site
 
 The Pages demo runs the dashboard with hash routing (`routing-mode.pages.ts`), so a new route must
