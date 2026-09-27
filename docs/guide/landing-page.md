@@ -9,12 +9,38 @@ front. The reasoning is in
 
 Every route is prerendered at build time (`RenderMode.Prerender`), and the browser hydrates
 the page with event replay, so a click that lands before hydration finishes is replayed
-instead of lost. The page today is a single shell with no routes of its own: header, hero,
-call-to-action links and footer.
+instead of lost. The page is a single shell with no routes of its own: a header with links to
+the sections, the hero and its call-to-action links, three [sections](#the-sections) and a
+footer. The skip link and the header's links are plain fragment links, so they work before the
+page hydrates.
 
 `ThemeService` is constructed on the server too, so it guards every DOM and storage access.
 The server renders the default theme, and the inline script in `index.html` plus hydration
 correct it in the browser before first paint. See [Theming](theming.md).
+
+## The sections
+
+Each section is a component in `apps/landing/src/app/sections/`, with its copy at the top of its
+file as a typed constant:
+
+| Section  | File          | Copy                                                                |
+| -------- | ------------- | ------------------------------------------------------------------- |
+| Features | `features.ts` | `FEATURES`: an icon, a title and a sentence each                    |
+| Pricing  | `pricing.ts`  | `PLANS`: a card each. The kit has one plan, and it is free          |
+| FAQ      | `faq.ts`      | `QUESTIONS`: a native `details` element each, open before hydration |
+
+To change what the page says, change the constants. To drop a section, remove its element
+from `app.html` and its entry from `sections` in `app.ts`, where the header's links come from.
+To add one, give it a `section` with an id and an `aria-labelledby` that points at its `h2`, and
+add the id to `sections`; a unit test checks that every header link finds its section.
+
+The copy only says what is true of the code, and the tests check the structure rather than the
+words, so when the code changes, change the copy with it. There is no testimonials section,
+because the kit has no real testimonials yet.
+
+The sections are built on the kit's own `Button`, `Card` and `Icon`, which is the point of one
+design system for both apps. That has a cost: `cn()` brings tailwind-merge into the page's
+JavaScript, about 28 kB before compression.
 
 ## Run and build
 

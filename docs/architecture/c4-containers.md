@@ -25,6 +25,7 @@ C4Container
   Rel(visitor, landing, "Reads")
   Rel(visitor, dashboard, "Explores")
   Rel(landing, tokens, "Imports")
+  Rel(landing, ui, "Imports")
   Rel(dashboard, tokens, "Imports")
   Rel(dashboard, ui, "Imports")
   Rel(dashboard, mockapi, "Imports, outside production builds")
@@ -51,9 +52,10 @@ C4Container
 
 ```
 landing ───┐
-           ├──► tokens ◄── ui ◄── dashboard
-dashboard ─┘
-dashboard ───► mock-api   (development and the demo; the production build swaps it out)
+           ├──► ui ───► tokens
+dashboard ─┘              ▲
+landing and dashboard ────┘  (directly too: ThemeService and the stylesheet)
+dashboard ───► mock-api      (development and the demo; the production build swaps it out)
 ```
 
 Two kinds of edge are drawn on purpose, because `npx nx graph` shows only the first:
@@ -61,7 +63,7 @@ Two kinds of edge are drawn on purpose, because `npx nx graph` shows only the fi
 - **Imports**: TypeScript imports through the `@angular-saas-kit/*` path aliases.
 - **Stylesheet references**: CSS `@import` and `@source` across project folders. Both
   apps get their design system through `@import '../../../libs/tokens/src/styles.css'`,
-  and the dashboard also declares `@source '../../../libs/ui/src'` so that Tailwind emits
+  and each also declares `@source '../../../libs/ui/src'` so that Tailwind emits
   the utilities the `ui` templates use. Each consumer declares its own sources: the
   tokens entry stylesheet declares none, which is what lets it work from anywhere,
   installed under `node_modules` included ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)).
