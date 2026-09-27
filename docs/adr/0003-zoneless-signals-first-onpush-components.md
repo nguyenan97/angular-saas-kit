@@ -33,6 +33,10 @@ its own state. This is a contributor rule in [`CONTRIBUTING.md`](../../CONTRIBUT
 
 ## Consequences
 
+- _Amended 2026-09-27:_ forms follow the same rule. The dashboard's forms use Signal
+  Forms (`@angular/forms/signals`, stable since Angular 22): the model is a signal, the
+  validation rules are declared once, and a field's state (`touched`, `invalid`, `errors`)
+  is read as signals in the template. Data comes in through `httpResource`.
 - Reactivity is explicit and rendering is predictable; bundles are smaller and
   server rendering is simpler ([0007](0007-prerendered-landing-and-client-side-dashboard.md)).
 - A library that relies on zone.js, or that mutates state outside signals, may not

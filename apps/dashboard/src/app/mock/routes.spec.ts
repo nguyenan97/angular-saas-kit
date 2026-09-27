@@ -4,10 +4,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 
 import type {
   Customer,
+  NotificationSettings,
   Order,
   OverviewStats,
   Page,
   Product,
+  Profile,
 } from '../data/models';
 import { mockRoutes } from './routes';
 import { type Dataset, createDataset } from './seed';
@@ -221,5 +223,52 @@ describe('GET /api/stats', () => {
       ['customers', 'up'],
       ['refundRate', 'down'],
     ]);
+  });
+});
+
+describe('GET and PUT /api/profile', () => {
+  it('saves a valid profile, trimmed, and remembers it', () => {
+    const saved = call<Profile>('PUT', '/api/profile', {
+      body: {
+        name: '  Ines Aziz ',
+        email: 'ines.aziz@example.com',
+        company: '',
+        timeZone: 'Asia/Ho_Chi_Minh',
+      },
+    });
+
+    expect(saved.name).toBe('Ines Aziz');
+    expect(call<Profile>('GET', '/api/profile')).toEqual(saved);
+  });
+
+  it('names the field at fault in a 400', () => {
+    const noName = thrown(() =>
+      call('PUT', '/api/profile', {
+        body: { name: ' ', email: 'a@example.com', timeZone: 'UTC' },
+      }),
+    );
+    const badEmail = thrown(() =>
+      call('PUT', '/api/profile', {
+        body: { name: 'Ines', email: 'ines@', timeZone: 'UTC' },
+      }),
+    );
+
+    expect([noName.status, noName.error.field]).toEqual([400, 'name']);
+    expect([badEmail.status, badEmail.error.field]).toEqual([400, 'email']);
+  });
+});
+
+describe('GET and PUT /api/notifications', () => {
+  it('keeps only real booleans', () => {
+    const saved = call<NotificationSettings>('PUT', '/api/notifications', {
+      body: { orders: false, weeklySummary: 'yes', productNews: true },
+    });
+
+    expect(saved).toEqual({
+      orders: false,
+      weeklySummary: false,
+      productNews: true,
+    });
+    expect(call('GET', '/api/notifications')).toEqual(saved);
   });
 });

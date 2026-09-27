@@ -5,12 +5,15 @@ import {
   type Customer,
   type DailyTotal,
   type Kpi,
+  type NotificationSettings,
   ORDER_STATUSES,
   type Order,
   type OrderStatus,
   type OverviewStats,
   type Page,
   type Product,
+  type Profile,
+  TIME_ZONES,
 } from '../data/models';
 import { type Dataset, startOfDay } from './seed';
 
@@ -68,6 +71,15 @@ function sorted<T>(
 function matches(query: URLSearchParams, ...fields: string[]): boolean {
   const q = query.get('q')?.trim().toLowerCase();
   return !q || fields.some((field) => field.toLowerCase().includes(q));
+}
+
+/** A 400 that names the field at fault, as a form wants it. */
+function invalid(field: string, message: string): never {
+  throw new HttpErrorResponse({
+    status: 400,
+    statusText: 'Bad Request',
+    error: { field, message },
+  });
 }
 
 function notFound(what: string): never {
@@ -269,6 +281,51 @@ export function mockRoutes(data: Dataset, today: Date): MockRoute[] {
           ),
           query,
         );
+      },
+    },
+    { method: 'GET', path: '/api/profile', handler: () => data.profile },
+    {
+      method: 'PUT',
+      path: '/api/profile',
+      handler: ({ body }) => {
+        const next = body as Partial<Profile> | null;
+        const name = next?.name?.trim() ?? '';
+        const email = next?.email?.trim() ?? '';
+        if (!name) {
+          invalid('name', 'Enter your name.');
+        }
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+          invalid('email', 'Enter an email address like name@example.com.');
+        }
+        const timeZone = next?.timeZone ?? 'UTC';
+        if (!TIME_ZONES.includes(timeZone)) {
+          invalid('timeZone', 'Choose a time zone from the list.');
+        }
+        data.profile = {
+          name,
+          email,
+          company: next?.company?.trim() ?? '',
+          timeZone,
+        };
+        return data.profile;
+      },
+    },
+    {
+      method: 'GET',
+      path: '/api/notifications',
+      handler: () => data.notifications,
+    },
+    {
+      method: 'PUT',
+      path: '/api/notifications',
+      handler: ({ body }) => {
+        const next = body as Partial<NotificationSettings> | null;
+        data.notifications = {
+          orders: next?.orders === true,
+          weeklySummary: next?.weeklySummary === true,
+          productNews: next?.productNews === true,
+        };
+        return data.notifications;
       },
     },
   ];
