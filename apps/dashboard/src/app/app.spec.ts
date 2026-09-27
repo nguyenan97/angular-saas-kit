@@ -73,7 +73,7 @@ async function render({
 }
 
 describe('App shell', () => {
-  it('links the pages that exist, and only those', async () => {
+  it('links every page', async () => {
     const { el } = await render();
 
     const links = [...el.querySelectorAll('nav a')].map((a) =>
@@ -81,14 +81,14 @@ describe('App shell', () => {
     );
     expect(links).toEqual([
       'Overview',
+      'Analytics',
       'Orders',
       'Customers',
       'Products',
       'Settings',
     ]);
-    // The planned pages are listed, marked "soon", and are not links.
-    expect(el.querySelector('nav')?.textContent).toContain('Analytics');
-    expect(el.querySelector('nav')?.textContent).toContain('soon');
+    // Nothing is left marked "soon".
+    expect(el.querySelector('nav')?.textContent).not.toContain('soon');
   });
 
   it('says the numbers are demo data while the mock backend serves them', async () => {

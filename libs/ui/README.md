@@ -4,7 +4,7 @@ Accessible Angular components for the
 [Angular SaaS Kit](https://github.com/nguyenan97/angular-saas-kit), styled only through the
 semantic tokens of `@angular-saas-kit/tokens`. Signals-first, `OnPush`, no `zone.js`.
 
-> **Pre-1.0.** It has the basics a dashboard page needs: `Badge`, `Button`, `Card`, `Dialog`,
+> **Pre-1.0.** It has the basics a dashboard page needs: `Badge`, `Button`, `Card`, `Chart`, `Dialog`,
 > `Icon`, `Input` and `Label`, `Menu`, `Pagination`, `Table` and `SortHeader`, `Tabs`, the `ThemeSwitcher`, and
 > the `cn()` class helper. The rest of the component library is on the roadmap. Nothing is
 > published to npm yet, so `0.0.x` may change without notice.

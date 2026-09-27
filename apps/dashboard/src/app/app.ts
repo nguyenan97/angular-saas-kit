@@ -85,7 +85,7 @@ export class App {
 
   protected readonly nav: readonly NavItem[] = [
     { label: 'Overview', path: '/' },
-    { label: 'Analytics', path: '/analytics', soon: true },
+    { label: 'Analytics', path: '/analytics' },
     { label: 'Orders', path: '/orders' },
     { label: 'Customers', path: '/customers' },
     { label: 'Products', path: '/products' },

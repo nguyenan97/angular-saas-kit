@@ -5,9 +5,10 @@ description: Add a page to the admin dashboard (apps/dashboard) - a lazy route, 
 
 # Add a dashboard page
 
-The dashboard is a client-side SPA: `apps/dashboard/src/app`. Its real pages are Overview,
-Orders, Customers, Products and Settings, in `pages/`. Analytics is listed in the sidebar as
-"soon": plain text, not a link. For a searchable, sortable, paged list, use `listQuery`
+The dashboard is a client-side SPA: `apps/dashboard/src/app`. Its pages are Overview, Analytics,
+Orders, Customers, Products and Settings, in `pages/`. A planned page can be listed in the sidebar
+with `soon: true`: plain text with a badge, not a link. For a chart, use `ask-chart`; it brings
+its own data table. For a searchable, sortable, paged list, use `listQuery`
 (`data/list-query.ts`), as `orders/orders.ts` does: it holds the state as signals and makes the
 request.
 

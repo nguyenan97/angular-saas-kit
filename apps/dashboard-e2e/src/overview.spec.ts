@@ -17,8 +17,12 @@ test.describe('overview', () => {
       'Active customers',
       'Refund rate',
     ]);
-    // Revenue, in whole dollars. The template may wrap it in whitespace.
-    await expect(figures.getByText(/^\s*\$[\d,]+\s*$/)).toBeVisible();
+    // Revenue, in whole dollars, in the first card. The template may wrap it
+    // in whitespace, and the chart below has dollar amounts of its own.
+    await expect(figures.getByText(/^\s*\$[\d,]+\s*$/).first()).toBeVisible();
+    await expect(
+      figures.getByRole('figure', { name: 'Revenue per day' }),
+    ).toBeVisible();
 
     const orders = page.getByRole('region', { name: 'Latest orders' });
     await expect(orders.getByRole('row')).toHaveCount(6);

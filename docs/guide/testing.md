@@ -79,7 +79,8 @@ and, on the Settings page, the keyboard behaviour of the theme switcher: the arr
 selection, each group is a single tab stop, and the option that has focus shows a ring. The
 shell has its own file (`shell.spec.ts`): the rail collapses to its token width, the skip link
 moves focus to the content, and at phone width the content gets the whole screen while the
-drawer holds focus until Escape and closes from its backdrop. `settings.spec.ts` moves between tabs with the arrow keys, Home and End, and checks the
+drawer holds focus until Escape and closes from its backdrop. `analytics.spec.ts` checks the charts fill their width, open their table from the
+keyboard and follow the period. `settings.spec.ts` moves between tabs with the arrow keys, Home and End, and checks the
 profile form focuses the field to fix. `orders.spec.ts` drives a row menu by keyboard, keeps
 Tab inside the refund dialog and checks focus comes back to the row. `overview.spec.ts` follows the
 data from the page through the mock API and back. These are here because jsdom lays nothing out,

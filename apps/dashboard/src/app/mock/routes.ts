@@ -2,6 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import type { MockRoute } from '@angular-saas-kit/mock-api';
 
 import {
+  ANALYTICS_PERIODS,
+  type Analytics,
+  type AnalyticsPeriod,
   type Customer,
   type DailyTotal,
   type Kpi,
@@ -188,6 +191,72 @@ export function overview(data: Dataset, today: Date): OverviewStats {
   return { kpis, daily };
 }
 
+/** Sales over the last `days` days, by day, status, category and product. */
+export function analytics(
+  data: Dataset,
+  today: Date,
+  days: AnalyticsPeriod,
+): Analytics {
+  const end = startOfDay(today).getTime() + DAY;
+  const start = end - days * DAY;
+  const orders = data.orders.filter((order) => {
+    const at = Date.parse(order.placedAt);
+    return at >= start && at < end;
+  });
+  const paid = orders.filter((order) => order.status === 'paid');
+
+  const daily: DailyTotal[] = Array.from({ length: days }, (_, i) => {
+    const from = start + i * DAY;
+    const onDay = orders.filter((order) => {
+      const at = Date.parse(order.placedAt);
+      return at >= from && at < from + DAY;
+    });
+    return {
+      date: new Date(from).toISOString(),
+      revenueCents: onDay
+        .filter((order) => order.status === 'paid')
+        .reduce((sum, order) => sum + order.totalCents, 0),
+      orders: onDay.length,
+    };
+  });
+
+  const byStatus = ORDER_STATUSES.map((status) => ({
+    status,
+    orders: orders.filter((order) => order.status === status).length,
+  }));
+
+  const category = new Map(
+    data.products.map((product) => [product.id, product.category]),
+  );
+  const revenueByCategory = new Map<string, number>();
+  const sales = new Map<string, { units: number; revenueCents: number }>();
+  for (const order of paid) {
+    for (const line of order.lines) {
+      const amount = line.quantity * line.unitPriceCents;
+      const name = category.get(line.productId) ?? 'Other';
+      revenueByCategory.set(name, (revenueByCategory.get(name) ?? 0) + amount);
+      const sold = sales.get(line.product) ?? { units: 0, revenueCents: 0 };
+      sales.set(line.product, {
+        units: sold.units + line.quantity,
+        revenueCents: sold.revenueCents + amount,
+      });
+    }
+  }
+
+  return {
+    days,
+    daily,
+    byStatus,
+    byCategory: [...revenueByCategory]
+      .map(([name, revenueCents]) => ({ category: name, revenueCents }))
+      .sort((a, b) => b.revenueCents - a.revenueCents),
+    topProducts: [...sales]
+      .map(([product, sold]) => ({ product, ...sold }))
+      .sort((a, b) => b.revenueCents - a.revenueCents)
+      .slice(0, 5),
+  };
+}
+
 /**
  * The dashboard's API, answered from memory. Lists take `q`, `sort`, `dir`,
  * `page` and `pageSize`; orders also take `status`. Writes change the data
@@ -196,6 +265,16 @@ export function overview(data: Dataset, today: Date): OverviewStats {
 export function mockRoutes(data: Dataset, today: Date): MockRoute[] {
   return [
     { method: 'GET', path: '/api/stats', handler: () => overview(data, today) },
+    {
+      method: 'GET',
+      path: '/api/analytics',
+      handler: ({ query }) => {
+        // An unknown period gets the default rather than an error.
+        const days = Number(query.get('days'));
+        const period = ANALYTICS_PERIODS.find((p) => p === days) ?? 30;
+        return analytics(data, today, period);
+      },
+    },
     {
       method: 'GET',
       path: '/api/orders',

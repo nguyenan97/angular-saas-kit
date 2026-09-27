@@ -115,3 +115,26 @@ export interface NotificationSettings {
   readonly weeklySummary: boolean;
   readonly productNews: boolean;
 }
+
+/** The periods the Analytics page offers, in days. */
+export const ANALYTICS_PERIODS = [7, 30, 90] as const;
+export type AnalyticsPeriod = (typeof ANALYTICS_PERIODS)[number];
+
+/** Sales over a period, broken down for the Analytics page. */
+export interface Analytics {
+  readonly days: AnalyticsPeriod;
+  readonly daily: readonly DailyTotal[];
+  readonly byStatus: readonly {
+    readonly status: OrderStatus;
+    readonly orders: number;
+  }[];
+  readonly byCategory: readonly {
+    readonly category: string;
+    readonly revenueCents: number;
+  }[];
+  readonly topProducts: readonly {
+    readonly product: string;
+    readonly units: number;
+    readonly revenueCents: number;
+  }[];
+}

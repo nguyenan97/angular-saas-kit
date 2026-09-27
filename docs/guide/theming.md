@@ -102,13 +102,14 @@ accent is swapped.
 The pairs a component may combine meet WCAG AA in both modes and with every accent, and
 `libs/tokens/src/lib/contrast.spec.ts` fails a change that breaks that:
 
-| Pair                                                                                      | At least |
-| ----------------------------------------------------------------------------------------- | -------- |
-| Text on its surface: `foreground` on `background`, `card-foreground` on `card`, and so on | 4.5:1    |
-| `muted-foreground` on `background`, `card` and `muted`                                    | 4.5:1    |
-| A colour's `-foreground` on the colour: a filled button or badge                          | 4.5:1    |
-| `primary` and each status colour as text on `background` and `card`: a link, a delta      | 4.5:1    |
-| The focus ring (`ring`) and form-field borders (`input`) on `background` and `card`       | 3:1      |
+| Pair                                                                                                  | At least |
+| ----------------------------------------------------------------------------------------------------- | -------- |
+| Text on its surface: `foreground` on `background`, `card-foreground` on `card`, and so on             | 4.5:1    |
+| `muted-foreground` on `background`, `card` and `muted`                                                | 4.5:1    |
+| A colour's `-foreground` on the colour: a filled button or badge                                      | 4.5:1    |
+| `primary` and each status colour as text on `background` and `card`: a link, a delta                  | 4.5:1    |
+| The chart colours (`chart-1` to `chart-5`) on `background` and `card`: the marks a chart is read from | 3:1      |
+| The focus ring (`ring`) and form-field borders (`input`) on `background` and `card`                   | 3:1      |
 
 The last two rows are why the light-mode status colours are fairly dark: one value has to carry
 white text in a badge and also be readable as text on a white card. `border` is for decoration
