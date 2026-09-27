@@ -29,44 +29,58 @@ The apps are zoneless, so a component test provides zoneless change detection an
 stability instead of calling `detectChanges()`:
 
 ```ts
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { of } from 'rxjs';
 import { describe, expect, it } from 'vitest';
 
 import { App } from './app';
 import { appRoutes } from './app.routes';
 
 describe('App shell', () => {
-  it('exposes the sidebar toggle to assistive tech', async () => {
+  it('points the menu button at the sidebar', async () => {
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideZonelessChangeDetection(), provideRouter(appRoutes)],
+      providers: [
+        provideZonelessChangeDetection(),
+        provideRouter(appRoutes),
+        // jsdom has no matchMedia: say which layout the test is about.
+        {
+          provide: BreakpointObserver,
+          useValue: { observe: () => of({ matches: true, breakpoints: {} }) },
+        },
+      ],
     }).compileComponents();
 
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
 
     const toggle = fixture.nativeElement.querySelector('[aria-controls]');
+    const sidebar = fixture.nativeElement.querySelector('#app-sidebar');
+    expect(toggle?.getAttribute('aria-controls')).toBe(sidebar?.id);
     expect(toggle?.getAttribute('aria-expanded')).toBe('true');
   });
 });
 ```
 
-That test is `apps/dashboard/src/app/app.spec.ts`. Note what it asserts: an accessibility
-contract, not that the component rendered. Test what a user or a consumer relies on:
-keyboard operation, announced state, and the behaviour of inputs. A test that only proves the
-component exists proves nothing.
+That is a shortened test from `apps/dashboard/src/app/app.spec.ts`. Note what it asserts: an
+accessibility contract, not that the component rendered. Test what a user or a consumer relies
+on: keyboard operation, announced state, and the behaviour of inputs. A test that only proves
+the component exists proves nothing.
 
 ## Browser tests
 
 `apps/dashboard-e2e` uses [Playwright](https://playwright.dev) against the running dashboard.
-The theme system is the kit's central claim, so it got the first coverage: the default accent
-and radius, the dark-mode toggle, an accent that survives a reload with no flash, the
-sidebar collapse, and the keyboard behaviour of the theme switcher: the arrow keys move the
-selection, each group is a single tab stop, and the option that has focus shows a ring. Those
-last three are here because jsdom implements none of a radio group's keyboard behaviour, so a
-unit test cannot prove them.
+The theme system is the kit's central claim, so it got the first coverage (`theme.spec.ts`): the
+default accent and radius, the dark-mode toggle, an accent that survives a reload with no flash,
+and the keyboard behaviour of the theme switcher: the arrow keys move the selection, each group
+is a single tab stop, and the option that has focus shows a ring. The shell has its own file
+(`shell.spec.ts`): the rail collapses to its token width, the skip link moves focus to the
+content, and at phone width the content gets the whole screen while the drawer holds focus until
+Escape and closes from its backdrop. These are here because jsdom lays nothing out and implements
+no Tab order or radio-group keys, so a unit test cannot prove them.
 
 ```bash
 npx playwright install      # once, to download the browsers

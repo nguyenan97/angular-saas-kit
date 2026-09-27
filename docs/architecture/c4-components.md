@@ -59,9 +59,10 @@ C4Component
   Container_Ext(ui, "ui", "Angular library", "ThemeSwitcher")
 
   Container_Boundary(dashboard, "dashboard") {
-    Component(shell, "App", "Standalone component, OnPush", "Sidebar with six links (five are stubs), topbar with collapse and dark-mode buttons, router outlet, theme panel")
+    Component(shell, "App", "Standalone component, OnPush, Angular CDK", "Sidebar (a rail from lg up, a modal drawer below), topbar with the menu button, the page title and a dark-mode button, router outlet, theme panel")
     Component(main, "main.ts", "Bootstrap", "Starts App with appConfig")
-    Component(config, "appConfig", "Application providers", "Global error listeners and the router")
+    Component(config, "appConfig", "Application providers", "Global error listeners, the router and the title strategy")
+    Component(title, "PageTitle", "TitleStrategy, signals", "Turns the title of each route into the topbar heading and the document title")
     Component(overview, "Overview", "Standalone component, lazy", "Four stat cards with static numbers; exercises the tokens on a real surface")
     Component(routes, "appRoutes", "Route table", "The empty path lazy-loads Overview; any other path redirects to it")
     Component(mode, "routerFeatures", "routing-mode.ts", "Empty by default; the Pages build swaps in withHashLocation")
@@ -72,19 +73,22 @@ C4Component
   Rel(main, shell, "Bootstraps")
   Rel(main, config, "Bootstraps with")
   Rel(shell, overview, "Shows through the outlet")
+  Rel(shell, title, "Reads the title from")
   Rel(config, routes, "Registers")
+  Rel(config, title, "Registers")
   Rel(config, mode, "Spreads")
   Rel(routes, overview, "Lazy-loads")
 
   UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
 ```
 
-| Component        | Source                                                                                                                                           | Notes                                                                                                                                                                                                 |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `App`            | [`app.ts`](../../apps/dashboard/src/app/app.ts), [`app.html`](../../apps/dashboard/src/app/app.html)                                             | Sidebar width is a signal shared by the desktop rail and the mobile drawer. The five stub links carry a "soon" badge and `aria-disabled`.                                                             |
-| `appRoutes`      | [`app.routes.ts`](../../apps/dashboard/src/app/app.routes.ts)                                                                                    | The `**` redirect is what makes the stub links harmless: they land on Overview.                                                                                                                       |
-| `Overview`       | [`overview.ts`](../../apps/dashboard/src/app/pages/overview.ts)                                                                                  | Placeholder. Nothing here fetches data, so the [mock API](#mock-api) is not involved.                                                                                                                 |
-| `routerFeatures` | [`routing-mode.ts`](../../apps/dashboard/src/app/routing-mode.ts), [`routing-mode.pages.ts`](../../apps/dashboard/src/app/routing-mode.pages.ts) | Swapped at build time by `fileReplacements` in the `pages` configuration, so the Pages demo gets hash URLs and every other build keeps path URLs ([ADR 0011](../adr/0011-github-pages-demo-site.md)). |
+| Component        | Source                                                                                                                                           | Notes                                                                                                                                                                                                                                                                                                                                                                                                               |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `App`            | [`app.ts`](../../apps/dashboard/src/app/app.ts), [`app.html`](../../apps/dashboard/src/app/app.html)                                             | From the `lg` breakpoint up (`BreakpointObserver`) the sidebar is a rail beside the content; below it, a drawer over it. The open drawer traps focus (`CdkTrapFocus`), makes the content column inert and closes on Escape, its Close button, the backdrop or a followed link, handing focus back to the menu button. Widths are the layout tokens. The five planned pages are text with a "soon" badge, not links. |
+| `PageTitle`      | [`page-title.ts`](../../apps/dashboard/src/app/page-title.ts)                                                                                    | A `TitleStrategy`: the router calls it after every navigation. It keeps the title in a signal for the topbar `h1`, so a page starts its own headings at `h2`, and sets the document title.                                                                                                                                                                                                                          |
+| `appRoutes`      | [`app.routes.ts`](../../apps/dashboard/src/app/app.routes.ts)                                                                                    | Every route has a `title`. The `**` redirect sends an unknown path to Overview.                                                                                                                                                                                                                                                                                                                                     |
+| `Overview`       | [`overview.ts`](../../apps/dashboard/src/app/pages/overview.ts)                                                                                  | Placeholder. Nothing here fetches data, so the [mock API](#mock-api) is not involved.                                                                                                                                                                                                                                                                                                                               |
+| `routerFeatures` | [`routing-mode.ts`](../../apps/dashboard/src/app/routing-mode.ts), [`routing-mode.pages.ts`](../../apps/dashboard/src/app/routing-mode.pages.ts) | Swapped at build time by `fileReplacements` in the `pages` configuration, so the Pages demo gets hash URLs and every other build keeps path URLs ([ADR 0011](../adr/0011-github-pages-demo-site.md)).                                                                                                                                                                                                               |
 
 ## landing
 

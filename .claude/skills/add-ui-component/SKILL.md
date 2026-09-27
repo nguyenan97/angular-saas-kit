@@ -13,8 +13,9 @@ the guide first. `libs/ui` is small today (`ThemeSwitcher`, `cn()`), so there is
 
 - Is there a WAI-ARIA pattern for it? Read it, and note the keyboard interactions it requires.
 - Does it need a focus trap, a roving tabindex, an overlay or a live region? Then use the **Angular
-  CDK** (`@angular/cdk`, not yet a dependency: adding it is expected, and the component that needs
-  it is the reason). Do not hand-roll these, and do not add another UI library.
+  CDK** (`@angular/cdk`, already a workspace dependency; the dashboard's drawer uses it). A `libs/ui`
+  component that imports it makes it a peer dependency of the package (step 7). Do not hand-roll
+  these, and do not add another UI library.
 - Does it need a colour the tokens do not have? Add a token to `libs/tokens` in the same change
   (`tokens.css` and `theme.css`) and say why in the PR.
 
