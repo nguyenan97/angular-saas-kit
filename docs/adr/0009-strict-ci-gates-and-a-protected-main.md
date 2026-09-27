@@ -60,7 +60,8 @@ push protection are on.
   them. It still runs and reports.
 - CodeQL is an advanced-setup workflow rather than GitHub's default setup, because
   the default cannot skip the push-to-`main` trigger.
-- Coverage is uploaded to Codecov with `fail_ci_if_error: false`.
+- Coverage is uploaded to Codecov with `fail_ci_if_error: false`. _Amended 2026-09-27:_ removed;
+  see the note below.
 
 ## Alternatives considered
 
@@ -78,10 +79,12 @@ push protection are on.
   "Update branch" and a fresh CI run for each after the first.
 - The administrator can still push straight to `main` and bypass the checks. That is
   a consequence of the choice above, not an oversight.
-- **Open:** the Codecov upload is rejected (`Token required because branch is
-protected`) and, because of `fail_ci_if_error: false`, hidden behind a green build.
-  It needs a `CODECOV_TOKEN` secret passed as `token:`. _Amended 2026-09-27:_ the workflow
-  already passes `secrets.CODECOV_TOKEN`; only creating the secret is left.
+- **Resolved 2026-09-27:** the Codecov upload was rejected (`Token required because
+branch is protected`) and, hidden behind `fail_ci_if_error: false`, stayed that way
+  behind a green build. Getting a token needs signing in to a third-party site and
+  handling a secret by hand, which is more setup than a coverage badge is worth for
+  this kit; the step was removed rather than left half-wired. Coverage still runs and
+  is readable locally ([Testing](../guide/testing.md#coverage)).
 - A local install must resolve peer dependencies the way CI does. A user-level
   `legacy-peer-deps=true` once hid a conflict that failed `npm ci` in CI, so the
   repository `.npmrc` pins `legacy-peer-deps=false`.

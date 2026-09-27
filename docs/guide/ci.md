@@ -100,19 +100,6 @@ A Dependabot pull request that fails `npm ci` is never merged. Read the dependen
 before accepting a security fix: the proposed one can be worse than removing an unused
 package.
 
-## Codecov
-
-Coverage is uploaded to Codecov from the `test` job, with `fail_ci_if_error: false`.
-
-> [!WARNING]
-> **The upload is not active yet.** Codecov rejects it, saying a token is required because
-> the branch is protected, and because of `fail_ci_if_error: false` that is hidden behind a
-> green build. The workflow already passes `secrets.CODECOV_TOKEN` to the action, so the one
-> thing left is to create the secret: copy the repository upload token from the repository's
-> settings on codecov.io, then add it as a repository secret named `CODECOV_TOKEN` (Settings,
-> Secrets and variables, Actions, or `gh secret set CODECOV_TOKEN`). Once uploads succeed,
-> consider setting `fail_ci_if_error` to `true` so that a broken upload is no longer hidden.
-
 ## When a check fails
 
 Reproduce it locally first: the commands are in the table above, and `npm run verify` runs
