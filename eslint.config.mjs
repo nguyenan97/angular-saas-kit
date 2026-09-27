@@ -1,4 +1,5 @@
 import js from '@eslint/js';
+import nx from '@nx/eslint-plugin';
 import angular from 'angular-eslint';
 import tseslint from 'typescript-eslint';
 
@@ -48,6 +49,44 @@ export default tseslint.config(
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
       '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+
+  // -- Module boundaries ----------------------------------------------------
+  // Every project carries a `type:` and a `scope:` tag in its project.json.
+  // These constraints turn the tags into rules, so a wrong import fails lint
+  // instead of waiting for a reviewer to notice it.
+  {
+    files: ['**/*.ts'],
+    plugins: { '@nx': nx },
+    rules: {
+      '@nx/enforce-module-boundaries': [
+        'error',
+        {
+          // A buildable library (tokens, ui) may depend only on other
+          // buildable ones, or its package could not be built on its own.
+          enforceBuildableLibDependency: true,
+          allow: [],
+          depConstraints: [
+            // Apps use libraries. Nothing imports an app.
+            { sourceTag: 'type:app', onlyDependOnLibsWithTags: ['type:lib'] },
+            { sourceTag: 'type:lib', onlyDependOnLibsWithTags: ['type:lib'] },
+            // Shared code knows nothing about the apps that use it.
+            {
+              sourceTag: 'scope:shared',
+              onlyDependOnLibsWithTags: ['scope:shared'],
+            },
+            {
+              sourceTag: 'scope:dashboard',
+              onlyDependOnLibsWithTags: ['scope:dashboard', 'scope:shared'],
+            },
+            {
+              sourceTag: 'scope:landing',
+              onlyDependOnLibsWithTags: ['scope:landing', 'scope:shared'],
+            },
+          ],
+        },
+      ],
     },
   },
 

@@ -13,7 +13,9 @@
  *   - a CSS `@import` or `@source` whose relative path lands in another project;
  *   - an entry in a project's `implicitDependencies`.
  *
- * It compares the map with the code. It does not forbid any dependency.
+ * It compares the map with the code. It does not forbid a dependency: lint
+ * does that for TypeScript imports (`@nx/enforce-module-boundaries`), and
+ * cannot see the stylesheet references this script covers.
  *
  *   node scripts/check-architecture.mjs
  */

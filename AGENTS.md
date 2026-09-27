@@ -39,9 +39,10 @@ docs/               guides, C4 diagrams (architecture/), ADRs (adr/), the VitePr
 scripts/            assemble/preview the Pages site, check the architecture map
 ```
 
-Import a library through its alias: `@angular-saas-kit/tokens`, `/ui`, `/mock-api`. Nothing
-enforces module boundaries yet, so keep them yourself: apps import libs, `ui` imports `tokens`,
-and nothing imports an app.
+Import a library through its alias: `@angular-saas-kit/tokens`, `/ui`, `/mock-api`. Lint enforces
+the module boundaries from each project's `type:` and `scope:` tags (`@nx/enforce-module-boundaries`):
+apps import libs, shared libs import only shared libs, nothing imports an app, no cycles. If lint
+rejects an import, the import is wrong; do not loosen the rule. A new project needs both tags.
 
 ## Rules that are not negotiable
 

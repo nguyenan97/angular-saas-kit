@@ -26,8 +26,10 @@ that is missing or extra. Fix the diagram to match the code, not the reverse, un
 
 - A container's label must be the Nx project name. The diagram id can differ (`mockapi` for `mock-api`).
 - Arrows to people and outside systems are not checked; arrows between two containers are.
-- The check verifies the map is true. It does not forbid a dependency. Do not add an edge that
-  breaks the direction rules (apps import libs; `ui` imports `tokens`; nothing imports an app).
+- The check verifies the map is true; it does not forbid a dependency. Lint does, for TypeScript
+  imports (`@nx/enforce-module-boundaries`, from the `type:` and `scope:` tags): apps import libs, shared
+  libs import only shared libs, nothing imports an app, no cycles. If lint rejects an import, the
+  import is wrong; do not loosen the rule to make it pass. A new project needs both tags.
 
 ## Editing a diagram
 
