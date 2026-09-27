@@ -62,8 +62,9 @@ and nothing imports an app.
 - **Conventional Commits.** The scope, if any, is one of `ui`, `tokens`, `mock-api`, `dashboard`,
   `landing`, `ci`, `deps`, `repo`. `docs` is a type, not a scope. The PR title becomes the squash
   commit, so it follows the same rules.
-- `main` is protected: `lint`, `test`, `build`, `typecheck` and `format` must pass and the branch
-  must be up to date. Work on a branch and open a PR; never push to `main`, never `--no-verify`.
+- `main` is protected: `lint`, `test`, `build`, `typecheck`, `format` and the Pages workflow's
+  `Build site` must pass, and the branch must be up to date. Work on a branch and open a PR; never
+  push to `main`, never `--no-verify`.
 - Update `docs/` in the same PR as the change it describes.
 
 ## Traps
