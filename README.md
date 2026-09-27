@@ -18,9 +18,9 @@ Signals-first, zoneless, Tailwind v4, and not locked to any UI library.
 </div>
 
 > **Status: early.** The design system, both apps, the dashboard's pages (on a
-> mock API) and the CI gates are in place. The component library and the
-> rest of the landing page are being built in the open — see [Roadmap](#roadmap). Stars and issues at this stage
-> genuinely shape what gets built first.
+> mock API), the landing page with its blog, and the CI gates are in place. The
+> component library is being built in the open — see [Roadmap](#roadmap). Stars
+> and issues at this stage genuinely shape what gets built first.
 
 ---
 
@@ -134,7 +134,7 @@ else changes.
 - [x] Live demo on GitHub Pages — landing at the root, dashboard demo under `/demo/`, deployed from `main`
 - [ ] Component library — ~40 components on the CDK
 - [x] Dashboard pages — overview, analytics, orders, customers, products, settings, sign-in, on a mock API
-- [ ] Landing sections — features, pricing and FAQ are done; a blog is next, and testimonials once there are real ones
+- [x] Landing sections — features, pricing, FAQ and a blog (testimonials wait until there are real ones)
 - [x] Published docs — guides, C4 architecture and decision records, on GitHub Pages
 - [ ] Storybook
 - [ ] Figma file with matching variables

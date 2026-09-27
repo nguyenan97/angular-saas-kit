@@ -1,6 +1,6 @@
 import { VERSION, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { describe, expect, it } from 'vitest';
 
 import { App } from './app';
@@ -9,6 +9,7 @@ import { QUESTIONS } from './sections/faq';
 import { PLANS } from './sections/pricing';
 
 describe('Landing', () => {
+  /** The whole app, on the home page. */
   async function render() {
     await TestBed.configureTestingModule({
       imports: [App],
@@ -16,6 +17,7 @@ describe('Landing', () => {
     }).compileComponents();
 
     const fixture = TestBed.createComponent(App);
+    await TestBed.inject(Router).navigateByUrl('/');
     await fixture.whenStable();
     return fixture;
   }
