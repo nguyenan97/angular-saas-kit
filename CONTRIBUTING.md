@@ -31,7 +31,8 @@ Prettier check and CodeQL scanning. Tests collect coverage for every project. A
 green local run is a green CI run.
 
 `main` is protected: changes land through a pull request, `lint`, `test`,
-`build`, `typecheck` and `format` must pass, and the branch has to be up to
+`build`, `typecheck`, `format` and the site build (`Build site`, which also
+catches a dead documentation link) must pass, and the branch has to be up to
 date with `main` before it can merge.
 
 ## Reviewing the demo site

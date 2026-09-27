@@ -19,13 +19,17 @@ CodeQL's weekly run is Monday at 03:17 UTC, and it does not run on pushes to `ma
 
 ## What a pull request must pass
 
-| Check         | Command to reproduce it | What it catches                                                      |
-| ------------- | ----------------------- | -------------------------------------------------------------------- |
-| **lint**      | `npm run lint`          | Rule violations, including template accessibility, which are errors. |
-| **test**      | `npm test`              | Failing unit tests. Collects coverage for every project.             |
-| **build**     | `npm run build`         | A build that breaks, or a bundle over its budget.                    |
-| **typecheck** | `npm run typecheck`     | Type errors the app builds do not compile, such as in spec files.    |
-| **format**    | `npm run format:check`  | Code that Prettier would change.                                     |
+| Check          | Command to reproduce it | What it catches                                                                               |
+| -------------- | ----------------------- | --------------------------------------------------------------------------------------------- |
+| **lint**       | `npm run lint`          | Rule violations, including template accessibility, which are errors.                          |
+| **test**       | `npm test`              | Failing unit tests. Collects coverage for every project.                                      |
+| **build**      | `npm run build`         | A build that breaks, or a bundle over its budget.                                             |
+| **typecheck**  | `npm run typecheck`     | Type errors the app builds do not compile, such as in spec files.                             |
+| **format**     | `npm run format:check`  | Code that Prettier would change.                                                              |
+| **Build site** | `npm run pages`         | A dead documentation link, a wrong base href, a page that points at a file that is not there. |
+
+`Build site` is the Pages workflow's build job. It is required because the site is built from
+`main` on every merge: a broken docs page would otherwise pass review and then fail the deploy.
 
 The `lint` job also runs `npm run check:architecture`, which fails when the container map in
 [Architecture](../architecture/c4-containers.md) and the imports in the source disagree.
@@ -50,7 +54,7 @@ change reaches. `typecheck` and `format` always cover the whole workspace.
 
 ## How `main` is protected
 
-- The five checks above are **required**, and the branch must be **up to date** with `main`
+- The six checks above are **required**, and the branch must be **up to date** with `main`
   before it can merge.
 - **No review approval is required**, and administrators are not forced through the rules.
   There is one maintainer, and a required approval would lock them out of merging their own

@@ -83,9 +83,9 @@ flowchart LR
   weekly["CodeQL: weekly scan of main"] -.-> codeql
 ```
 
-The five CI checks are required and the branch must be up to date before a merge
-([ADR 0009](../adr/0009-strict-ci-gates-and-a-protected-main.md)). CodeQL and the Pages
-build run on every pull request but are not required.
+The five CI checks and the Pages site build are required, and the branch must be up to
+date before a merge ([ADR 0009](../adr/0009-strict-ci-gates-and-a-protected-main.md)).
+CodeQL runs on every pull request but is not required.
 
 ## Running it locally
 
