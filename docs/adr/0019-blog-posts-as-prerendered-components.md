@@ -1,6 +1,6 @@
 # 0019. Blog posts as prerendered Angular components
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-09-28
 - **Deciders:** @nguyenan97
 
