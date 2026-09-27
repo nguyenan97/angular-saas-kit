@@ -97,6 +97,27 @@ The colour definitions are in `libs/tokens/src/lib/styles/tokens.css` and the ma
 Tailwind is in `theme.css`, next to it. Colours are OKLCH, so lightness stays even when an
 accent is swapped.
 
+## Contrast
+
+The pairs a component may combine meet WCAG AA in both modes and with every accent, and
+`libs/tokens/src/lib/contrast.spec.ts` fails a change that breaks that:
+
+| Pair                                                                                      | At least |
+| ----------------------------------------------------------------------------------------- | -------- |
+| Text on its surface: `foreground` on `background`, `card-foreground` on `card`, and so on | 4.5:1    |
+| `muted-foreground` on `background`, `card` and `muted`                                    | 4.5:1    |
+| A colour's `-foreground` on the colour: a filled button or badge                          | 4.5:1    |
+| `primary` and each status colour as text on `background` and `card`: a link, a delta      | 4.5:1    |
+| The focus ring (`ring`) and form-field borders (`input`) on `background` and `card`       | 3:1      |
+
+The last two rows are why the light-mode status colours are fairly dark: one value has to carry
+white text in a badge and also be readable as text on a white card. `border` is for decoration
+(cards, dividers) and is not held to 3:1; a form field uses `border-input`, which is.
+
+Pick a new value against the test, not by eye: `npx nx test tokens`. The test sees a colour
+outside sRGB the way a browser shows it, with its chroma reduced, and it cannot check a
+translucent token, so the checked tokens are opaque.
+
 ## Adding an accent
 
 Adding a fifth accent is one CSS block per mode and one array entry. Nothing else changes.
@@ -120,7 +141,9 @@ Adding a fifth accent is one CSS block per mode and one array entry. Nothing els
    }
    ```
 
-3. Done. `ThemeSwitcher` iterates `ACCENTS`, so the new swatch appears on its own.
+3. Run `npx nx test tokens`. The contrast test iterates `ACCENTS` too, so the new accent is
+   checked in both modes (the values above pass).
+4. Done. `ThemeSwitcher` iterates `ACCENTS`, so the new swatch appears on its own.
 
 A new radius works the same way: an entry in `RADII` and a `[data-radius='xl']` block that
 sets `--radius-base`.
