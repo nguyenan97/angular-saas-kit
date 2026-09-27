@@ -4,9 +4,9 @@
 that answers requests from route handlers you register, after a realistic delay.
 
 > [!NOTE]
-> **Built and tested, not used yet.** No app registers routes or installs the interceptor
-> today: the dashboard's overview page shows static numbers. This page is how to wire it
-> when a page starts fetching. The reasoning is in
+> **The dashboard runs on it** in development and in the demo on GitHub Pages; its production
+> build leaves it out. [In the dashboard](#in-the-dashboard) shows how it is wired, and the
+> sections before it are the general recipe. The reasoning is in
 > [ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md).
 
 ## Register routes
@@ -49,6 +49,10 @@ A handler receives a context with three fields:
 | `query`  | `URLSearchParams`        | The query string, for example `query.get('page')`.       |
 | `body`   | `unknown`                | The request body.                                        |
 
+`query` holds the whole query string whether the caller wrote it into the URL
+(`/api/orders?page=2`) or passed it as `HttpClient` `params` (`{ params: { page: 2 } }`). To
+answer with an error status, throw an `HttpErrorResponse` from the handler.
+
 ## Install the interceptor
 
 Add it to the app's providers, next to `provideHttpClient`:
@@ -87,4 +91,31 @@ The mock API is for local development and must never ship to a production build
 ([security policy](https://github.com/nguyenan97/angular-saas-kit/blob/main/SECURITY.md)).
 The kit's way of making something build-specific is a file replacement, the same mechanism the
 demo site uses to switch on hash routing: provide the interceptor from a small file that the
-production configuration swaps for an empty one.
+production configuration swaps for an empty one. The dashboard does exactly that.
+
+## In the dashboard
+
+| File                                                                                    | What it does                                                                                                                              |
+| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| [`mock/seed.ts`](../../apps/dashboard/src/app/mock/seed.ts)                             | The demo shop: customers, products and 90 days of orders, from a fixed seed and relative to today, on `example.com` addresses.            |
+| [`mock/routes.ts`](../../apps/dashboard/src/app/mock/routes.ts)                         | The API: `GET /api/stats`, `GET /api/orders` (and `/:id`), `PATCH /api/orders/:id` (a refund), `GET /api/customers`, `GET /api/products`. |
+| [`mock-backend.ts`](../../apps/dashboard/src/app/mock-backend.ts)                       | Registers those routes and exports the interceptor list.                                                                                  |
+| [`mock-backend.production.ts`](../../apps/dashboard/src/app/mock-backend.production.ts) | An empty interceptor list, swapped in by the `production` configuration: no mock, no data.                                                |
+| [`pages/pages.routes.ts`](../../apps/dashboard/src/app/pages/pages.routes.ts)           | `provideHttpClient(withInterceptors(backendInterceptors))`, on the lazy page routes, so none of it is in the initial bundle.              |
+| [`demo-data.ts`](../../apps/dashboard/src/app/demo-data.ts)                             | `DEMO_DATA`, which puts the "Demo data" label in the topbar; `false` in production.                                                       |
+
+The lists take `q` (search), `sort` and `dir`, and `page` and `pageSize` (at most 50); orders
+also take `status`. A write changes the data for the rest of the session, as a real backend's
+would, and a reload starts over.
+
+Which build has it:
+
+| Build                                 | Mock API | Why                                                  |
+| ------------------------------------- | -------- | ---------------------------------------------------- |
+| `npm start` (development)             | Yes      | Nothing else answers `/api`.                         |
+| `npx nx build dashboard -c pages`     | Yes      | The demo is a static site with no backend.           |
+| `npx nx build dashboard` (production) | No       | `/api` goes to the backend the app is deployed with. |
+
+To point the dashboard at a real backend, keep the data shapes in
+[`data/models.ts`](../../apps/dashboard/src/app/data/models.ts), serve them under `/api`, and
+build for production.

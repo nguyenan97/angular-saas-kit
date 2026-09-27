@@ -18,14 +18,18 @@ import { cn } from '../utils/cn';
 // The rows and cells are styled from the table, so the markup stays plain
 // HTML: `thead`, `th scope="col"`, `tbody`, `td`. Screen readers get a real
 // table, with its headers and its row and column counts.
+//
+// Each rule is wrapped in `:where()`, which counts for nothing in
+// specificity, so a class on a cell wins: `<th class="text-right">`. Written
+// as `[&_th]` instead, the table's `th { text-align: left }` would outrank it.
 const TABLE = [
   'w-full caption-bottom border-collapse text-sm',
-  '[&_caption]:mt-3 [&_caption]:text-left [&_caption]:text-muted-foreground',
-  '[&_thead_tr]:border-b [&_thead_tr]:border-border',
-  '[&_th]:h-10 [&_th]:px-3 [&_th]:text-left [&_th]:align-middle [&_th]:font-medium [&_th]:whitespace-nowrap [&_th]:text-muted-foreground',
-  '[&_td]:px-3 [&_td]:py-2.5 [&_td]:align-middle',
-  '[&_tbody_tr]:border-b [&_tbody_tr]:border-border [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-muted/50 [&_tbody_tr:last-child]:border-0',
-  '[&_tfoot]:border-t [&_tfoot]:border-border [&_tfoot]:bg-muted/50 [&_tfoot]:font-medium',
+  '[:where(&)_caption]:mt-3 [:where(&)_caption]:text-left [:where(&)_caption]:text-muted-foreground',
+  '[:where(&)_thead_tr]:border-b [:where(&)_thead_tr]:border-border',
+  '[:where(&)_th]:h-10 [:where(&)_th]:px-3 [:where(&)_th]:text-left [:where(&)_th]:align-middle [:where(&)_th]:font-medium [:where(&)_th]:whitespace-nowrap [:where(&)_th]:text-muted-foreground',
+  '[:where(&)_td]:px-3 [:where(&)_td]:py-2.5 [:where(&)_td]:align-middle',
+  '[:where(&)_tbody_tr]:border-b [:where(&)_tbody_tr]:border-border [:where(&)_tbody_tr]:transition-colors [:where(&)_tbody_tr:hover]:bg-muted/50 [:where(&)_tbody_tr:last-child]:border-0',
+  '[:where(&)_tfoot]:border-t [:where(&)_tfoot]:border-border [:where(&)_tfoot]:bg-muted/50 [:where(&)_tfoot]:font-medium',
 ].join(' ');
 
 /**

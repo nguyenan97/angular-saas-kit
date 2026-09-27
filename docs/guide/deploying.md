@@ -81,6 +81,12 @@ npx nx build dashboard      # dist/apps/dashboard/browser
 npx nx build landing        # dist/apps/landing/browser (plus a server folder)
 ```
 
+> [!IMPORTANT]
+> **The production dashboard has no mock API.** It calls `/api` on the host it is served
+> from, so deploy it with a backend that answers there, in the shapes of
+> `apps/dashboard/src/app/data/models.ts`. Without one its pages show their error states. The
+> demo on GitHub Pages keeps the mock on purpose; see [Mock API](mock-api.md#in-the-dashboard).
+
 The dashboard is a single-page app with path-based URLs, so the host must answer an unknown
 path with `index.html`. `nx run dashboard:serve-static` does exactly that, locally, and is a
 handy way to check a production build.

@@ -75,12 +75,40 @@ the component exists proves nothing.
 `apps/dashboard-e2e` uses [Playwright](https://playwright.dev) against the running dashboard.
 The theme system is the kit's central claim, so it got the first coverage (`theme.spec.ts`): the
 default accent and radius, the dark-mode toggle, an accent that survives a reload with no flash,
-and the keyboard behaviour of the theme switcher: the arrow keys move the selection, each group
-is a single tab stop, and the option that has focus shows a ring. The shell has its own file
-(`shell.spec.ts`): the rail collapses to its token width, the skip link moves focus to the
-content, and at phone width the content gets the whole screen while the drawer holds focus until
-Escape and closes from its backdrop. These are here because jsdom lays nothing out and implements
-no Tab order or radio-group keys, so a unit test cannot prove them.
+and, on the Settings page, the keyboard behaviour of the theme switcher: the arrow keys move the
+selection, each group is a single tab stop, and the option that has focus shows a ring. The
+shell has its own file (`shell.spec.ts`): the rail collapses to its token width, the skip link
+moves focus to the content, and at phone width the content gets the whole screen while the
+drawer holds focus until Escape and closes from its backdrop. `overview.spec.ts` follows the
+data from the page through the mock API and back. These are here because jsdom lays nothing out,
+applies no stylesheet and implements no Tab order or radio-group keys, so a unit test cannot
+prove them.
+
+### Testing a page that fetches
+
+A unit test does not use the mock API: it answers the page's requests itself, with
+`HttpTestingController`, so it controls every state, the error included. `TestBed.tick()` sends
+the requests of the page's `httpResource`s:
+
+```ts
+TestBed.configureTestingModule({
+  providers: [
+    provideZonelessChangeDetection(),
+    provideHttpClient(),
+    provideHttpClientTesting(),
+  ],
+});
+const fixture = TestBed.createComponent(Overview);
+TestBed.tick();
+
+const http = TestBed.inject(HttpTestingController);
+http.expectOne('/api/stats').flush(STATS);
+// Or, for the error state:
+// http.expectOne('/api/stats').flush('down', { status: 500, statusText: 'Server Error' });
+await fixture.whenStable();
+```
+
+The routes of the mock API have their own tests, as plain functions (`mock/routes.spec.ts`).
 
 ```bash
 npx playwright install      # once, to download the browsers

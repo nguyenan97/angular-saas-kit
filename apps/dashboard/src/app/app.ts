@@ -15,9 +15,9 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from '@angular-saas-kit/tokens';
-import { ThemeSwitcher } from '@angular-saas-kit/ui';
 import { map } from 'rxjs';
 
+import { DEMO_DATA } from './demo-data';
 import { PageTitle } from './page-title';
 
 interface NavItem {
@@ -36,13 +36,7 @@ export const DESKTOP_QUERY = '(min-width: 64rem)';
 @Component({
   selector: 'ask-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-    CdkTrapFocus,
-    ThemeSwitcher,
-  ],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, CdkTrapFocus],
   templateUrl: './app.html',
   // Escape closes the open drawer from anywhere, as it would a dialog.
   host: { '(document:keydown.escape)': 'closeDrawer()' },
@@ -50,6 +44,7 @@ export const DESKTOP_QUERY = '(min-width: 64rem)';
 export class App {
   protected readonly theme = inject(ThemeService);
   protected readonly pageTitle = inject(PageTitle).title;
+  protected readonly demoData = DEMO_DATA;
   private readonly injector = inject(Injector);
 
   // The observer emits on subscribe, so the first render already has the
@@ -91,7 +86,7 @@ export class App {
     { label: 'Orders', path: '/orders', soon: true },
     { label: 'Customers', path: '/customers', soon: true },
     { label: 'Products', path: '/products', soon: true },
-    { label: 'Settings', path: '/settings', soon: true },
+    { label: 'Settings', path: '/settings' },
   ];
 
   private readonly menuButton =

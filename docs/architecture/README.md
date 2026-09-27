@@ -22,8 +22,8 @@ show the shapes.
   calls a library a component; showing them as containers is what makes the
   dependency direction between them visible.
 - A diagram shows what **exists today**. Where something is intended but unbuilt
-  (the mock API is not wired into an app; `@angular/cdk` is not installed), the
-  diagram says so instead of drawing the finished picture.
+  (the dashboard's planned pages, which are not links yet), the diagram says so
+  instead of drawing the finished picture.
 - Each diagram opens with a `%%{init: ...}%%` line that widens the gap between
   boxes. Mermaid draws an arrow's label at its midpoint, and with the default gap the
   label of a short arrow lands on the boxes at both ends. Keep the line when you edit

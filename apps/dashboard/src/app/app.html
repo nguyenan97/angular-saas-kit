@@ -115,6 +115,18 @@
       <!-- The page's one h1. Pages start their own headings at h2. -->
       <h1 class="truncate text-sm font-medium">{{ pageTitle() }}</h1>
 
+      <!-- The numbers come from the mock backend here; say so, rather than
+           let them pass for real ones. The production build has no mock.
+           A plain span, not ask-badge: the shell is in the initial bundle,
+           and ask-badge would bring cn() and tailwind-merge (~29 kB) with it. -->
+      @if (demoData) {
+        <span
+          class="rounded-md border border-border px-2 py-0.5 text-xs font-medium whitespace-nowrap"
+          title="Served by an in-memory mock API"
+          >Demo data</span
+        >
+      }
+
       <button
         type="button"
         class="ml-auto rounded-md border border-border px-2.5 py-1 text-xs hover:bg-accent hover:text-accent-foreground"
@@ -126,14 +138,6 @@
 
     <main #content id="main-content" tabindex="-1" class="flex-1 p-6 focus-visible:outline-none">
       <router-outlet />
-
-      <section class="mt-8 max-w-md rounded-lg border border-border bg-card p-5">
-        <h2 class="text-sm font-semibold">Theme</h2>
-        <p class="mt-1 mb-4 text-xs text-muted-foreground">
-          Three axes, all driven from tokens. No rebuild, no component knows a colour value.
-        </p>
-        <ask-theme-switcher />
-      </section>
     </main>
   </div>
 </div>

@@ -15,11 +15,11 @@ C4Container
 
   System_Boundary(kit, "Angular SaaS Kit (one Nx workspace)") {
     Container(landing, "landing", "Angular 22, prerendered", "Marketing page. Static output on Pages; a Node server build is also configured")
-    Container(dashboard, "dashboard", "Angular 22, zoneless SPA", "Admin shell with a theme panel and an overview page; five more sections are stubs")
+    Container(dashboard, "dashboard", "Angular 22, zoneless SPA", "Admin shell with an overview page on live data and a settings page; four more sections are planned")
     Container(e2e, "dashboard-e2e", "Playwright", "Browser tests for theming, the sidebar and the theme switcher's keyboard behaviour. Run in CI on Chromium")
     Container(tokens, "tokens", "Angular library and CSS", "Design tokens, Tailwind v4 theme mapping, ThemeService, anti-flash script")
     Container(ui, "ui", "Angular library", "Components on the semantic tokens: Button, Card, Table, Icon and the rest, the ThemeSwitcher, and cn()")
-    Container(mockapi, "mock-api", "Angular library", "HTTP interceptor serving registered routes from memory. Not wired into an app yet")
+    Container(mockapi, "mock-api", "Angular library", "HTTP interceptor serving registered routes from memory. The dashboard uses it in development and in the demo")
   }
 
   Rel(visitor, landing, "Reads")
@@ -27,6 +27,7 @@ C4Container
   Rel(landing, tokens, "Imports")
   Rel(dashboard, tokens, "Imports")
   Rel(dashboard, ui, "Imports")
+  Rel(dashboard, mockapi, "Imports, outside production builds")
   Rel(ui, tokens, "Imports")
   Rel(e2e, dashboard, "Drives")
 
@@ -38,10 +39,10 @@ C4Container
 | Container       | Kind        | Tags                          | Notes                                                                                                                                                                                                                                                                                                                            |
 | --------------- | ----------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `landing`       | application | `type:app`, `scope:landing`   | Prerendered, hydrates in the browser ([ADR 0007](../adr/0007-prerendered-landing-and-client-side-dashboard.md)).                                                                                                                                                                                                                 |
-| `dashboard`     | application | `type:app`, `scope:dashboard` | Client-side SPA; hash routing in the Pages build ([ADR 0011](../adr/0011-github-pages-demo-site.md)).                                                                                                                                                                                                                            |
+| `dashboard`     | application | `type:app`, `scope:dashboard` | Client-side SPA; hash routing in the Pages build ([ADR 0011](../adr/0011-github-pages-demo-site.md)). Its pages and their `HttpClient` load lazily; the mock backend answers `/api` except in the production build.                                                                                                              |
 | `tokens`        | library     | `type:lib`, `scope:shared`    | Built as an npm package that ships its stylesheets and passes `npm run check:packages`; nothing is published yet ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)). Imports no other project, and its stylesheet references none ([ADR 0004](../adr/0004-semantic-design-tokens-and-three-axis-theming.md)). |
 | `ui`            | library     | `type:lib`, `scope:shared`    | Built as an npm package that declares what it imports and passes `npm run check:packages`; nothing is published yet. Imports only `tokens` ([ADR 0005](../adr/0005-angular-cdk-and-tailwind-instead-of-a-ui-library.md)).                                                                                                        |
-| `mock-api`      | library     | `type:lib`, `scope:shared`    | Not published, and imported by no app yet ([ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md)).                                                                                                                                                                                                                  |
+| `mock-api`      | library     | `type:lib`, `scope:shared`    | Not published. The dashboard imports it from a file that the production build replaces ([ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md)).                                                                                                                                                                     |
 | `dashboard-e2e` | e2e         | none                          | Playwright, against `nx run dashboard:serve` on port 4200. Configured for Chromium, Firefox and WebKit; CI runs Chromium.                                                                                                                                                                                                        |
 
 ## Dependency direction
@@ -52,7 +53,7 @@ C4Container
 landing ───┐
            ├──► tokens ◄── ui ◄── dashboard
 dashboard ─┘
-mock-api   (nothing depends on it yet)
+dashboard ───► mock-api   (development and the demo; the production build swaps it out)
 ```
 
 Two kinds of edge are drawn on purpose, because `npx nx graph` shows only the first:

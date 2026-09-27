@@ -1,6 +1,6 @@
 # 0006. An in-memory mock API instead of a backend
 
-- **Status:** Accepted, not yet wired into an app
+- **Status:** Accepted
 - **Date:** 2026-09-26 (recorded after the fact)
 - **Deciders:** @nguyenan97
 
@@ -41,6 +41,12 @@ interceptor to an app that already talks to an API is safe.
 - **State today:** the library and its interceptor are unit-tested, but neither app
   imports it. The dashboard shows static placeholder data and never calls
   `HttpClient`. The first page that fetches data is what wires it in.
+  _Amended 2026-09-27:_ the dashboard is wired in. Its routes and a seeded dataset live
+  in `apps/dashboard/src/app/mock`, as this record said they would; the interceptor is
+  provided from `mock-backend.ts`, which the `production` configuration replaces with an
+  empty file, and the demo (`pages`) keeps it because it has no backend. Wiring it in
+  found a bug: the interceptor read `req.url`, which leaves out `HttpClient` `params`,
+  so handlers never saw a query passed that way; it reads `urlWithParams` now.
 
 ## References
 
