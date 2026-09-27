@@ -6,4 +6,4 @@ import type { SiteLinks } from './site-links.types';
  * `site-links.pages.ts` (see the `pages` configuration in project.json), where
  * the demo is served from a sibling path.
  */
-export const SITE_LINKS: SiteLinks = { demo: null };
+export const SITE_LINKS: SiteLinks = { demo: null, docs: null };

@@ -4,8 +4,9 @@
  *
  *   _site/         <- apps/landing    static, prerendered
  *   _site/demo/    <- apps/dashboard  single-page app, hash routing
+ *   _site/docs/    <- docs            VitePress site
  *
- * Run through `npm run pages`, which builds both apps first.
+ * Run through `npm run pages`, which builds all three first.
  *
  * The check exists because a wrong <base href> is the classic way for a Pages
  * deploy to go green and serve a blank page: every local file an index.html
@@ -41,6 +42,14 @@ const parts = [
     to: 'demo',
     base: `${SITE_BASE}demo/`,
   },
+  {
+    name: 'docs',
+    from: 'docs/.vitepress/dist',
+    to: 'docs',
+    base: `${SITE_BASE}docs/`,
+    // VitePress writes absolute paths under its `base` and emits no <base> tag.
+    baseTag: false,
+  },
 ];
 
 const problems = [];
@@ -52,7 +61,7 @@ for (const part of parts) {
   const source = join(root, part.from);
   if (!existsSync(source)) {
     console.error(
-      `Missing ${part.from} - build the "${part.name}" app with -c pages first.`,
+      `Missing ${part.from} - build "${part.name}" first (npm run pages does).`,
     );
     process.exit(1);
   }
@@ -73,12 +82,14 @@ for (const part of parts) {
   const indexPath = join(site, part.to, 'index.html');
   const html = readFileSync(indexPath, 'utf8');
 
-  const base = /<base href="([^"]*)"/.exec(html)?.[1];
-  if (base !== part.base) {
-    problems.push(
-      `${part.name}: <base href> is "${base}", expected "${part.base}"`,
-    );
-    continue;
+  if (part.baseTag !== false) {
+    const base = /<base href="([^"]*)"/.exec(html)?.[1];
+    if (base !== part.base) {
+      problems.push(
+        `${part.name}: <base href> is "${base}", expected "${part.base}"`,
+      );
+      continue;
+    }
   }
 
   const references = [...html.matchAll(/\b(?:src|href)="([^"]+)"/g)].map(

@@ -6,6 +6,7 @@
 Signals-first, zoneless, Tailwind v4, and not locked to any UI library.
 
 **[Live demo](https://nguyenan97.github.io/angular-saas-kit/demo/)** ·
+[Docs](https://nguyenan97.github.io/angular-saas-kit/docs/) ·
 [Landing page](https://nguyenan97.github.io/angular-saas-kit/)
 
 [![CI](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml)
@@ -62,13 +63,22 @@ resolution bug on this tree.
 
 ## What's in the box
 
-| Package          | Purpose                                               |
-| ---------------- | ----------------------------------------------------- |
-| `apps/dashboard` | The admin application                                 |
-| `apps/landing`   | Marketing site, SSR + prerendered                     |
-| `libs/tokens`    | Design tokens, Tailwind theme mapping, `ThemeService` |
-| `libs/ui`        | Shared component library (publishable to npm)         |
-| `libs/mock-api`  | In-memory backend with realistic latency              |
+| Package          | Purpose                                                         |
+| ---------------- | --------------------------------------------------------------- |
+| `apps/dashboard` | The admin application                                           |
+| `apps/landing`   | Marketing site, SSR + prerendered                               |
+| `libs/tokens`    | Design tokens, Tailwind theme mapping, `ThemeService`           |
+| `libs/ui`        | Shared component library (npm package build, not yet published) |
+| `libs/mock-api`  | In-memory backend with realistic latency                        |
+| `docs`           | Guides, C4 diagrams and decision records (VitePress)            |
+
+## Documentation
+
+The [documentation site](https://nguyenan97.github.io/angular-saas-kit/docs/) has the
+guides: [getting started](./docs/guide/getting-started.md), [theming](./docs/guide/theming.md),
+[components](./docs/guide/components.md), the [mock API](./docs/guide/mock-api.md),
+[deploying](./docs/guide/deploying.md) and [CI](./docs/guide/ci.md). Its source is
+[`docs/`](./docs/README.md), which reads fine on GitHub too.
 
 ## Architecture
 
@@ -124,7 +134,8 @@ else changes.
 - [ ] Component library — ~40 components on the CDK
 - [ ] Dashboard pages — analytics, orders, customers, products, settings, auth
 - [ ] Landing sections — pricing, FAQ, testimonials, blog
-- [ ] Storybook + published docs
+- [x] Published docs — guides, C4 architecture and decision records, on GitHub Pages
+- [ ] Storybook
 - [ ] Figma file with matching variables
 
 ## Contributing

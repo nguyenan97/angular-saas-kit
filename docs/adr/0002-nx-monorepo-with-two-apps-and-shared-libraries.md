@@ -45,6 +45,11 @@ One Nx workspace, npm, a single lockfile.
 - **The tags are declared but not enforced.** No `@nx/enforce-module-boundaries`
   rule is configured, so nothing stops an app importing another app or a library
   importing an app. Turning it on is a known follow-up.
+- **The packages are not publish-ready.** The ng-packagr builds succeed, but the
+  built `ui` manifest does not declare `clsx`, `tailwind-merge` or
+  `@angular-saas-kit/tokens`, which its code imports, and the built `tokens` package
+  contains no stylesheets. Nothing is published, so nothing is broken yet; both have
+  to be fixed before a first release.
 
 ## References
 

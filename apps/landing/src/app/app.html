@@ -51,6 +51,13 @@
             >Live demo</a
           >
         }
+        @if (links.docs) {
+          <a
+            [href]="links.docs"
+            class="rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+            >Docs</a
+          >
+        }
         <a
           href="https://github.com/sponsors/nguyenan97"
           class="rounded-lg border border-border px-5 py-2.5 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"

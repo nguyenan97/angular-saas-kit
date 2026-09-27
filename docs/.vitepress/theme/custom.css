@@ -1,0 +1,98 @@
+/* The kit's default accent (Tailwind blue-600), so the docs match the apps. */
+:root {
+  --vp-c-brand-1: #155dfc;
+  --vp-c-brand-2: #1447e6;
+  --vp-c-brand-3: #155dfc;
+  --vp-c-brand-soft: rgb(21 93 252 / 14%);
+}
+
+.dark {
+  --vp-c-brand-1: #51a2ff;
+  --vp-c-brand-2: #8ec5ff;
+  --vp-c-brand-3: #2b7fff;
+  --vp-c-brand-soft: rgb(81 162 255 / 16%);
+}
+
+/* -- Mermaid diagrams -------------------------------------------------- */
+
+.mermaid-diagram {
+  position: relative;
+  margin: 16px 0;
+  padding: 12px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg-soft);
+}
+
+.mermaid-canvas {
+  overflow-x: auto;
+}
+
+/* Fit the column; the full-size button is for reading the small print. */
+.mermaid-canvas svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.mermaid-diagram pre {
+  margin: 0;
+  overflow-x: auto;
+  font-size: 12px;
+}
+
+.mermaid-expand,
+.mermaid-close {
+  padding: 4px 12px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.mermaid-expand {
+  margin-top: 8px;
+}
+
+.mermaid-expand:hover,
+.mermaid-close:hover {
+  border-color: var(--vp-c-brand-1);
+  color: var(--vp-c-brand-1);
+}
+
+.mermaid-dialog {
+  width: 96vw;
+  height: 92vh;
+  max-width: none;
+  max-height: none;
+  padding: 0;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+}
+
+.mermaid-dialog::backdrop {
+  background: rgb(0 0 0 / 60%);
+}
+
+.mermaid-dialog .mermaid-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1;
+}
+
+.mermaid-scroller {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 16px;
+}
+
+.mermaid-scroller svg {
+  max-width: none;
+}

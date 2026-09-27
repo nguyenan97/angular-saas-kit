@@ -16,6 +16,7 @@
 - [ ] Tests cover the behaviour, not just that it renders
 - [ ] New project or dependency between projects: `docs/architecture/c4-containers.md` updated (`npm run check:architecture`)
 - [ ] Hard-to-reverse decision: an ADR in `docs/adr/`
+- [ ] Behaviour a guide describes has changed: the page in `docs/` is updated (`npm run docs:build` passes)
 - [ ] Commits follow Conventional Commits
 
 ## Screenshots

@@ -8,4 +8,6 @@
 export interface SiteLinks {
   /** The dashboard demo. */
   readonly demo: string | null;
+  /** The documentation site. */
+  readonly docs: string | null;
 }

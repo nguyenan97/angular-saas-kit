@@ -6,7 +6,9 @@
     "start": "nx serve dashboard",
     "start:landing": "nx serve landing",
     "build": "nx run-many -t build",
-    "pages": "nx run-many -t build -p landing dashboard -c pages && node scripts/assemble-pages.mjs",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "pages": "nx run-many -t build -p landing dashboard -c pages && npm run docs:build && node scripts/assemble-pages.mjs",
     "pages:preview": "node scripts/preview-pages.mjs",
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
@@ -62,6 +64,7 @@
     "jsdom": "^30.1.1",
     "jsonc-eslint-parser": "^3.3.0",
     "lint-staged": "^17.5.1",
+    "mermaid": "^11.17.2",
     "ng-packagr": "~22.2.1",
     "nx": "23.2.1",
     "postcss": "^8.5.28",
@@ -74,6 +77,7 @@
     "typescript-eslint": "^8.70.1",
     "verdaccio": "^6.10.4",
     "vite": "^8.3.0",
+    "vitepress": "^2.0.0-alpha.20",
     "vitest": "^4.0.8"
   },
   "dependencies": {
@@ -107,7 +111,7 @@
     "npm": ">=11"
   },
   "lint-staged": {
-    "*.{ts,html,css,json,md,mjs}": "prettier --write"
+    "*.{ts,mts,vue,html,css,json,md,mjs,yml,yaml}": "prettier --write"
   },
   "overrides": {
     "smol-toml": "^1.7.1"

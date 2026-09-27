@@ -62,6 +62,19 @@ before changing a shape.
   [`docs/adr/template.md`](./docs/adr/template.md), open the PR with it as
   `Proposed`, and it becomes `Accepted` when the PR merges.
 
+## Documentation
+
+The guides, the diagrams and the decision records are Markdown in [`docs`](./docs/README.md),
+published as a site. Change a page in the same PR as the code it describes.
+
+```bash
+npm run docs:dev      # live reload
+npm run docs:build    # what CI builds; fails on a dead link
+```
+
+Write links relative and end them in `.md`, so they work on GitHub and on the site.
+[`docs/README.md`](./docs/README.md) has the rest of the conventions.
+
 ## The rules that are not negotiable
 
 These are the things the kit is _for_. A PR that breaks one of them will be

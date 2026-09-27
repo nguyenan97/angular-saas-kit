@@ -17,6 +17,9 @@ Deploy one site to GitHub Pages at `https://nguyenan97.github.io/angular-saas-ki
 the landing page at the root and the dashboard under `/demo/`. Pages is served by
 GitHub Actions, not from a branch.
 
+_Amended 2026-09-27:_ the documentation site is built into the same artifact under
+`/docs/` ([0013](0013-documentation-site-with-vitepress.md)).
+
 - Both apps get a `pages` build configuration. The landing page builds with
   `outputMode: static` and a `/angular-saas-kit/` base href; the dashboard builds
   with a `/angular-saas-kit/demo/` base href.

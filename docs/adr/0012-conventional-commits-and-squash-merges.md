@@ -18,7 +18,7 @@ coverage on broke a test until the next commit fixed it).
   enforced by commitlint in a husky `commit-msg` hook. The optional scope must be one
   of `ui`, `tokens`, `mock-api`, `dashboard`, `landing`, `ci`, `deps`, `repo`.
 - A husky `pre-commit` hook runs `lint-staged`, which runs `prettier --write` on
-  staged TypeScript, HTML, CSS, JSON, Markdown and `.mjs` files.
+  staged TypeScript, Vue, HTML, CSS, JSON, YAML, Markdown and `.mjs` files.
 - **Pull requests are squash-merged.** The PR title becomes the commit subject on
   `main`, so it has to satisfy the same rules. `main` stays a linear list of one
   conventional commit per change.
