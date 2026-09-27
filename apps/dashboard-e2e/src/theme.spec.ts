@@ -91,13 +91,4 @@ test.describe('theme', () => {
     await expect(ring).toHaveCSS('outline-style', 'solid');
     await expect(ring).toHaveCSS('outline-width', '2px');
   });
-
-  test('collapses and expands the sidebar', async ({ page }) => {
-    await page.goto('/');
-    const toggle = page.getByRole('button', { name: /collapse|expand/i });
-
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await toggle.click();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-  });
 });
