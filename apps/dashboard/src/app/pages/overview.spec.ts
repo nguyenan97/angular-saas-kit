@@ -99,18 +99,17 @@ describe('Overview', () => {
     await fixture.whenStable();
 
     const cards = [...el.querySelectorAll('ask-card')].slice(0, 2);
-    expect(cards.map((card) => card.querySelector('h3')?.textContent)).toEqual([
-      'Revenue',
-      'Refund rate',
-    ]);
+    expect(
+      cards.map((card) => card.querySelector('h3')?.textContent?.trim()),
+    ).toEqual(['Revenue', 'Refund rate']);
     expect(cards[0]?.textContent).toContain('$48,120');
     const [revenueChange, refundChange] = cards.map((card) =>
       card.querySelector('p:last-child span'),
     );
-    expect(revenueChange?.textContent).toBe('+12.4%');
+    expect(revenueChange?.textContent?.trim()).toBe('+12.4%');
     expect(revenueChange?.classList).toContain('text-success');
     // More refunds is bad news, so the rise is shown as one.
-    expect(refundChange?.textContent).toBe('+0.6 pts');
+    expect(refundChange?.textContent?.trim()).toBe('+0.6 pts');
     expect(refundChange?.classList).toContain('text-destructive');
   });
 

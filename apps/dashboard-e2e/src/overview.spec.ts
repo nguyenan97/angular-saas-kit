@@ -17,7 +17,8 @@ test.describe('overview', () => {
       'Active customers',
       'Refund rate',
     ]);
-    await expect(figures.getByText(/^\$[\d,]+$/)).toBeVisible();
+    // Revenue, in whole dollars. The template may wrap it in whitespace.
+    await expect(figures.getByText(/^\s*\$[\d,]+\s*$/)).toBeVisible();
 
     const orders = page.getByRole('region', { name: 'Latest orders' });
     await expect(orders.getByRole('row')).toHaveCount(6);
