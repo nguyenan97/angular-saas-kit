@@ -75,7 +75,8 @@ push protection are on.
   a consequence of the choice above, not an oversight.
 - **Open:** the Codecov upload is rejected (`Token required because branch is
 protected`) and, because of `fail_ci_if_error: false`, hidden behind a green build.
-  It needs a `CODECOV_TOKEN` secret passed as `token:`.
+  It needs a `CODECOV_TOKEN` secret passed as `token:`. _Amended 2026-09-27:_ the workflow
+  already passes `secrets.CODECOV_TOKEN`; only creating the secret is left.
 - A local install must resolve peer dependencies the way CI does. A user-level
   `legacy-peer-deps=true` once hid a conflict that failed `npm ci` in CI, so the
   repository `.npmrc` pins `legacy-peer-deps=false`.
