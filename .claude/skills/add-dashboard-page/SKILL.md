@@ -6,16 +6,17 @@ description: Add a page to the admin dashboard (apps/dashboard) - a lazy route, 
 # Add a dashboard page
 
 The dashboard is a client-side SPA: `apps/dashboard/src/app`. Today it has one real page,
-`Overview` (`pages/overview.ts`), and five sidebar entries flagged "soon" that redirect to it.
+`Overview` (`pages/overview.ts`). Five more are listed in the sidebar as "soon": plain text,
+not links.
 
 ## The pieces
 
-| What              | Where                   | Notes                                                                                                         |
-| ----------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------- |
-| The page          | `pages/<name>.ts`       | Standalone, `OnPush`, selector `ask-<name>`, signals for state.                                               |
-| The route         | `app.routes.ts`         | Lazy: `loadComponent: () => import('./pages/<name>').then((m) => m.<Name>)`. Put it before the `**` redirect. |
-| The sidebar entry | `nav` array in `app.ts` | The stubs already exist with `soon: true`. Remove `soon` when the page is real; add an item for a new one.    |
-| A test            | `pages/<name>.spec.ts`  | Zoneless; see `app.spec.ts` for the setup.                                                                    |
+| What              | Where                   | Notes                                                                                                                                         |
+| ----------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| The page          | `pages/<name>.ts`       | Standalone, `OnPush`, selector `ask-<name>`, signals for state.                                                                               |
+| The route         | `app.routes.ts`         | Lazy: `loadComponent: () => import('./pages/<name>').then((m) => m.<Name>)`, and a `title`. Put it before the `**` redirect.                  |
+| The sidebar entry | `nav` array in `app.ts` | The planned pages are there with `soon: true`. Remove `soon` when the page is real, and the entry becomes a link; add an item for a new page. |
+| A test            | `pages/<name>.spec.ts`  | Zoneless; see `app.spec.ts` for the setup.                                                                                                    |
 
 ## Rules
 
@@ -27,11 +28,17 @@ The dashboard is a client-side SPA: `apps/dashboard/src/app`. Today it has one r
 - Use components from `@angular-saas-kit/ui` where one exists. If you need one that does not, use the
   `add-ui-component` skill instead of building it inline in the page.
 
-## Known gap
+## Titles and headings
 
-The topbar title in `app.html` is the literal text "Overview" and does not follow the route. A
-second page will show the wrong title. Fix it as part of the first new page (route `data`, or
-`title` on the route with a small signal), and add a test that the title changes.
+The route's `title` is the page's name. `PageTitle` (`page-title.ts`, a `TitleStrategy`) shows it
+in the topbar as the page's one `h1` and sets the document title, so a page does not render an `h1`
+of its own: its headings start at `h2`.
+
+## Layout
+
+Below the `lg` breakpoint the sidebar is a drawer, so a page gets the full width of a phone. Check
+the page at 375 px as well as on a desktop, and let wide content (a table, say) scroll inside its own
+container rather than the page.
 
 ## Data
 

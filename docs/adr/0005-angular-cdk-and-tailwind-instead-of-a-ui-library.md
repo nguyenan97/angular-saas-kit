@@ -41,6 +41,11 @@ single-purpose utilities are fine after an issue.
   is **not yet a dependency** - no component needs a CDK primitive yet - so the
   README's "builds on the Angular CDK" describes the intent, not the current
   `package.json`. It becomes true with the first overlay, menu or dialog.
+  _Amended 2026-09-27:_ `@angular/cdk` is now a dependency. The first user is the
+  dashboard shell, not `libs/ui`: its mobile drawer traps focus with `CdkTrapFocus`
+  and follows the `lg` breakpoint with `BreakpointObserver`. A component in `libs/ui`
+  that uses the CDK declares it as a peer dependency of the package
+  ([0016](0016-packages-declare-and-ship-what-they-need.md)).
 
 ## References
 

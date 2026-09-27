@@ -1,60 +1,119 @@
 <div class="flex min-h-dvh bg-background text-foreground">
-  <!-- Sidebar. Width comes from a token so the topbar offset can never
-       drift out of sync with it. -->
+  <a
+    href="#main-content"
+    class="sr-only rounded-md border border-border bg-background px-3 py-2 text-sm font-medium focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
+    (click)="skipToContent($event)"
+    >Skip to content</a
+  >
+
+  <!-- Behind the open drawer. Pointer users tap it to close the drawer;
+       keyboard users have Escape and the Close button, so it is hidden from
+       assistive tech. -->
+  @if (drawerVisible()) {
+    <div
+      class="fixed inset-0 z-30 bg-background/80 backdrop-blur-sm"
+      aria-hidden="true"
+      (click)="closeDrawer()"
+    ></div>
+  }
+
+  <!-- The sidebar: a rail beside the content from the lg breakpoint up, a
+       drawer over it below. Its widths are the layout tokens, which the
+       content column's offset uses too, so the two cannot drift apart. -->
   <aside
-    class="fixed inset-y-0 left-0 z-40 flex flex-col border-r border-border bg-card transition-[width] duration-200"
-    [style.width.rem]="sidebarOpen() ? 16 : 3.5"
+    id="app-sidebar"
+    class="fixed inset-y-0 left-0 z-40 flex-col border-r border-border bg-card transition-[width] duration-200"
+    [class.flex]="isDesktop() || drawerOpen()"
+    [class.hidden]="!isDesktop() && !drawerOpen()"
+    [class.w-sidebar]="labelsVisible()"
+    [class.w-sidebar-collapsed]="!labelsVisible()"
+    [class.shadow-lg]="drawerVisible()"
+    [cdkTrapFocus]="drawerVisible()"
+    [cdkTrapFocusAutoCapture]="drawerVisible()"
   >
     <div class="flex h-topbar items-center gap-2 border-b border-border px-4">
-      <span class="size-6 shrink-0 rounded-md bg-primary"></span>
-      @if (sidebarOpen()) {
+      <span class="size-6 shrink-0 rounded-md bg-primary" aria-hidden="true"></span>
+      @if (labelsVisible()) {
         <span class="truncate text-sm font-semibold">Angular SaaS Kit</span>
+      }
+      @if (!isDesktop()) {
+        <button
+          type="button"
+          class="ml-auto rounded-md border border-border px-2.5 py-1 text-xs hover:bg-accent hover:text-accent-foreground"
+          (click)="closeDrawer()"
+        >
+          Close<span class="sr-only"> menu</span>
+        </button>
       }
     </div>
 
-    <nav class="flex-1 space-y-1 overflow-y-auto p-2" aria-label="Main">
-      @for (item of nav; track item.path) {
-        <a
-          [routerLink]="item.path"
-          routerLinkActive="bg-accent text-accent-foreground"
-          [routerLinkActiveOptions]="{ exact: true }"
-          class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-          [attr.aria-disabled]="item.soon ? 'true' : null"
-          [attr.title]="sidebarOpen() ? null : item.label"
-        >
-          <span class="size-2 shrink-0 rounded-full bg-current opacity-40"></span>
-          @if (sidebarOpen()) {
-            <span class="truncate">{{ item.label }}</span>
+    <nav class="flex-1 overflow-y-auto p-2" aria-label="Main">
+      <ul class="space-y-1">
+        @for (item of nav; track item.path) {
+          <li>
             @if (item.soon) {
+              <!-- Not built yet, so not a link: nothing to follow, and
+                   nothing in the tab order. -->
               <span
-                class="ml-auto rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground"
-                >soon</span
+                class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground"
+                [attr.title]="labelsVisible() ? null : item.label + ' (soon)'"
               >
+                <span
+                  class="size-2 shrink-0 rounded-full bg-current opacity-40"
+                  aria-hidden="true"
+                ></span>
+                <span class="truncate" [class.sr-only]="!labelsVisible()">{{ item.label }}</span>
+                <span
+                  class="ml-auto rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-medium"
+                  [class.sr-only]="!labelsVisible()"
+                  >soon</span
+                >
+              </span>
+            } @else {
+              <a
+                [routerLink]="item.path"
+                routerLinkActive="bg-accent text-accent-foreground"
+                ariaCurrentWhenActive="page"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                [attr.title]="labelsVisible() ? null : item.label"
+                (click)="closeDrawer()"
+              >
+                <span
+                  class="size-2 shrink-0 rounded-full bg-current opacity-40"
+                  aria-hidden="true"
+                ></span>
+                <span class="truncate" [class.sr-only]="!labelsVisible()">{{ item.label }}</span>
+              </a>
             }
-          }
-        </a>
-      }
+          </li>
+        }
+      </ul>
     </nav>
   </aside>
 
   <div
     class="flex min-w-0 flex-1 flex-col transition-[margin] duration-200"
-    [style.marginLeft.rem]="sidebarOpen() ? 16 : 3.5"
+    [class.ml-sidebar]="isDesktop() && expanded()"
+    [class.ml-sidebar-collapsed]="isDesktop() && !expanded()"
+    [attr.inert]="drawerVisible() ? '' : null"
   >
     <header
-      class="sticky top-0 z-30 flex h-topbar items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur"
+      class="sticky top-0 z-20 flex h-topbar items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur"
     >
       <button
+        #menuButton
         type="button"
         class="rounded-md border border-border px-2.5 py-1 text-xs hover:bg-accent hover:text-accent-foreground"
-        [attr.aria-expanded]="sidebarOpen()"
         aria-controls="app-sidebar"
+        [attr.aria-expanded]="sidebarShown()"
         (click)="toggleSidebar()"
       >
-        {{ sidebarOpen() ? 'Collapse' : 'Expand' }}
+        {{ isDesktop() ? (expanded() ? 'Collapse' : 'Expand') : 'Menu' }}
       </button>
 
-      <span class="text-sm font-medium">Overview</span>
+      <!-- The page's one h1. Pages start their own headings at h2. -->
+      <h1 class="truncate text-sm font-medium">{{ pageTitle() }}</h1>
 
       <button
         type="button"
@@ -65,7 +124,7 @@
       </button>
     </header>
 
-    <main class="flex-1 p-6">
+    <main #content id="main-content" tabindex="-1" class="flex-1 p-6 focus-visible:outline-none">
       <router-outlet />
 
       <section class="mt-8 max-w-md rounded-lg border border-border bg-card p-5">
