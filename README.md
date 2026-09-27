@@ -54,9 +54,11 @@ git clone https://github.com/nguyenan97/angular-saas-kit.git
 cd angular-saas-kit
 npm ci
 
-npx nx serve dashboard   # http://localhost:4200
-npx nx serve landing     # http://localhost:4201
+npx nx serve dashboard             # http://localhost:4200
+npx nx serve landing --port=4201   # http://localhost:4201
 ```
+
+Both dev servers default to port 4200, so give the second one a port if you run them together.
 
 Requires **Node 22+** and **npm 11+**. Older npm versions hit a dependency
 resolution bug on this tree.
