@@ -140,7 +140,7 @@ C4Component
   title Components: ui
 
   Container_Ext(dashboard, "dashboard", "Angular app", "Embeds the switcher")
-  Component(switcher, "ThemeSwitcher", "Standalone component, OnPush", "Three radio groups for mode, accent and radius. Selector ask-theme-switcher")
+  Component(switcher, "ThemeSwitcher", "Standalone component, OnPush", "Three fieldsets of native radio inputs for mode, accent and radius. Selector ask-theme-switcher")
   Container_Ext(tokens, "tokens", "Angular library and CSS", "ThemeService and the theme constants")
   Component(cn, "cn", "Function", "clsx, then tailwind-merge: the last class wins, so a consumer can override a default")
 

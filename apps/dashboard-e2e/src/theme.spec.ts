@@ -45,6 +45,53 @@ test.describe('theme', () => {
     );
   });
 
+  // The switcher is made of native radio inputs, so the browser supplies the
+  // keyboard behaviour of a radio group. jsdom implements none of it, so it is
+  // proved here, in a real browser.
+  test('moves between accents with the arrow keys', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByRole('radio', { name: 'blue', exact: true }).focus();
+    await page.keyboard.press('ArrowRight');
+
+    const violet = page.getByRole('radio', { name: 'violet', exact: true });
+    await expect(violet).toBeChecked();
+    await expect(violet).toBeFocused();
+    await expect(page.locator('html')).toHaveAttribute('data-accent', 'violet');
+  });
+
+  test('has one tab stop for each group', async ({ page }) => {
+    await page.goto('/');
+
+    // From the checked mode, Tab leaves the group for the checked accent, and
+    // then the checked radius, instead of walking every option in between.
+    await page.getByRole('radio', { name: 'system', exact: true }).focus();
+    await page.keyboard.press('Tab');
+    await expect(
+      page.getByRole('radio', { name: 'blue', exact: true }),
+    ).toBeFocused();
+
+    await page.keyboard.press('Tab');
+    await expect(
+      page.getByRole('radio', { name: 'md', exact: true }),
+    ).toBeFocused();
+  });
+
+  test('shows a focus ring on the option that has keyboard focus', async ({
+    page,
+  }) => {
+    await page.goto('/');
+
+    await page.getByRole('radio', { name: 'system', exact: true }).focus();
+    await page.keyboard.press('Tab');
+
+    // The radio itself is transparent, so the ring is drawn on its label.
+    const ring = page.locator('label:has(input:focus-visible)');
+    await expect(ring).toHaveCount(1);
+    await expect(ring).toHaveCSS('outline-style', 'solid');
+    await expect(ring).toHaveCSS('outline-width', '2px');
+  });
+
   test('collapses and expands the sidebar', async ({ page }) => {
     await page.goto('/');
     const toggle = page.getByRole('button', { name: /collapse|expand/i });

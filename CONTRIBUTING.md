@@ -99,8 +99,10 @@ what lets the whole kit reskin from three attributes on `<html>`.
 
 **Accessibility is a gate.** Interactive elements are reachable and operable
 by keyboard, focus is visible, state is announced. Template a11y lint rules
-are errors, not warnings. If a component needs a roving tabindex or a focus
-trap, use the Angular CDK rather than rolling one.
+are errors, not warnings. Prefer a native element to an ARIA role: a group of
+`<input type="radio">` gets the arrow keys and one tab stop from the browser,
+where `<button role="radio">` gets neither. If a component needs a roving
+tabindex or a focus trap, use the Angular CDK rather than rolling one.
 
 **Signals, not RxJS state.** Component state is `signal` / `computed`. RxJS
 is fine at the edges — HTTP, event streams — but it should not be how a

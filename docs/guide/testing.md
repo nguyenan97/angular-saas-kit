@@ -64,8 +64,11 @@ component exists proves nothing.
 
 `apps/dashboard-e2e` uses [Playwright](https://playwright.dev) against the running dashboard.
 The theme system is the kit's central claim, so it got the first coverage: the default accent
-and radius, the dark-mode toggle, an accent that survives a reload with no flash, and the
-sidebar collapse.
+and radius, the dark-mode toggle, an accent that survives a reload with no flash, the
+sidebar collapse, and the keyboard behaviour of the theme switcher: the arrow keys move the
+selection, each group is a single tab stop, and the option that has focus shows a ring. Those
+last three are here because jsdom implements none of a radio group's keyboard behaviour, so a
+unit test cannot prove them.
 
 ```bash
 npx playwright install      # once, to download the browsers

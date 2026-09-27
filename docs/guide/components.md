@@ -18,8 +18,11 @@ overrides. Use the semantic token: `bg-card`, `text-muted-foreground`, `border-b
 
 **Accessibility is a gate.** Interactive elements are reachable and operable by keyboard,
 focus is visible, and state is announced. Template accessibility lint rules are errors, not
-warnings. If a component needs a roving tabindex or a focus trap, use the Angular CDK
-instead of rolling one.
+warnings. Prefer a native element to an ARIA role: a group of `<input type="radio">` gets the
+arrow keys and a single tab stop from the browser, while `<button role="radio">` gets neither
+and leaves the component to build both, which is how the `ThemeSwitcher` once got it wrong.
+If a component needs a roving tabindex or a focus trap, use the Angular CDK instead of
+rolling one.
 
 **Signals, not RxJS state.** Component state is `signal` and `computed`. RxJS is fine at the
 edges, such as HTTP and event streams, but it is not how a component holds its own state.
