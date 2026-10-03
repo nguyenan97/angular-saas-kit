@@ -39,7 +39,8 @@ One Nx workspace, npm, a single lockfile.
   ([0009](0009-strict-ci-gates-and-a-protected-main.md)).
 - One place for lint, test and format configuration.
 - **Nx version coupling.** Its plugins pin transitive dependencies (`nx` pins
-  `smol-toml` to an exact vulnerable version, which needed an npm override) and
+  `smol-toml`, `axios` and `brace-expansion` to exact vulnerable versions, which need
+  npm overrides; see [0010](0010-dependabot-grouping-and-ignored-major-versions.md)) and
   executors get deprecated: `@nx/vitest:test`, used by `mock-api`, is scheduled
   for removal in Nx 24.
 - **The tags were declared but not enforced.** No `@nx/enforce-module-boundaries`

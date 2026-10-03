@@ -65,7 +65,15 @@ reason.
   in the lockfile, so the entries used only by it have to be pruned as well.
 - `nx` pins `smol-toml` to an exact vulnerable version and no fixed Nx release
   exists yet, so an npm `overrides` entry forces `^1.7.1`. It must be dropped once
-  Nx ships a fix.
+  Nx ships a fix. _Amended 2026-10-03:_ Nx 23.2.1 also pins `axios` 1.18.1 and
+  `brace-expansion` 5.0.9, with advisories fixed in 1.20.0 and 5.0.12, so `overrides`
+  forces `axios` to `^1.20.0` and, inside `nx` only, `brace-expansion` to `^5.0.12`. A
+  global `brace-expansion` override would force 5.x on the 2.x copy that `test-exclude`
+  needs. Drop all three when Nx ships the fixes.
+- _Amended 2026-10-03:_ the `verdaccio` local registry, the `local-registry` target the
+  workspace generator added, was used by nothing and brought 16 advisories. It is gone,
+  with its 266 lockfile entries. Testing a publish locally can bring it back, pinned to
+  a release without them.
 - Merging Dependabot PRs one after another means an "Update branch" each, and
   `@dependabot rebase` when a lockfile conflicts.
 
