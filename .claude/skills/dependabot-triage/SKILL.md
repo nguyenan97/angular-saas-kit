@@ -17,8 +17,8 @@ gh pr list --repo nguyenan97/angular-saas-kit --author "app/dependabot" \
 
 ## 2. Read each one
 
-- **Groups.** The Angular packages (`@angular/*`, `@angular-devkit/*`, `angular-eslint`) travel
-  together, and so do `nx` and `@nx/*`. `@angular/compiler` and `@angular/compiler-cli` peer-depend on
+- **Groups.** The Angular packages (`@angular/*`, `@angular-devkit/*`, `@schematics/angular`,
+  `angular-eslint`) travel together, and so do `nx` and `@nx/*`. `@angular/compiler` and `@angular/compiler-cli` peer-depend on
   each other's exact version. A PR that splits the Angular set is a configuration bug: report it, do not
   merge half of it.
 - **Ignored majors.** Major bumps of `vitest`, `@vitest/*` and `@types/node` are ignored on purpose
