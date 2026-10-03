@@ -59,5 +59,5 @@ asked.
 ## 7. After
 
 `git fetch origin` and confirm `main` has the commit. A push to `main` runs CI again and, for site
-changes, deploys the Pages site: open `https://nguyenan97.github.io/angular-saas-kit/` (and `/demo/`,
+changes, deploys the Pages site: open `https://nguyenan97.github.io/angular-saas-kit/` (and `/demo/`, `/storybook/`,
 `/docs/`) and check the change is live. If a follow-up is needed, start a new branch from `origin/main`.

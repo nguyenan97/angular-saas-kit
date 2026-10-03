@@ -8,7 +8,7 @@
     "build": "nx run-many -t build",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "pages": "nx run-many -t build -p landing dashboard -c pages && npm run docs:build && node scripts/assemble-pages.mjs",
+    "pages": "nx run-many -t build -p landing dashboard -c pages && nx run ui:build-storybook && npm run docs:build && node scripts/assemble-pages.mjs",
     "pages:preview": "node scripts/preview-pages.mjs",
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",
@@ -17,18 +17,21 @@
     "check:packages": "node scripts/check-packages.mjs",
     "format:check": "prettier --check .",
     "verify": "nx run-many -t lint test build && npm run typecheck && npm run check:architecture && npm run check:packages",
-    "prepare": "husky"
+    "prepare": "husky",
+    "storybook": "nx run ui:storybook"
   },
   "private": true,
   "devDependencies": {
     "@analogjs/vite-plugin-angular": "~2.7.2",
     "@analogjs/vitest-angular": "~2.7.2",
+    "@angular-devkit/build-angular": "~22.2.1",
     "@angular-devkit/core": "~22.2.1",
     "@angular-devkit/schematics": "~22.2.1",
     "@angular/build": "~22.2.1",
     "@angular/cli": "~22.2.1",
     "@angular/compiler-cli": "~22.2.1",
     "@angular/language-service": "~22.2.1",
+    "@angular/platform-browser-dynamic": "~22.2.1",
     "@commitlint/cli": "^21.2.3",
     "@commitlint/config-conventional": "^21.2.2",
     "@eslint/js": "^10.0.1",
@@ -46,6 +49,8 @@
     "@oxc-project/runtime": "^0.151.0",
     "@playwright/test": "^1.37.0",
     "@schematics/angular": "~22.2.1",
+    "@storybook/addon-a11y": "~10.6.1",
+    "@storybook/angular": "~10.6.1",
     "@swc-node/register": "~1.12.1",
     "@swc/core": "~1.16.2",
     "@swc/helpers": "~0.5.18",
@@ -71,6 +76,7 @@
     "nx": "23.2.1",
     "postcss": "^8.5.28",
     "prettier": "~3.9.8",
+    "storybook": "~10.6.1",
     "tailwindcss": "^4.3.3",
     "ts-jest": "^29.4.13",
     "ts-node": "10.9.2",
@@ -121,6 +127,9 @@
     "axios": "^1.20.0",
     "nx": {
       "brace-expansion": "^5.0.12"
+    },
+    "@storybook/builder-webpack5": {
+      "webpack-dev-middleware": "^7.4.6"
     }
   }
 }

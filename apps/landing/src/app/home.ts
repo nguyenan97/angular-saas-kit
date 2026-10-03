@@ -47,6 +47,11 @@ import { SITE_LINKS } from './site-links';
         @if (links.docs) {
           <a askButton variant="outline" size="lg" [href]="links.docs">Docs</a>
         }
+        @if (links.storybook) {
+          <a askButton variant="outline" size="lg" [href]="links.storybook"
+            >Components</a
+          >
+        }
         <a
           askButton
           variant="outline"

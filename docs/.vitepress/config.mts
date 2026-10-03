@@ -129,6 +129,7 @@ export default defineConfig({
       { text: 'Decisions', link: '/adr/' },
       { text: 'Reference', link: '/reference/scripts' },
       { text: 'Live demo', link: `${SITE}/demo/` },
+      { text: 'Storybook', link: `${SITE}/storybook/` },
     ],
 
     sidebar: [

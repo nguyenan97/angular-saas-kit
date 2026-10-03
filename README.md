@@ -7,6 +7,7 @@ Signals-first, zoneless, Tailwind v4, and not locked to any UI library.
 
 **[Live demo](https://nguyenan97.github.io/angular-saas-kit/demo/)** ·
 [Docs](https://nguyenan97.github.io/angular-saas-kit/docs/) ·
+[Storybook](https://nguyenan97.github.io/angular-saas-kit/storybook/) ·
 [Landing page](https://nguyenan97.github.io/angular-saas-kit/)
 
 [![CI](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml)
@@ -136,7 +137,7 @@ else changes.
 - [x] Dashboard pages — overview, analytics, orders, customers, products, settings, sign-in, on a mock API
 - [x] Landing sections — features, pricing, FAQ and a blog (testimonials wait until there are real ones)
 - [x] Published docs — guides, C4 architecture and decision records, on GitHub Pages
-- [ ] Storybook
+- [x] Storybook — every component, with a theme toolbar and an accessibility panel, published under `/storybook/`
 - [ ] Figma file with matching variables
 
 ## Contributing

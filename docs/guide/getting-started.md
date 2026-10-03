@@ -29,17 +29,18 @@ running app at once, with no build step in between.
 
 ## The commands you will use
 
-| Command                 | What it does                                                                      |
-| ----------------------- | --------------------------------------------------------------------------------- |
-| `npm start`             | Serves the dashboard.                                                             |
-| `npm run start:landing` | Serves the landing page.                                                          |
-| `npm test`              | Runs every project's unit tests, with coverage.                                   |
-| `npm run lint`          | Lints every project. Template accessibility rules are errors.                     |
-| `npm run build`         | Builds everything into `dist/`.                                                   |
-| `npm run verify`        | Lint, test, build, workspace typecheck, then the architecture and package checks. |
-| `npm run format:check`  | Checks formatting with Prettier. Commits are formatted for you by a hook.         |
-| `npm run pages`         | Builds the whole demo site (landing, dashboard demo, these docs) into `_site/`.   |
-| `npm run docs:dev`      | Serves these docs with live reload.                                               |
+| Command                 | What it does                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| `npm start`             | Serves the dashboard.                                                                |
+| `npm run start:landing` | Serves the landing page.                                                             |
+| `npm test`              | Runs every project's unit tests, with coverage.                                      |
+| `npm run lint`          | Lints every project. Template accessibility rules are errors.                        |
+| `npm run build`         | Builds everything into `dist/`.                                                      |
+| `npm run verify`        | Lint, test, build, workspace typecheck, then the architecture and package checks.    |
+| `npm run format:check`  | Checks formatting with Prettier. Commits are formatted for you by a hook.            |
+| `npm run storybook`     | Serves the components in Storybook, on port 4400.                                    |
+| `npm run pages`         | Builds the whole demo site (landing, dashboard demo, docs, Storybook) into `_site/`. |
+| `npm run docs:dev`      | Serves these docs with live reload.                                                  |
 
 The full list, with the Nx targets behind each, is in
 [Scripts and targets](../reference/scripts.md).
