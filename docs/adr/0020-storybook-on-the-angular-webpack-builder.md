@@ -1,6 +1,6 @@
 # 0020. Storybook on the Angular webpack builder
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-03
 - **Deciders:** @nguyenan97
 
