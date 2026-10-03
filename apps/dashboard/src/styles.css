@@ -9,7 +9,9 @@
 /* ...and the components it uses from the shared library. */
 @source '../../../libs/ui/src';
 
-/* Tests are not part of the app. Their strings (a `bg-white` in a test of
- * class merging, say) must not turn into utilities in the production CSS. */
+/* Tests and Storybook stories are not part of the app. Their strings (a
+ * `bg-white` in a test of class merging, say) must not turn into utilities in
+ * the production CSS. */
 @source not './**/*.spec.ts';
 @source not '../../../libs/ui/src/**/*.spec.ts';
+@source not '../../../libs/ui/src/**/*.stories.ts';

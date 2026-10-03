@@ -13,11 +13,12 @@ running; the other two are how you would take it further.
 
 One site at `https://nguyenan97.github.io/angular-saas-kit/`:
 
-| URL      | What it is                                    |
-| -------- | --------------------------------------------- |
-| `/`      | The landing page, prerendered to static files |
-| `/demo/` | The dashboard, a single-page app              |
-| `/docs/` | These docs                                    |
+| URL           | What it is                                    |
+| ------------- | --------------------------------------------- |
+| `/`           | The landing page, prerendered to static files |
+| `/demo/`      | The dashboard, a single-page app              |
+| `/docs/`      | These docs                                    |
+| `/storybook/` | The components in Storybook                   |
 
 It is built and deployed by the `Pages` workflow, from `main` only. Every pull request also
 runs the build and the site checks, and attaches the built site as a downloadable

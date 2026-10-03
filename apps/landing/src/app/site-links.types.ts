@@ -10,4 +10,6 @@ export interface SiteLinks {
   readonly demo: string | null;
   /** The documentation site. */
   readonly docs: string | null;
+  /** The components' Storybook. */
+  readonly storybook: string | null;
 }

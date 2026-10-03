@@ -28,6 +28,7 @@ _why_ something is the way it is before changing it. The reasoning for
 | [0017](0017-icons-from-lucide-data-drawn-by-one-component.md)       | Icons: Lucide's data, drawn by one component              | Accepted |
 | [0018](0018-charts-as-svg-on-the-chart-tokens-with-a-data-table.md) | Charts: SVG on the chart tokens, with the data as a table | Accepted |
 | [0019](0019-blog-posts-as-prerendered-components.md)                | Blog posts as prerendered Angular components              | Accepted |
+| [0020](0020-storybook-on-the-angular-webpack-builder.md)            | Storybook on the Angular webpack builder                  | Proposed |
 
 Records 0002-0008 were written after the fact, from the code and its history, and
 describe what is true today - including what is unfinished.

@@ -2,11 +2,12 @@
 /**
  * Assembles the GitHub Pages site from the `pages` builds and checks it.
  *
- *   _site/         <- apps/landing    static, prerendered
- *   _site/demo/    <- apps/dashboard  single-page app, hash routing
- *   _site/docs/    <- docs            VitePress site
+ *   _site/            <- apps/landing    static, prerendered
+ *   _site/demo/       <- apps/dashboard  single-page app, hash routing
+ *   _site/docs/       <- docs            VitePress site
+ *   _site/storybook/  <- libs/ui         the components' Storybook
  *
- * Run through `npm run pages`, which builds all three first.
+ * Run through `npm run pages`, which builds all four first.
  *
  * The check exists because a wrong <base href> is the classic way for a Pages
  * deploy to go green and serve a blank page: every local file an index.html
@@ -48,6 +49,14 @@ const parts = [
     to: 'docs',
     base: `${SITE_BASE}docs/`,
     // VitePress writes absolute paths under its `base` and emits no <base> tag.
+    baseTag: false,
+  },
+  {
+    name: 'storybook',
+    from: 'dist/storybook/ui',
+    to: 'storybook',
+    base: `${SITE_BASE}storybook/`,
+    // Storybook writes relative paths and emits no <base> tag either.
     baseTag: false,
   },
 ];

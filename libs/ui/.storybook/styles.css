@@ -1,0 +1,9 @@
+/* Storybook's global styles: the kit's tokens and Tailwind, imported the way
+ * the apps import them, so a story looks exactly as it does in an app. */
+@import '../../tokens/src/styles.css';
+
+/* The components and their stories... */
+@source '../src';
+
+/* ...but not their tests, whose strings must not become utilities. */
+@source not '../src/**/*.spec.ts';
