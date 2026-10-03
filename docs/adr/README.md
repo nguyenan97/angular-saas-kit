@@ -27,7 +27,7 @@ _why_ something is the way it is before changing it. The reasoning for
 | [0016](0016-packages-declare-and-ship-what-they-need.md)            | Packages declare what they import, ship what they promise | Accepted |
 | [0017](0017-icons-from-lucide-data-drawn-by-one-component.md)       | Icons: Lucide's data, drawn by one component              | Accepted |
 | [0018](0018-charts-as-svg-on-the-chart-tokens-with-a-data-table.md) | Charts: SVG on the chart tokens, with the data as a table | Accepted |
-| [0019](0019-blog-posts-as-prerendered-components.md)                | Blog posts as prerendered Angular components              | Proposed |
+| [0019](0019-blog-posts-as-prerendered-components.md)                | Blog posts as prerendered Angular components              | Accepted |
 
 Records 0002-0008 were written after the fact, from the code and its history, and
 describe what is true today - including what is unfinished.
