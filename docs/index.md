@@ -14,6 +14,9 @@ hero:
       text: Live demo
       link: https://nguyenan97.github.io/angular-saas-kit/demo/
     - theme: alt
+      text: Storybook
+      link: https://nguyenan97.github.io/angular-saas-kit/storybook/
+    - theme: alt
       text: View on GitHub
       link: https://github.com/nguyenan97/angular-saas-kit
 

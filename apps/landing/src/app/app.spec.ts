@@ -40,12 +40,13 @@ describe('Landing', () => {
     expect(linkTexts(fixture.nativeElement)).toContain('Get started');
   });
 
-  it('shows no demo or docs link when the landing runs on its own', async () => {
+  it('shows no demo, docs or Storybook link when the landing runs on its own', async () => {
     // The links only exist in the GitHub Pages build; elsewhere they would be dead.
     const fixture = await render();
     const links = linkTexts(fixture.nativeElement);
     expect(links).not.toContain('Live demo');
     expect(links).not.toContain('Docs');
+    expect(links).not.toContain('Components');
   });
 
   it('offers a skip link first, to a main that can take the focus', async () => {

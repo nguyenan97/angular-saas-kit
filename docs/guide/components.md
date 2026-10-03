@@ -30,6 +30,28 @@ The keyboard behaviour of `Dialog`, `Menu` and `Tabs` (focus traps, arrow keys, 
 comes from the Angular CDK and is unit-tested; it is proved in a real browser as the dashboard
 pages start to use them.
 
+## Storybook
+
+Every component has stories, published at
+[/storybook/](https://nguyenan97.github.io/angular-saas-kit/storybook/) next to the demo:
+
+```bash
+npm run storybook        # http://localhost:4400
+```
+
+- **The toolbar is the theme.** Mode, accent and radius set the same class and data attributes on
+  the html element that `ThemeService` sets, so every story shows what a theme change does.
+- **The Accessibility panel runs axe** on the story you are looking at. Every story has none of
+  its violations; keep it that way.
+- **Stories run zoneless**, like the apps, on the same tokens and Tailwind sources.
+
+A story lives next to its component, as `<name>.stories.ts`. It imports what its template uses
+with `moduleMetadata`, and a story that needs state (a sorted table, an open dialog) declares a
+small host component in the same file, with an `ask-story-` selector. Stories are left out of the
+npm package (`tsconfig.lib.json`) and out of the apps' CSS (`@source not` in each app's
+stylesheet), as tests are. Why Storybook brings back the webpack builder is in
+[ADR 0020](../adr/0020-storybook-on-the-angular-webpack-builder.md).
+
 ## The rules
 
 These are the things the kit is _for_. A pull request that breaks one will be asked to

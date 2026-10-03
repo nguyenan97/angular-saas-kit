@@ -64,7 +64,11 @@ Enter/Space/arrow keys do what the pattern says. "It renders" is not a test. Run
 ## Document it
 
 A short README next to the component: usage, an API table, accessibility notes. If the component is
-part of the story users need, add it to `docs/guide/components.md`. The `ThemeSwitcher` is exercised
+part of the story users need, add it to `docs/guide/components.md`.
+
+Add `<name>.stories.ts` next to it: its variants and states, with `moduleMetadata` for what the
+templates use, and a small `ask-story-` host component where a story needs state. Run
+`npm run storybook` and check the Accessibility panel shows no violations, in light and dark. The `ThemeSwitcher` is exercised
 by the dashboard, so check it still works in the dashboard in light and dark and with all four accents.
 
 ## Finish

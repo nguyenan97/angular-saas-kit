@@ -222,6 +222,14 @@ package gets the utilities they use. Nothing in the workspace imports it: both a
 Tailwind at `libs/ui/src` directly. See
 [ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md).
 
+Every component also has stories, `<name>.stories.ts` next to its source, and
+`libs/ui/.storybook` configures Storybook for them: the theme toolbar, the accessibility addon,
+and a stylesheet that imports the tokens and points Tailwind at `libs/ui/src`, as the apps do.
+The `storybook` and `build-storybook` targets run it on the Angular webpack builder, and the
+Pages site publishes the build under `/storybook/`
+([ADR 0020](../adr/0020-storybook-on-the-angular-webpack-builder.md)). Stories stay out of the
+package and out of the apps' CSS.
+
 ## mock-api
 
 Used by the dashboard in development and in the demo; the production build leaves it out ([ADR 0006](../adr/0006-in-memory-mock-api-instead-of-a-backend.md)).

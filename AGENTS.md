@@ -24,6 +24,7 @@ npx nx test <project>      # one project: dashboard, landing, tokens, ui, mock-a
 npm run verify             # lint + test + build + typecheck + architecture and package checks
 npm run format:check       # Prettier; a commit hook formats staged files for you
 npm run docs:dev           # the docs site, live reload
+npm run storybook          # the ui components in Storybook, http://localhost:4400
 npm run pages              # the whole Pages site into _site/; then npm run pages:preview
 ```
 
@@ -90,7 +91,7 @@ rejects an import, the import is wrong; do not loosen the rule. A new project ne
   component goes in `libs/ui/package.json` and in `allowedNonPeerDependencies` in its
   `ng-package.json`; a file a package promises must ship. `npm run check:packages` checks the built
   output, after a build. The tokens stylesheet declares no `@source`: each app declares its own,
-  and excludes `*.spec.ts` with `@source not`, or test strings become utilities.
+  and excludes `*.spec.ts` and `*.stories.ts` with `@source not`, or test strings become utilities.
 - **Docs links are relative and end in `.md`**, so they work on GitHub and on the site. A
   folder's `README.md` becomes its index page. `docs/superpowers` is working material, not published.
 - **Dependency changes:** keep `package-lock.json` in sync with npm 11, and run `npm audit`. A
