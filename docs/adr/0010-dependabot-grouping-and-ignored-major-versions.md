@@ -31,6 +31,13 @@ In [`.github/dependabot.yml`](../../.github/dependabot.yml):
   entries are dropped once all three tools widen their peer range; `@types/node`
   stays on the minimum supported Node.
 
+_Amended 2026-10-03:_ the first run after this change kept `@angular/build`, `cli` and
+`compiler-cli` with the rest of Angular, in one PR
+([#51](https://github.com/nguyenan97/angular-saas-kit/pull/51)). `@schematics/angular`, which
+ships with `@angular/cli` at the same version and matches neither pattern, still went to
+`dev-minor` ([#52](https://github.com/nguyenan97/angular-saas-kit/pull/52)), so each PR
+installed a nested copy of the other's version. Both groups now name it.
+
 Dependabot security updates are enabled, and PRs are triaged before merging: a PR
 that fails `npm ci` is never merged, and unsupported bumps are closed with the
 reason.

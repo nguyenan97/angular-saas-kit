@@ -7,9 +7,17 @@ updates:
     open-pull-requests-limit: 5
     groups:
       # Angular packages must move together or the build breaks on a
-      # half-upgraded tree.
+      # half-upgraded tree. @schematics/angular ships with @angular/cli at the
+      # same version; left out, it lands in dev-minor and each PR installs a
+      # nested copy of the other's version.
       angular:
-        patterns: ['@angular/*', '@angular-devkit/*', 'angular-eslint']
+        patterns:
+          [
+            '@angular/*',
+            '@angular-devkit/*',
+            '@schematics/angular',
+            'angular-eslint',
+          ]
       nx:
         patterns: ['@nx/*', 'nx']
       dev-minor:
@@ -21,7 +29,14 @@ updates:
         # their own: @angular/compiler and @angular/compiler-cli peer-depend
         # on each other's exact version.
         exclude-patterns:
-          ['@angular/*', '@angular-devkit/*', 'angular-eslint', '@nx/*', 'nx']
+          [
+            '@angular/*',
+            '@angular-devkit/*',
+            '@schematics/angular',
+            'angular-eslint',
+            '@nx/*',
+            'nx',
+          ]
     ignore:
       # Vitest 5 is not supported yet: @angular/build wants ^4.0.8, @nx/vitest
       # ^3 || ^4 and @analogjs/vitest-angular <= ^4. Drop these two entries
