@@ -13,12 +13,15 @@
 | [Badge](../../libs/ui/src/lib/badge/README.md)                | `ask-badge`                          | A short status or count                          |
 | [Button](../../libs/ui/src/lib/button/README.md)              | `button[askButton]`, `a[askButton]`  | Styles a native button or link                   |
 | [Card](../../libs/ui/src/lib/card/README.md)                  | `ask-card` and its parts             | A raised surface; the parts are directives       |
+| [Checkbox](../../libs/ui/src/lib/checkbox/README.md)          | `input[askCheckbox]`                 | Styles a native checkbox                         |
 | [Chart](../../libs/ui/src/lib/chart/README.md)                | `ask-chart`                          | A line or bars in SVG, with the data as a table  |
 | [Dialog](../../libs/ui/src/lib/dialog/README.md)              | `DialogService` and the parts        | A modal dialog, on the CDK's `Dialog`            |
 | [Icon](../../libs/ui/src/lib/icon/README.md)                  | `ask-icon`                           | An inline SVG icon, from Lucide's data           |
 | [Input and Label](../../libs/ui/src/lib/input/README.md)      | `input[askInput]`, `label[askLabel]` | Style native text fields, selects and labels     |
 | [Menu](../../libs/ui/src/lib/menu/README.md)                  | `[askMenuTrigger]`, `[askMenu]`, ... | A menu of actions, on the CDK's menu             |
 | [Pagination](../../libs/ui/src/lib/pagination/README.md)      | `ask-pagination`                     | Previous and next for a paged list               |
+| [Radio](../../libs/ui/src/lib/radio/README.md)                | `input[askRadio]`                    | Styles a native radio, grouped by a fieldset     |
+| [Switch](../../libs/ui/src/lib/switch/README.md)              | `input[askSwitch]`                   | A checkbox drawn as a switch, `role="switch"`    |
 | [Table and SortHeader](../../libs/ui/src/lib/table/README.md) | `table[askTable]`, `ask-sort-header` | Styles a native table; a sortable column header  |
 | [Tabs](../../libs/ui/src/lib/tabs/README.md)                  | `ask-tabs`, `ask-tab`                | Tabs, with the CDK's roving focus                |
 | ThemeSwitcher                                                 | `ask-theme-switcher`                 | The three theme axes, as groups of native radios |
