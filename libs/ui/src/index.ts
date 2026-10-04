@@ -11,3 +11,6 @@ export * from './lib/menu/menu';
 export * from './lib/pagination/pagination';
 export * from './lib/table/table';
 export * from './lib/tabs/tabs';
+export * from './lib/checkbox/checkbox';
+export * from './lib/radio/radio';
+export * from './lib/switch/switch';
