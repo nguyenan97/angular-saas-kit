@@ -14,3 +14,6 @@ export * from './lib/tabs/tabs';
 export * from './lib/checkbox/checkbox';
 export * from './lib/radio/radio';
 export * from './lib/switch/switch';
+export * from './lib/alert/alert';
+export * from './lib/skeleton/skeleton';
+export * from './lib/avatar/avatar';

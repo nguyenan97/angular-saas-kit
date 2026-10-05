@@ -10,6 +10,8 @@
 
 | Component                                                     | Selector                             | What it is                                       |
 | ------------------------------------------------------------- | ------------------------------------ | ------------------------------------------------ |
+| [Alert](../../libs/ui/src/lib/alert/README.md)                | `ask-alert`                          | A message that stays on the page                 |
+| [Avatar](../../libs/ui/src/lib/avatar/README.md)              | `ask-avatar`                         | A picture, or initials                           |
 | [Badge](../../libs/ui/src/lib/badge/README.md)                | `ask-badge`                          | A short status or count                          |
 | [Button](../../libs/ui/src/lib/button/README.md)              | `button[askButton]`, `a[askButton]`  | Styles a native button or link                   |
 | [Card](../../libs/ui/src/lib/card/README.md)                  | `ask-card` and its parts             | A raised surface; the parts are directives       |
@@ -22,6 +24,7 @@
 | [Pagination](../../libs/ui/src/lib/pagination/README.md)      | `ask-pagination`                     | Previous and next for a paged list               |
 | [Radio](../../libs/ui/src/lib/radio/README.md)                | `input[askRadio]`                    | Styles a native radio, grouped by a fieldset     |
 | [Switch](../../libs/ui/src/lib/switch/README.md)              | `input[askSwitch]`                   | A checkbox drawn as a switch, `role="switch"`    |
+| [Skeleton](../../libs/ui/src/lib/skeleton/README.md)          | `ask-skeleton`                       | A loading placeholder                            |
 | [Table and SortHeader](../../libs/ui/src/lib/table/README.md) | `table[askTable]`, `ask-sort-header` | Styles a native table; a sortable column header  |
 | [Tabs](../../libs/ui/src/lib/tabs/README.md)                  | `ask-tabs`, `ask-tab`                | Tabs, with the CDK's roving focus                |
 | ThemeSwitcher                                                 | `ask-theme-switcher`                 | The three theme axes, as groups of native radios |
