@@ -30,6 +30,7 @@ _why_ something is the way it is before changing it. The reasoning for
 | [0019](0019-blog-posts-as-prerendered-components.md)                | Blog posts as prerendered Angular components              | Accepted |
 | [0020](0020-storybook-on-the-angular-webpack-builder.md)            | Storybook on the Angular webpack builder                  | Accepted |
 | [0021](0021-bounded-contexts-as-nx-libraries.md)                    | Bounded contexts as Nx libraries                          | Proposed |
+| [0022](0022-the-token-and-signal-rules-are-checked-by-machine.md)   | The token and signal rules are checked by machine         | Proposed |
 
 Records 0002-0008 were written after the fact, from the code and its history, and
 describe what is true today - including what is unfinished.

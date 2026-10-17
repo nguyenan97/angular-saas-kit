@@ -29,6 +29,10 @@ _Amended 2026-09-27:_ the `lint` leg also runs
 when the C4 container map and the code disagree. It has no dependencies, so it shares
 the `lint` runner instead of adding one.
 
+_Amended 2026-10-17:_ the `lint` leg also runs
+[`scripts/check-tokens.mjs`](../../scripts/check-tokens.mjs), on the same reasoning
+([0022](0022-the-token-and-signal-rules-are-checked-by-machine.md)).
+
 _Amended 2026-09-27:_ the Pages workflow's `Build site` job is required as well, because the
 documentation site is built from `main` on every merge and a dead link in it fails the build.
 `Deploy site` is skipped on pull requests, so it is not required.

@@ -15,8 +15,9 @@
     "typecheck": "tsc -p tsconfig.base.json --noEmit",
     "check:architecture": "node scripts/check-architecture.mjs",
     "check:packages": "node scripts/check-packages.mjs",
+    "check:tokens": "node scripts/check-tokens.mjs",
     "format:check": "prettier --check .",
-    "verify": "nx run-many -t lint test build && npm run typecheck && npm run check:architecture && npm run check:packages",
+    "verify": "nx run-many -t lint test build && npm run typecheck && npm run check:architecture && npm run check:tokens && npm run check:packages",
     "prepare": "husky",
     "storybook": "nx run ui:storybook"
   },

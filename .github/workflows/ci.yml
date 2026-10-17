@@ -60,6 +60,12 @@ jobs:
         if: matrix.target == 'lint' && !cancelled()
         run: node scripts/check-architecture.mjs
 
+      # Components take their colours from the semantic tokens (ADR 0022). Same
+      # reasoning as the map: no dependencies, well under a second, the lint leg.
+      - name: Check the semantic tokens
+        if: matrix.target == 'lint' && !cancelled()
+        run: node scripts/check-tokens.mjs
+
       # The built libraries have to install and work on their own: every import
       # declared, every promised file shipped. It only means something after a
       # build, and says so when a change reaches no library and nothing was built.

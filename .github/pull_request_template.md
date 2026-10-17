@@ -19,7 +19,7 @@ people link to). Blast radius in a word: none, docs, one component, the dashboar
 ## Checklist
 
 - [ ] `npx nx run-many -t lint test build` passes locally
-- [ ] No colour literals in components — semantic tokens only
+- [ ] No colour literals in components — semantic tokens only (`npm run check:tokens`)
 - [ ] Keyboard reachable and operable; focus is visible
 - [ ] ARIA attributes match the WAI-ARIA pattern for this component
 - [ ] Works in both light and dark, and with all four accents
