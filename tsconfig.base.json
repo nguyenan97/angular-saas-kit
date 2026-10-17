@@ -28,7 +28,8 @@
     "paths": {
       "@angular-saas-kit/ui": ["./libs/ui/src/index.ts"],
       "@angular-saas-kit/tokens": ["./libs/tokens/src/index.ts"],
-      "@angular-saas-kit/mock-api": ["./libs/mock-api/src/index.ts"]
+      "@angular-saas-kit/mock-api": ["./libs/mock-api/src/index.ts"],
+      "@angular-saas-kit/shared-kernel": ["./libs/shared/kernel/src/index.ts"]
     }
   },
   "angularCompilerOptions": {
