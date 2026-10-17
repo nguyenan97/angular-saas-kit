@@ -12,13 +12,10 @@ import {
   submit,
 } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
-import { Button, Input, Label } from '@angular-saas-kit/ui';
+import { Button, Input } from '@angular-saas-kit/ui';
 
-import {
-  errorMessage,
-  errorShown,
-  focusFirstInvalid,
-} from '../forms/field-errors';
+import { focusFirstInvalid } from '../forms/field-errors';
+import { FormFieldFrame } from '../forms/form-field';
 
 /**
  * Sign in with an email and a password.
@@ -29,31 +26,20 @@ import {
 @Component({
   selector: 'ask-sign-in',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Button, FormField, Input, Label, RouterLink],
+  imports: [Button, FormField, FormFieldFrame, Input, RouterLink],
   template: `
     <form novalidate class="mt-6 flex flex-col gap-4" (submit)="save($event)">
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="sign-in-email">Email</label>
+      <ask-form-field label="Email">
         <input
           askInput
           id="sign-in-email"
           type="email"
           autocomplete="email"
           [formField]="form.email"
-          [attr.aria-invalid]="shown(form.email) || null"
-          [attr.aria-describedby]="
-            shown(form.email) ? 'sign-in-email-error' : null
-          "
         />
-        @if (shown(form.email)) {
-          <p id="sign-in-email-error" class="text-sm text-destructive">
-            {{ message(form.email) }}
-          </p>
-        }
-      </div>
+      </ask-form-field>
 
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="sign-in-password">Password</label>
+      <ask-form-field label="Password">
         <div class="relative">
           <input
             askInput
@@ -62,10 +48,6 @@ import {
             autocomplete="current-password"
             [type]="revealed() ? 'text' : 'password'"
             [formField]="form.password"
-            [attr.aria-invalid]="shown(form.password) || null"
-            [attr.aria-describedby]="
-              shown(form.password) ? 'sign-in-password-error' : null
-            "
           />
           <button
             type="button"
@@ -76,19 +58,15 @@ import {
             Show<span class="sr-only"> password</span>
           </button>
         </div>
-        @if (shown(form.password)) {
-          <p id="sign-in-password-error" class="text-sm text-destructive">
-            {{ message(form.password) }}
-          </p>
-        }
         <!-- After the field, not beside its label: Tab goes from the email
              straight to the password. -->
         <a
+          askFieldEnd
           routerLink="/forgot-password"
           class="w-fit rounded-sm text-sm text-primary underline-offset-4 hover:underline"
           >Forgot your password?</a
         >
-      </div>
+      </ask-form-field>
 
       <button type="submit" askButton class="mt-2 w-full">Sign in</button>
     </form>
@@ -117,9 +95,6 @@ export class SignIn {
 
   /** The password shown as text, for checking what was typed. A toggle button, so aria-pressed. */
   protected readonly revealed = signal(false);
-
-  protected readonly shown = errorShown;
-  protected readonly message = errorMessage;
 
   protected async save(event: Event): Promise<void> {
     event.preventDefault();

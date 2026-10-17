@@ -7,13 +7,10 @@ import {
   submit,
 } from '@angular/forms/signals';
 import { RouterLink } from '@angular/router';
-import { Button, Input, Label } from '@angular-saas-kit/ui';
+import { Button, Input } from '@angular-saas-kit/ui';
 
-import {
-  errorMessage,
-  errorShown,
-  focusFirstInvalid,
-} from '../forms/field-errors';
+import { focusFirstInvalid } from '../forms/field-errors';
+import { FormFieldFrame } from '../forms/form-field';
 
 /**
  * Ask for a password reset link.
@@ -25,7 +22,7 @@ import {
 @Component({
   selector: 'ask-forgot-password',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Button, FormField, Input, Label, RouterLink],
+  imports: [Button, FormField, FormFieldFrame, Input, RouterLink],
   template: `
     <p class="mt-2 text-sm text-muted-foreground">
       Enter the email address you signed up with, and we will send you a link to
@@ -33,25 +30,15 @@ import {
     </p>
 
     <form novalidate class="mt-6 flex flex-col gap-4" (submit)="save($event)">
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="reset-email">Email</label>
+      <ask-form-field label="Email">
         <input
           askInput
           id="reset-email"
           type="email"
           autocomplete="email"
           [formField]="form.email"
-          [attr.aria-invalid]="shown(form.email) || null"
-          [attr.aria-describedby]="
-            shown(form.email) ? 'reset-email-error' : null
-          "
         />
-        @if (shown(form.email)) {
-          <p id="reset-email-error" class="text-sm text-destructive">
-            {{ message(form.email) }}
-          </p>
-        }
-      </div>
+      </ask-form-field>
 
       <button type="submit" askButton class="mt-2 w-full">Send the link</button>
     </form>
@@ -78,9 +65,6 @@ export class ForgotPassword {
 
   /** What was done, read out by the status region. */
   protected readonly sent = signal('');
-
-  protected readonly shown = errorShown;
-  protected readonly message = errorMessage;
 
   protected async save(event: Event): Promise<void> {
     event.preventDefault();

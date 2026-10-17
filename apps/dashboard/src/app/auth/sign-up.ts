@@ -13,13 +13,10 @@ import {
   submit,
 } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
-import { Button, Input, Label } from '@angular-saas-kit/ui';
+import { Button, Input } from '@angular-saas-kit/ui';
 
-import {
-  errorMessage,
-  errorShown,
-  focusFirstInvalid,
-} from '../forms/field-errors';
+import { focusFirstInvalid } from '../forms/field-errors';
+import { FormFieldFrame } from '../forms/form-field';
 
 /** The fewest characters a new password may have. Said before the user types, not after. */
 export const PASSWORD_MIN_LENGTH = 8;
@@ -32,72 +29,37 @@ export const PASSWORD_MIN_LENGTH = 8;
 @Component({
   selector: 'ask-sign-up',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Button, FormField, Input, Label, RouterLink],
+  imports: [Button, FormField, FormFieldFrame, Input, RouterLink],
   template: `
     <form novalidate class="mt-6 flex flex-col gap-4" (submit)="save($event)">
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="sign-up-name">Name</label>
+      <ask-form-field label="Name">
         <input
           askInput
           id="sign-up-name"
           autocomplete="name"
           [formField]="form.name"
-          [attr.aria-invalid]="shown(form.name) || null"
-          [attr.aria-describedby]="
-            shown(form.name) ? 'sign-up-name-error' : null
-          "
         />
-        @if (shown(form.name)) {
-          <p id="sign-up-name-error" class="text-sm text-destructive">
-            {{ message(form.name) }}
-          </p>
-        }
-      </div>
+      </ask-form-field>
 
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="sign-up-email">Email</label>
+      <ask-form-field label="Email">
         <input
           askInput
           id="sign-up-email"
           type="email"
           autocomplete="email"
           [formField]="form.email"
-          [attr.aria-invalid]="shown(form.email) || null"
-          [attr.aria-describedby]="
-            shown(form.email) ? 'sign-up-email-error' : null
-          "
         />
-        @if (shown(form.email)) {
-          <p id="sign-up-email-error" class="text-sm text-destructive">
-            {{ message(form.email) }}
-          </p>
-        }
-      </div>
+      </ask-form-field>
 
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="sign-up-password">Password</label>
+      <ask-form-field label="Password" [hint]="passwordHint">
         <input
           askInput
           id="sign-up-password"
           type="password"
           autocomplete="new-password"
           [formField]="form.password"
-          [attr.aria-invalid]="shown(form.password) || null"
-          [attr.aria-describedby]="
-            shown(form.password)
-              ? 'sign-up-password-hint sign-up-password-error'
-              : 'sign-up-password-hint'
-          "
         />
-        <p id="sign-up-password-hint" class="text-sm text-muted-foreground">
-          At least {{ minLength }} characters.
-        </p>
-        @if (shown(form.password)) {
-          <p id="sign-up-password-error" class="text-sm text-destructive">
-            {{ message(form.password) }}
-          </p>
-        }
-      </div>
+      </ask-form-field>
 
       <button type="submit" askButton class="mt-2 w-full">
         Create account
@@ -117,7 +79,7 @@ export const PASSWORD_MIN_LENGTH = 8;
 export class SignUp {
   private readonly router = inject(Router);
 
-  protected readonly minLength = PASSWORD_MIN_LENGTH;
+  protected readonly passwordHint = `At least ${PASSWORD_MIN_LENGTH} characters.`;
   protected readonly model = signal({ name: '', email: '', password: '' });
   protected readonly form = form(this.model, (path) => {
     required(path.name, { message: 'Enter your name.' });
@@ -130,9 +92,6 @@ export class SignUp {
       message: `Use at least ${PASSWORD_MIN_LENGTH} characters.`,
     });
   });
-
-  protected readonly shown = errorShown;
-  protected readonly message = errorMessage;
 
   protected async save(event: Event): Promise<void> {
     event.preventDefault();

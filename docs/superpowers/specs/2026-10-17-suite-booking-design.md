@@ -148,7 +148,7 @@ about 60 orders across every status.
 - Business errors (409 with `code`): an `ask-alert` above the form or action, with the mapped
   message.
 - Network and 5xx errors: one banner with a Retry button.
-- Field validation: inline, as the dashboard's auth forms do (`field-errors.ts`).
+- Field validation: inline, as the dashboard's auth forms do (`form-field.ts`).
 
 ## UI
 
