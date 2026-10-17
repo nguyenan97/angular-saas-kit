@@ -39,11 +39,21 @@ export interface OrderLineInput {
   readonly vatRate: VatRate;
 }
 
+/** A quantity a line may hold: a positive integer, at most `MAX_LINE_QUANTITY`. */
+export function lineQuantity(
+  value: number,
+): Result<Quantity, 'invalid-quantity'> {
+  const quantity = toQuantity(value);
+  return quantity.ok && quantity.value <= MAX_LINE_QUANTITY
+    ? quantity
+    : err('invalid-quantity');
+}
+
 export function orderLine(
   input: OrderLineInput,
 ): Result<OrderLine, DomainError> {
-  const quantity = toQuantity(input.quantity);
-  if (!quantity.ok || quantity.value > MAX_LINE_QUANTITY) {
+  const quantity = lineQuantity(input.quantity);
+  if (!quantity.ok) {
     return err(
       domainError('invalid-quantity', `${input.productId}: ${input.quantity}`),
     );
