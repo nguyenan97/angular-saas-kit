@@ -13,6 +13,8 @@ libs/
   tokens/           Design tokens, Tailwind theme mapping, ThemeService
   ui/               Shared components (Button, Badge, Card, Icon, Input, Table, ...) and cn()
   mock-api/         In-memory HTTP interceptor with realistic latency
+  shared/kernel/    Plain-TypeScript domain value types, Result and an event bus (no app uses it yet)
+  booking/domain/   Plain-TypeScript Booking domain: SalesOrder, lines, delivery slots (no app uses it yet)
 docs/
   guide/            The guides on this site
   reference/        These reference pages
@@ -28,16 +30,18 @@ scripts/            Build and check scripts: the demo site, the architecture map
 
 ## Projects and tags
 
-Every project carries a `type:` and a `scope:` tag.
+Every project carries a `type:`, a `scope:` and, for bounded-context libraries, a `layer:` tag.
 
-| Project         | Tags                          | Depends on                      |
-| --------------- | ----------------------------- | ------------------------------- |
-| `landing`       | `type:app`, `scope:landing`   | `tokens`                        |
-| `dashboard`     | `type:app`, `scope:dashboard` | `tokens`, `ui`                  |
-| `tokens`        | `type:lib`, `scope:shared`    | none                            |
-| `ui`            | `type:lib`, `scope:shared`    | `tokens`                        |
-| `mock-api`      | `type:lib`, `scope:shared`    | none; nothing depends on it yet |
-| `dashboard-e2e` | none                          | `dashboard`                     |
+| Project          | Tags                                        | Depends on                      |
+| ---------------- | ------------------------------------------- | ------------------------------- |
+| `landing`        | `type:app`, `scope:landing`                 | `tokens`                        |
+| `dashboard`      | `type:app`, `scope:dashboard`               | `tokens`, `ui`                  |
+| `tokens`         | `type:lib`, `scope:shared`                  | none                            |
+| `ui`             | `type:lib`, `scope:shared`                  | `tokens`                        |
+| `mock-api`       | `type:lib`, `scope:shared`                  | none; nothing depends on it yet |
+| `shared-kernel`  | `type:lib`, `scope:shared`, `layer:domain`  | none                            |
+| `booking-domain` | `type:lib`, `scope:booking`, `layer:domain` | `shared-kernel`                 |
+| `dashboard-e2e`  | none                                        | `dashboard`                     |
 
 Lint turns the tags into rules with `@nx/enforce-module-boundaries`, so a wrong import fails
 `npm run lint`:
@@ -46,6 +50,9 @@ Lint turns the tags into rules with `@nx/enforce-module-boundaries`, so a wrong 
 - a shared library may depend only on shared libraries;
 - the dashboard and the landing page may depend on their own scope and on shared code, never
   on each other;
+- a `layer:domain` library may depend only on `layer:domain` libraries, and refuses Angular and
+  RxJS imports;
+- `scope:booking` may depend on itself and on shared code;
 - a buildable library (`tokens`, `ui`) may depend only on other buildable libraries;
 - projects may not depend on each other in a circle.
 
@@ -58,11 +65,13 @@ references that lint cannot see. See
 Libraries are consumed inside the workspace through TypeScript path aliases in
 `tsconfig.base.json`, so there is no build step between an edit and the apps:
 
-| Alias                        | Points at                    |
-| ---------------------------- | ---------------------------- |
-| `@angular-saas-kit/tokens`   | `libs/tokens/src/index.ts`   |
-| `@angular-saas-kit/ui`       | `libs/ui/src/index.ts`       |
-| `@angular-saas-kit/mock-api` | `libs/mock-api/src/index.ts` |
+| Alias                              | Points at                          |
+| ---------------------------------- | ---------------------------------- |
+| `@angular-saas-kit/tokens`         | `libs/tokens/src/index.ts`         |
+| `@angular-saas-kit/ui`             | `libs/ui/src/index.ts`             |
+| `@angular-saas-kit/mock-api`       | `libs/mock-api/src/index.ts`       |
+| `@angular-saas-kit/shared-kernel`  | `libs/shared/kernel/src/index.ts`  |
+| `@angular-saas-kit/booking-domain` | `libs/booking/domain/src/index.ts` |
 
 Code imports a library through its alias. The one place a relative path crosses projects is a
 stylesheet: a CSS `@import` cannot use a TypeScript alias, so each app reaches the shared

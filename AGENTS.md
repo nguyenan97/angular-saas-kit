@@ -20,7 +20,8 @@ dependency. The repo `.npmrc` resolves peer dependencies strictly, like CI; do n
 ```bash
 npm start                  # dashboard dev server, http://localhost:4200
 npm run start:landing      # landing dev server
-npx nx test <project>      # one project: dashboard, landing, tokens, ui, mock-api
+npx nx test <project>      # one project: dashboard, landing, tokens, ui, mock-api,
+                           # shared-kernel, booking-domain
 npm run verify             # lint + test + build + typecheck + architecture and package checks
 npm run format:check       # Prettier; a commit hook formats staged files for you
 npm run docs:dev           # the docs site, live reload
@@ -36,11 +37,13 @@ npm run pages              # the whole Pages site into _site/; then npm run page
 apps/dashboard      admin SPA (client-side)          apps/landing   marketing page (prerendered)
 apps/dashboard-e2e  Playwright (CI: Chromium)         libs/tokens    design tokens, ThemeService
 libs/ui             components (a README each), cn() libs/mock-api  in-memory HTTP interceptor
+libs/shared/kernel    domain value types, Result, event bus (plain TS, no app uses it yet)
+libs/booking/domain  Booking domain: SalesOrder, lines, slots (plain TS, no app uses it yet)
 docs/               guides, C4 diagrams (architecture/), ADRs (adr/), the VitePress site
 scripts/            assemble/preview the Pages site, check the architecture map and the built packages
 ```
 
-Import a library through its alias: `@angular-saas-kit/tokens`, `/ui`, `/mock-api`. Lint enforces
+Import a library through its alias: `@angular-saas-kit/tokens`, `/ui`, `/mock-api`, `/shared-kernel`, `/booking-domain`. Lint enforces
 the module boundaries from each project's `type:` and `scope:` tags (`@nx/enforce-module-boundaries`):
 apps import libs, shared libs import only shared libs, nothing imports an app, no cycles. If lint
 rejects an import, the import is wrong; do not loosen the rule. A new project needs both tags.

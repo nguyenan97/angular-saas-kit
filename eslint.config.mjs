@@ -9,6 +9,34 @@ import tseslint from 'typescript-eslint';
  * Individual projects extend this and add only their own selector prefix, so
  * a rule change here reaches every app and library at once.
  */
+/**
+ * Domain purity (ADR 0021). Domain libraries (the shared kernel and each
+ * context's `domain`) are plain TypeScript, so they may not import Angular or
+ * RxJS. The tag rule limits which projects they depend on; this limits packages.
+ *
+ * It is exported rather than scoped here with `files`: ESLint resolves a
+ * `files` glob against the config file of the project being linted, so a
+ * `libs/...` path in this file never matches. Each domain library's own
+ * eslint.config.mjs adds it.
+ */
+export const domainPurity = {
+  files: ['**/*.ts'],
+  rules: {
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['@angular/*', 'rxjs', 'rxjs/*'],
+            message:
+              'The domain layer is plain TypeScript: no Angular, no RxJS.',
+          },
+        ],
+      },
+    ],
+  },
+};
+
 export default tseslint.config(
   {
     ignores: [
@@ -53,7 +81,8 @@ export default tseslint.config(
   },
 
   // -- Module boundaries ----------------------------------------------------
-  // Every project carries a `type:` and a `scope:` tag in its project.json.
+  // Every project carries a `type:` and a `scope:` tag in its project.json, and
+  // bounded-context libraries a `layer:` tag too (ADR 0021).
   // These constraints turn the tags into rules, so a wrong import fails lint
   // instead of waiting for a reviewer to notice it.
   {
@@ -83,6 +112,18 @@ export default tseslint.config(
             {
               sourceTag: 'scope:landing',
               onlyDependOnLibsWithTags: ['scope:landing', 'scope:shared'],
+            },
+            // A bounded context's domain layer depends only on other domain
+            // code (its own and the shared kernel): no data access, no UI.
+            {
+              sourceTag: 'layer:domain',
+              onlyDependOnLibsWithTags: ['layer:domain'],
+            },
+            // A business context sees itself and shared code. Other contexts
+            // reach it only through its contracts (added with SCM).
+            {
+              sourceTag: 'scope:booking',
+              onlyDependOnLibsWithTags: ['scope:booking', 'scope:shared'],
             },
           ],
         },

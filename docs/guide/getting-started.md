@@ -23,7 +23,7 @@ Use `npm ci`, not `npm install`. Installs resolve peer dependencies strictly, th
 does: the repository's `.npmrc` sets `legacy-peer-deps=false`. If `npm ci` reports
 `ERESOLVE`, the tree has a real conflict. Don't paper over it with `--legacy-peer-deps`.
 
-Both apps live-reload as you edit. The libraries (`tokens`, `ui`, `mock-api`) are consumed
+Both apps live-reload as you edit. The libraries (`tokens`, `ui`, `mock-api`, `shared-kernel`, `booking-domain`) are consumed
 through TypeScript path aliases, so an edit in `libs/tokens` or `libs/ui` shows up in the
 running app at once, with no build step in between.
 
@@ -58,14 +58,16 @@ run, never stricter. See [Continuous integration](ci.md) for what each check is 
 
 ## What is where
 
-| Path             | What it is                                                                                                       |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `apps/dashboard` | The admin application: a client-side single-page app.                                                            |
-| `apps/landing`   | The marketing page: prerendered, with an optional Node server build.                                             |
-| `libs/tokens`    | Design tokens, the Tailwind theme mapping and `ThemeService`.                                                    |
-| `libs/ui`        | Shared components (`Button`, `Card`, `Dialog`, `Menu`, `Table`, `Tabs` and more) and the `cn()` helper.          |
-| `libs/mock-api`  | An in-memory HTTP interceptor with realistic latency. Built, not yet used.                                       |
-| `docs`           | These docs, the [architecture diagrams](../architecture/README.md) and the [decision records](../adr/README.md). |
+| Path                  | What it is                                                                                                       |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `apps/dashboard`      | The admin application: a client-side single-page app.                                                            |
+| `apps/landing`        | The marketing page: prerendered, with an optional Node server build.                                             |
+| `libs/tokens`         | Design tokens, the Tailwind theme mapping and `ThemeService`.                                                    |
+| `libs/ui`             | Shared components (`Button`, `Card`, `Dialog`, `Menu`, `Table`, `Tabs` and more) and the `cn()` helper.          |
+| `libs/mock-api`       | An in-memory HTTP interceptor with realistic latency. Built, not yet used.                                       |
+| `libs/shared/kernel`  | Plain-TypeScript domain library, not used by an app yet.                                                         |
+| `libs/booking/domain` | Plain-TypeScript domain library, not used by an app yet.                                                         |
+| `docs`                | These docs, the [architecture diagrams](../architecture/README.md) and the [decision records](../adr/README.md). |
 
 [Workspace layout](../reference/workspace.md) has the whole tree.
 
