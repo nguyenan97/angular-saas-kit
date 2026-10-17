@@ -58,7 +58,9 @@ layers each".
   `status`, `cancelReason?`, `placedAt?`.
 - **`OrderLine`**: `productId`, `name`, `quantity: Quantity`, `unitPrice: Money`,
   `discount: Money` (per line, not above the line total), `vatRate: 0 | 8 | 10`.
-- **`DeliverySlot`**: `id`, `date`, `window` (`08-12`, `13-17`), `capacity`, `booked`.
+- **`DeliverySlot`**: `id`, `date`, `window` (`08-12`, `13-17`), `capacity`, `booked`. The date is
+  a calendar date in the store's local zone (`Asia/Ho_Chi_Minh`); a malformed date is a data
+  error and throws.
 - **`OrderStatus`**: `draft → placed → confirmed`, and `cancelled` from any of those three.
 - **`Money`**: integer minor units plus currency (`VND`, `USD`); arithmetic refuses mixed
   currencies. No floating point anywhere in totals.
@@ -68,7 +70,10 @@ layers each".
 Every rule below has at least one unit test, written before the code.
 
 1. Lines can be added, changed or removed only while `draft`.
-2. A line's quantity is a positive integer; every line's currency matches the order's.
+2. A line's quantity is a positive integer up to 100,000 (`invalid-quantity`); its unit price is
+   not negative (`invalid-price`); its discount is between zero (`negative-discount`) and the line
+   total (`discount-too-large`); the discount's currency matches the price's (`currency-mismatch`),
+   and every line's currency matches the order's.
 3. `place(slot, now)`: needs at least one line (`empty-order`), a slot later than `now`
    (`slot-in-past`) with `booked < capacity` (`slot-full`). On success: `placed`, `placedAt = now`,
    emits `OrderPlaced`.

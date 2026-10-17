@@ -8,6 +8,8 @@ export type DomainErrorCode =
   | 'not-draft'
   | 'invalid-quantity'
   | 'currency-mismatch'
+  | 'negative-discount'
+  | 'invalid-price'
   | 'discount-too-large'
   | 'duplicate-line'
   | 'line-not-found';

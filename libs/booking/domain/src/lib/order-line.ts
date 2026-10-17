@@ -13,6 +13,9 @@ import {
 
 import { domainError, type DomainError } from './errors';
 
+/** Keeps line arithmetic well inside safe integers, so it never throws. */
+export const MAX_LINE_QUANTITY = 100_000;
+
 export type VatRate = 0 | 8 | 10;
 
 export interface OrderLine {
@@ -37,7 +40,7 @@ export function orderLine(
   input: OrderLineInput,
 ): Result<OrderLine, DomainError> {
   const quantity = toQuantity(input.quantity);
-  if (!quantity.ok) {
+  if (!quantity.ok || quantity.value > MAX_LINE_QUANTITY) {
     return err(
       domainError('invalid-quantity', `${input.productId}: ${input.quantity}`),
     );
@@ -45,6 +48,16 @@ export function orderLine(
   if (input.discount.currency !== input.unitPrice.currency) {
     return err(
       domainError('currency-mismatch', `${input.productId}: discount currency`),
+    );
+  }
+  if (input.unitPrice.amount < 0) {
+    return err(
+      domainError('invalid-price', `${input.productId}: negative price`),
+    );
+  }
+  if (input.discount.amount < 0) {
+    return err(
+      domainError('negative-discount', `${input.productId}: negative discount`),
     );
   }
   const gross = multiply(input.unitPrice, quantity.value);
@@ -56,7 +69,14 @@ export function orderLine(
       ),
     );
   }
-  return ok({ ...input, quantity: quantity.value });
+  return ok({
+    productId: input.productId,
+    name: input.name,
+    quantity: quantity.value,
+    unitPrice: input.unitPrice,
+    discount: input.discount,
+    vatRate: input.vatRate,
+  });
 }
 
 export function lineNet(line: OrderLine): Money {

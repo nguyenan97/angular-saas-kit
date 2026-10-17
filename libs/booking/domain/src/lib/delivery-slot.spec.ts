@@ -45,6 +45,20 @@ describe('DeliverySlot', () => {
     ).toMatchObject({ ok: false, error: { code: 'slot-full' } });
   });
 
+  it('refuses a malformed or impossible date', () => {
+    expect(() => slotStart(slot({ date: '2026-10' }))).toThrow(RangeError);
+    expect(() => slotStart(slot({ date: '' }))).toThrow(RangeError);
+    expect(() => slotStart(slot({ date: '2026-02-30' }))).toThrow(
+      'Bad slot date 2026-02-30',
+    );
+  });
+
+  it('is full at capacity 0', () => {
+    expect(
+      isBookable(slot({ capacity: 0 }), new Date(2026, 9, 19)),
+    ).toMatchObject({ ok: false, error: { code: 'slot-full' } });
+  });
+
   it('books and releases one place', () => {
     expect(bookSlot(slot()).booked).toBe(1);
     expect(releaseSlot(slot({ booked: 1 })).booked).toBe(0);
