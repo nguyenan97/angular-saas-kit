@@ -26,10 +26,8 @@ directives with `hostDirectives`, and `dialog` for an overlay opened from a serv
 
 1. Create `libs/ui/src/lib/<name>/<name>.ts`. Class `PascalCase`, selector `ask-<name>`
    (kebab-case; the linter enforces the `ask` prefix), `changeDetection: OnPush`.
-2. Inputs and outputs are `input()`, `output()`, `model()`. State is `signal` and `computed`; RxJS
-   only at the edges. No `zone.js`, no `@Input()` decorators.
-3. Colours are semantic tokens only: `bg-card`, `text-muted-foreground`, `border-border`. Never
-   `bg-white`, `text-slate-500` or a `dark:` colour override.
+2. Inputs and outputs are `input()`, `output()`, `model()`; state is `signal` and `computed`.
+3. Colours are semantic tokens (the rule is in `AGENTS.md`); a missing one is added as above.
 4. Merge host classes through `cn()` from `../utils/cn`, with a `class` input last so the consumer
    wins (see the `Badge` example in the guide).
 5. Keyboard and ARIA: reachable, operable, visible focus, state announced. Template a11y lint rules
@@ -71,6 +69,12 @@ templates use, and a small `ask-story-` host component where a story needs state
 `npm run storybook` and check the Accessibility panel shows no violations, in light and dark. The `ThemeSwitcher` is exercised
 by the dashboard, so check it still works in the dashboard in light and dark and with all four accents.
 
-## Finish
+## Done when
 
-Run the `verify` skill, then `open-pr`. Tick the checklist in the pull request template honestly.
+- The component is exported from `libs/ui/src/index.ts`.
+- Its spec asserts at least one keyboard interaction or `aria-*` state and that a consumer's
+  `class` wins; `npx nx test ui` passes.
+- A README and a `<name>.stories.ts` sit next to it, and the Storybook Accessibility panel shows
+  no violations in light and dark.
+- After `npx nx build ui`, `npm run check:packages` reports nothing.
+- The `verify` skill is done. Then `open-pr`.
