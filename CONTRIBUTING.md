@@ -87,7 +87,11 @@ Write links relative and end them in `.md`, so they work on GitHub and on the si
 [`AGENTS.md`](./AGENTS.md) tells coding agents how this repository works, and
 [`.claude/skills`](./.claude/skills) holds step-by-step skills for the recurring jobs: verifying a
 change, adding a component or a dashboard page, writing an ADR, updating the architecture map,
-writing docs, opening a pull request and triaging Dependabot. The rules are the same for everyone.
+writing docs, writing a spec, modelling a domain, reviewing a change, opening a pull request,
+triaging Dependabot and running a retrospective. The rules are the same for everyone: how a change
+is sized and carried from spec to merge is in the
+[development process](docs/guide/development-process.md), and every check it must pass is in
+[`CONSTRAINTS.md`](CONSTRAINTS.md).
 A change made with an agent goes through the same checks, and you are responsible for what you
 submit.
 

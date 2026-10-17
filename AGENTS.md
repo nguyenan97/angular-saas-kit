@@ -9,6 +9,10 @@ A free, MIT-licensed admin dashboard and landing page for Angular 22: zoneless, 
 Tailwind v4, on a semantic-token design system. An Nx monorepo, npm, one lockfile. It is early:
 the docs say what exists and what is only planned, and so should you.
 
+**Before writing code, read [`CONSTRAINTS.md`](CONSTRAINTS.md)**: every check a change must pass,
+and the floor review rejects. Do not weaken it to make a change pass. How a change is sized and
+taken from spec to merge is in [`docs/guide/development-process.md`](docs/guide/development-process.md).
+
 ## Commands
 
 Node 22+ and npm 11+. Install with `npm ci`, never `npm install`, unless you are adding a
@@ -97,4 +101,5 @@ its tags.
 
 Architecture decision records: [`docs/adr`](docs/adr/README.md). C4 diagrams:
 [`docs/architecture`](docs/architecture/README.md). Guides: [`docs/guide`](docs/guide/getting-started.md).
+A bounded context's words: its `GLOSSARY.md` (`libs/booking/GLOSSARY.md`, `libs/shared/GLOSSARY.md`).
 Repeatable tasks have skills in [`.claude/skills`](.claude/skills), written to be read by any agent.
