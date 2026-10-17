@@ -54,7 +54,7 @@ export function createDraft(input: {
   id: string;
   customerId: string;
   currency: Currency;
-}): SalesOrder {
+}): DraftOrder {
   return {
     id: input.id,
     customerId: input.customerId,
@@ -139,13 +139,16 @@ export function removeLine(
 }
 
 /** A state change and what it raised, for the caller to save and publish. */
-export interface Transition<E extends BookingEvent = BookingEvent> {
-  readonly order: SalesOrder;
+export interface Transition<
+  E extends BookingEvent = BookingEvent,
+  O extends SalesOrder = SalesOrder,
+> {
+  readonly order: O;
   readonly events: readonly E[];
 }
 
 /** Placing also books the slot; the caller saves the order and the slot together. */
-export interface PlaceTransition extends Transition<OrderPlaced> {
+export interface PlaceTransition extends Transition<OrderPlaced, PlacedOrder> {
   readonly slot: DeliverySlot;
 }
 
@@ -196,11 +199,20 @@ export function place(
 
 export function confirm(
   order: SalesOrder,
-): Result<Transition<never>, DomainError> {
+): Result<Transition<never, PlacedOrder>, DomainError> {
   if (order.status !== 'placed') {
     return err(invalidTransition(order, 'confirmed'));
   }
-  return ok({ order: { ...order, status: 'confirmed' }, events: [] });
+  const confirmed: PlacedOrder = {
+    id: order.id,
+    customerId: order.customerId,
+    currency: order.currency,
+    lines: order.lines,
+    status: 'confirmed',
+    slotId: order.slotId,
+    placedAt: order.placedAt,
+  };
+  return ok({ order: confirmed, events: [] });
 }
 
 export function cancel(

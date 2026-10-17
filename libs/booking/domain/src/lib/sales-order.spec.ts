@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { money } from '@angular-saas-kit/shared-kernel';
 
@@ -11,7 +11,9 @@ import {
   createDraft,
   place,
   removeLine,
+  type DraftOrder,
   type OrderStatus,
+  type PlacedOrder,
   type SalesOrder,
 } from './sales-order';
 import { NOW, line, slot, unwrap } from './testing';
@@ -232,6 +234,17 @@ describe('SalesOrder transitions', () => {
   });
 
   describe('confirm', () => {
+    it('narrows the types of the orders it returns', () => {
+      expectTypeOf(
+        createDraft({ id: 'SO-1', customerId: 'C-1', currency: 'VND' }),
+      ).toEqualTypeOf<DraftOrder>();
+      const placed = unwrap(place(withLine(), slot(), NOW));
+      expectTypeOf(placed.order).toEqualTypeOf<PlacedOrder>();
+      expectTypeOf(
+        unwrap(confirm(placed.order)).order,
+      ).toEqualTypeOf<PlacedOrder>();
+    });
+
     it('confirms a placed order and raises no event', () => {
       const result = unwrap(confirm(placedOrder()));
       expect(result.events).toEqual([]);
