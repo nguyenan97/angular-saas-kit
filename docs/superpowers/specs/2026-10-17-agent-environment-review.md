@@ -42,6 +42,10 @@ Ranked by value. Verdicts: **Adopt** (take as is), **Adapt** (take the idea, res
 | 13  | Router skill (`ask-matt`)                                       | `ask-matt`                                               | Eight skills, all named in `CLAUDE.md`. Cognitive load is low.                                                                                                                                                                                                                                          | –    | **Skip**                                              |
 | 14  | Per-skill docs pages and `.out-of-scope/`                       | `.agents/writing-docs.md`, `SCOPE.md`                    | A curated public catalogue needs these; a project with eight internal skills does not.                                                                                                                                                                                                                  | –    | **Skip**                                              |
 
+_Corrected 2026-10-17, while applying:_ the OnPush half of #1 was wrong. OnPush is the default
+since Angular 22, and `prefer-on-push-component-change-detection` (which rejects an opt-out) is
+already on through angular-eslint's `tsRecommended`. Only the two signal rules were missing.
+
 ### 1. Mechanical rule → deterministic check
 
 The rule that most defines this kit is enforced by a checkbox. Today the tree is clean (a search for
