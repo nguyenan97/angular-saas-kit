@@ -1,8 +1,6 @@
 # AGENTS.md
 
-Guidance for AI coding agents working in this repository (Claude Code, Codex, Copilot, Cursor
-and the rest). Humans should read [CONTRIBUTING.md](CONTRIBUTING.md) and the
-[docs site](https://nguyenan97.github.io/angular-saas-kit/docs/); this file is the short version,
+For AI coding agents. People read [CONTRIBUTING.md](CONTRIBUTING.md); this is the short version,
 with the traps.
 
 ## What this is
@@ -18,18 +16,14 @@ dependency. The repo `.npmrc` resolves peer dependencies strictly, like CI; do n
 `ERESOLVE` with `--legacy-peer-deps`.
 
 ```bash
-npm start                  # dashboard dev server, http://localhost:4200
-npm run start:landing      # landing dev server
-npx nx test <project>      # one project: dashboard, landing, tokens, ui, mock-api,
-                           # shared-kernel, booking-domain
-npm run verify             # lint + test + build + typecheck + architecture and package checks
+npx nx test <project>      # one project, by its Nx name (npx nx show projects)
+npm run verify             # lint + test + build + typecheck + the check:* scripts
 npm run format:check       # Prettier; a commit hook formats staged files for you
-npm run docs:dev           # the docs site, live reload
-npm run storybook          # the ui components in Storybook, http://localhost:4400
 npm run pages              # the whole Pages site into _site/; then npm run pages:preview
 ```
 
-`verify` is what CI runs, apart from the format check. Run both before you say a change is done.
+The other scripts (dev servers, docs, Storybook) are in `package.json`. `verify` is what CI runs,
+apart from the format check. Run both before you say a change is done.
 
 ## Layout
 
@@ -40,24 +34,24 @@ libs/ui             components (a README each), cn() libs/mock-api  in-memory HT
 libs/shared/kernel    domain value types, Result, event bus (plain TS, no app uses it yet)
 libs/booking/domain  Booking domain: SalesOrder, lines, slots (plain TS, no app uses it yet)
 docs/               guides, C4 diagrams (architecture/), ADRs (adr/), the VitePress site
-scripts/            assemble/preview the Pages site, check the architecture map and the built packages
+scripts/            assemble/preview the Pages site; the check:* scripts that verify runs
 ```
 
-Import a library through its alias: `@angular-saas-kit/tokens`, `/ui`, `/mock-api`, `/shared-kernel`, `/booking-domain`. Lint enforces
-the module boundaries from each project's `type:` and `scope:` tags (`@nx/enforce-module-boundaries`):
-apps import libs, shared libs import only shared libs, nothing imports an app, no cycles. If lint
-rejects an import, the import is wrong; do not loosen the rule. A new project needs both tags.
+Import a library through its `@angular-saas-kit/*` alias (`tsconfig.base.json`). Lint enforces the
+module boundaries from each project's `type:`, `scope:` and, in a bounded context, `layer:` tags:
+apps import libs, shared libs import only shared libs, nothing imports an app, no cycles (ADR 0015,
+0021). If lint rejects an import, the import is wrong; do not loosen the rule. A new project needs
+its tags.
 
 ## Rules that are not negotiable
 
-- **Components never name a colour.** No `bg-white`, `text-slate-500` or `dark:` colour overrides.
-  Use semantic tokens: `bg-card`, `text-muted-foreground`, `border-border`. Missing token: add it
-  to `libs/tokens` in the same change and say why.
+- **Components take colours from semantic tokens** (`npm run check:tokens` rejects the rest).
+  Missing token: add it to `libs/tokens` in the same change and say why.
 - **Accessibility is a gate.** Keyboard operable, visible focus, announced state. Template a11y
   lint rules are errors. Prefer a native element to an ARIA role (`input type="radio"`, not
   `button role="radio"`: the browser supplies the arrow keys and the single tab stop). Reach for the
   Angular CDK before hand-rolling a focus trap.
-- **Signals, not RxJS state.** `signal`/`computed`; every component is `OnPush`; no `zone.js`.
+- **Signals, not RxJS state.** `signal`/`computed`, RxJS only at the edges; no `zone.js`.
 - **Selectors:** `ask-` prefix, kebab-case for components; `ask` prefix, camelCase for directives.
 - **No new UI-library dependency** (Material, PrimeNG and the like). The CDK and small utilities are fine.
 - **Merge host classes through `cn()`** so a consumer can override a component's defaults.
@@ -71,9 +65,8 @@ rejects an import, the import is wrong; do not loosen the rule. A new project ne
 - **Conventional Commits.** The scope, if any, is one of `ui`, `tokens`, `mock-api`, `dashboard`,
   `landing`, `ci`, `deps`, `repo`. `docs` is a type, not a scope. The PR title becomes the squash
   commit, so it follows the same rules.
-- `main` is protected: `lint`, `test`, `build`, `typecheck`, `format`, `e2e` and the Pages
-  workflow's `Build site` must pass, and the branch must be up to date. Work on a branch and open a PR; never
-  push to `main`, never `--no-verify`.
+- `main` is protected: the required checks (ADR 0009) must pass and the branch must be up to date.
+  Work on a branch and open a PR; never push to `main`, never `--no-verify`.
 - Update `docs/` in the same PR as the change it describes.
 
 ## Traps
