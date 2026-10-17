@@ -4,6 +4,10 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # Wait a week before taking a new release: most compromised packages are
+    # caught and pulled within days (ADR 0024). Security updates ignore this.
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 5
     groups:
       # Angular packages must move together or the build breaks on a
@@ -54,3 +58,5 @@ updates:
     directory: /
     schedule:
       interval: monthly
+    cooldown:
+      default-days: 7

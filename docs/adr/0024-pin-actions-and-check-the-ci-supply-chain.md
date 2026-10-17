@@ -27,8 +27,10 @@ supply chain around it:
 - **Every `uses:` is pinned to a full commit SHA**, with the release in a comment
   (`@3d3c42e… # v7.0.1`). Dependabot's monthly Actions updates move the SHA and the comment
   together. Every checkout sets `persist-credentials: false`.
-- **zizmor** (the `Security` workflow) checks the workflows on every pull request and push to
-  `main`, outside Advanced Security mode so that a finding fails the job.
+- **zizmor** (the `Security` workflow) checks the workflows and `dependabot.yml` on every pull
+  request and push to `main`, outside Advanced Security mode so that a finding fails the job.
+- **Dependabot waits seven days** (`cooldown`) before proposing a new npm or Actions release:
+  most compromised releases are found and pulled within days. Security updates are not delayed.
 - **Dependency review** (the same workflow, pull requests only) fails a change that adds or
   upgrades to a dependency with a known vulnerability at `high` or above, or under a licence
   outside the allow list of permissive licences.

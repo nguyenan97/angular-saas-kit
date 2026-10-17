@@ -95,8 +95,11 @@ Because the branch must be up to date, merging several pull requests in a row ne
   `tj-actions/changed-files` in March 2025; a SHA cannot. Dependabot updates the SHA and the
   comment together. Checkouts set `persist-credentials: false`, so no job leaves the token in
   `.git/config`.
-- **zizmor** checks the workflows on every pull request: template injection, broad permissions,
-  an unpinned action, credentials left behind. A finding fails the job.
+- **zizmor** checks the workflows and `dependabot.yml` on every pull request: template
+  injection, broad permissions, an unpinned action, credentials left behind, no cooldown. A
+  finding fails the job.
+- **Dependabot waits seven days** before proposing a new release (`cooldown`), so a compromised
+  version is usually pulled before it reaches a pull request. Security updates are not delayed.
 - **Dependency review** fails a pull request that adds, or upgrades to, a dependency with a known
   vulnerability at `high` or above, or under a licence outside the allow list in
   `.github/workflows/security.yml`. It judges only what the change adds.
