@@ -13,15 +13,12 @@ import {
   required,
   submit,
 } from '@angular/forms/signals';
-import { Button, Input, Label } from '@angular-saas-kit/ui';
+import { Button, Input } from '@angular-saas-kit/ui';
 import { firstValueFrom } from 'rxjs';
 
 import { type Profile, TIME_ZONES } from '../../data/models';
-import {
-  errorMessage,
-  errorShown,
-  focusFirstInvalid,
-} from '../../forms/field-errors';
+import { focusFirstInvalid } from '../../forms/field-errors';
+import { FormFieldFrame } from '../../forms/form-field';
 
 const EMPTY: Profile = { name: '', email: '', company: '', timeZone: 'UTC' };
 
@@ -37,63 +34,38 @@ const EMPTY: Profile = { name: '', email: '', company: '', timeZone: 'UTC' };
 @Component({
   selector: 'ask-profile-settings',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Button, FormField, Input, Label],
+  imports: [Button, FormField, FormFieldFrame, Input],
   template: `
     <form novalidate class="flex flex-col gap-5" (submit)="save($event)">
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="profile-name">Name</label>
+      <ask-form-field label="Name">
         <input
           askInput
           id="profile-name"
           autocomplete="name"
           [formField]="profile.name"
-          [attr.aria-invalid]="shown(profile.name) || null"
-          [attr.aria-describedby]="
-            shown(profile.name) ? 'profile-name-error' : null
-          "
         />
-        @if (shown(profile.name)) {
-          <p id="profile-name-error" class="text-sm text-destructive">
-            {{ message(profile.name) }}
-          </p>
-        }
-      </div>
+      </ask-form-field>
 
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="profile-email">Email</label>
+      <ask-form-field label="Email">
         <input
           askInput
           id="profile-email"
           type="email"
           autocomplete="email"
           [formField]="profile.email"
-          [attr.aria-invalid]="shown(profile.email) || null"
-          [attr.aria-describedby]="
-            shown(profile.email) ? 'profile-email-error' : null
-          "
         />
-        @if (shown(profile.email)) {
-          <p id="profile-email-error" class="text-sm text-destructive">
-            {{ message(profile.email) }}
-          </p>
-        }
-      </div>
+      </ask-form-field>
 
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="profile-company">
-          Company
-          <span class="font-normal text-muted-foreground">(optional)</span>
-        </label>
+      <ask-form-field label="Company" optional>
         <input
           askInput
           id="profile-company"
           autocomplete="organization"
           [formField]="profile.company"
         />
-      </div>
+      </ask-form-field>
 
-      <div class="flex flex-col gap-1.5">
-        <label askLabel for="profile-time-zone">Time zone</label>
+      <ask-form-field label="Time zone">
         <select
           askInput
           id="profile-time-zone"
@@ -104,7 +76,7 @@ const EMPTY: Profile = { name: '', email: '', company: '', timeZone: 'UTC' };
             <option [value]="zone">{{ zone }}</option>
           }
         </select>
-      </div>
+      </ask-form-field>
 
       <div class="flex flex-wrap items-center gap-3">
         <button type="submit" askButton [attr.aria-disabled]="saving() || null">
@@ -134,8 +106,6 @@ export class ProfileSettings {
   protected readonly saving = signal(false);
   protected readonly status = signal('');
   protected readonly timeZones = TIME_ZONES;
-  protected readonly shown = errorShown;
-  protected readonly message = errorMessage;
 
   constructor() {
     // What the API has becomes what the form edits.
