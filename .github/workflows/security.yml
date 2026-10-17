@@ -1,0 +1,53 @@
+name: Security
+
+# Supply-chain checks on every pull request (ADR 0024). Each judges what the
+# change adds, so an advisory that `main` already carries does not block an
+# unrelated pull request. No path filter: a required check that never runs
+# would hold a pull request forever (ADR 0009).
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Static analysis of the workflows themselves: template injection, broad
+  # permissions, unpinned actions, credentials left in the checkout.
+  zizmor:
+    name: zizmor
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Without Advanced Security mode the job fails on a finding, so it can
+      # be a required check rather than an alert to read.
+      - uses: zizmorcore/zizmor-action@85b2b9fb8e3325e7a23d7d0a9d7ba5ae0f999e3e # v0.7.1
+        with:
+          advanced-security: false
+
+  # Fails a pull request that adds or upgrades to a dependency with a known
+  # vulnerability at high or above, or under a licence outside the list.
+  dependency-review:
+    name: dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+          allow-licenses: >-
+            MIT, MIT-0, ISC, 0BSD, Apache-2.0, BSD-2-Clause, BSD-3-Clause,
+            BlueOak-1.0.0, CC0-1.0, CC-BY-4.0, Unlicense, Python-2.0, MPL-2.0,
+            OFL-1.1
