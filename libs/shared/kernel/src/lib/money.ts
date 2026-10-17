@@ -10,12 +10,13 @@ export function money(amount: number, currency: Currency): Money {
   if (!Number.isSafeInteger(amount)) {
     throw new RangeError(`Money needs a safe integer amount, got ${amount}`);
   }
-  return { amount, currency };
+  // `+ 0` turns -0 into 0.
+  return { amount: amount + 0, currency };
 }
 
 function sameCurrency(a: Money, b: Money): Currency {
   if (a.currency !== b.currency) {
-    throw new Error(`Cannot combine ${a.currency} and ${b.currency}`);
+    throw new TypeError(`Cannot combine ${a.currency} and ${b.currency}`);
   }
   return a.currency;
 }
@@ -42,7 +43,16 @@ export function percentOf(m: Money, rate: number): Money {
       `A rate is a whole, non-negative percentage, got ${rate}`,
     );
   }
-  return money(Math.floor((m.amount * rate + 50) / 100), m.currency);
+  if (m.amount < 0) {
+    throw new RangeError(
+      `percentOf needs a non-negative amount, got ${m.amount}`,
+    );
+  }
+  const product = m.amount * rate;
+  if (!Number.isSafeInteger(product)) {
+    throw new RangeError(`${m.amount} at ${rate}% overflows a safe integer`);
+  }
+  return money(Math.floor((product + 50) / 100), m.currency);
 }
 
 export function compare(a: Money, b: Money): -1 | 0 | 1 {

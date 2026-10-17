@@ -63,4 +63,85 @@ describe('InMemoryEventBus', () => {
 
     expect(seen).toEqual(['Pinged', 'Ponged']);
   });
+
+  it('survives an unsubscribe called twice', () => {
+    const bus = new InMemoryEventBus<Pinged>();
+    const calls: string[] = [];
+    const unsubscribeA = bus.subscribe('Pinged', () => calls.push('a'));
+    bus.subscribe('Pinged', () => calls.push('b'));
+
+    unsubscribeA();
+    unsubscribeA();
+    bus.publish(domainEvent('Pinged', { n: 1 }, at));
+
+    expect(calls).toEqual(['b']);
+  });
+
+  it('survives a subscribeAll unsubscribe called twice', () => {
+    const bus = new InMemoryEventBus<Pinged>();
+    const calls: string[] = [];
+    const unsubscribeA = bus.subscribeAll(() => calls.push('a'));
+    bus.subscribeAll(() => calls.push('b'));
+
+    unsubscribeA();
+    unsubscribeA();
+    bus.publish(domainEvent('Pinged', { n: 1 }, at));
+
+    expect(calls).toEqual(['b']);
+  });
+
+  it('delivers type subscribers before subscribeAll subscribers', () => {
+    const bus = new InMemoryEventBus<Pinged>();
+    const calls: string[] = [];
+    bus.subscribeAll(() => calls.push('all'));
+    bus.subscribe('Pinged', () => calls.push('type'));
+
+    bus.publish(domainEvent('Pinged', { n: 1 }, at));
+
+    expect(calls).toEqual(['type', 'all']);
+  });
+
+  it('queues a nested publish until the current event is fully delivered', () => {
+    const bus = new InMemoryEventBus<Pinged | Ponged>();
+    const log: string[] = [];
+    bus.subscribe('Pinged', () =>
+      bus.publish(domainEvent('Ponged', { n: 2 }, at)),
+    );
+    bus.subscribeAll((event) => log.push(event.type));
+
+    bus.publish(domainEvent('Pinged', { n: 1 }, at));
+
+    expect(log).toEqual(['Pinged', 'Ponged']);
+  });
+
+  it('still delivers to a handler unsubscribed during the publish', () => {
+    const bus = new InMemoryEventBus<Pinged>();
+    const calls: string[] = [];
+    let unsubscribeLate = (): void => undefined;
+    bus.subscribe('Pinged', () => unsubscribeLate());
+    unsubscribeLate = bus.subscribe('Pinged', () => calls.push('late'));
+
+    bus.publish(domainEvent('Pinged', { n: 1 }, at));
+    bus.publish(domainEvent('Pinged', { n: 2 }, at));
+
+    expect(calls).toEqual(['late']);
+  });
+
+  it('propagates a handler error and keeps working afterwards', () => {
+    const bus = new InMemoryEventBus<Pinged | Ponged>();
+    const seen: string[] = [];
+    bus.subscribe('Pinged', () => {
+      bus.publish(domainEvent('Ponged', { n: 2 }, at));
+      throw new Error('boom');
+    });
+    bus.subscribeAll((event) => seen.push(event.type));
+
+    expect(() => bus.publish(domainEvent('Pinged', { n: 1 }, at))).toThrow(
+      'boom',
+    );
+    seen.length = 0;
+    bus.publish(domainEvent('Ponged', { n: 3 }, at));
+
+    expect(seen).toEqual(['Ponged']);
+  });
 });

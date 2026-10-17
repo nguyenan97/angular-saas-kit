@@ -59,4 +59,30 @@ describe('Money', () => {
       money(3, 'VND'),
     );
   });
+
+  it('refuses a negative amount or a bad rate in percentOf', () => {
+    expect(() => percentOf(money(-1, 'USD'), 8)).toThrow(RangeError);
+    expect(() => percentOf(money(100, 'USD'), 1.5)).toThrow(RangeError);
+    expect(() => percentOf(money(100, 'USD'), -1)).toThrow(RangeError);
+    expect(() => percentOf(money(Number.MAX_SAFE_INTEGER, 'USD'), 10)).toThrow(
+      RangeError,
+    );
+  });
+
+  it('gives zero for a zero rate and rounds an exact half up', () => {
+    expect(percentOf(money(1000, 'USD'), 0)).toEqual(money(0, 'USD'));
+    // 1005 * 10% = 100.5 -> 101
+    expect(percentOf(money(1005, 'USD'), 10)).toEqual(money(101, 'USD'));
+  });
+
+  it('never holds a negative zero', () => {
+    const result = multiply(money(0, 'USD'), -1);
+    expect(Object.is(result.amount, 0)).toBe(true);
+  });
+
+  it('refuses mixed currencies in every operation', () => {
+    expect(() => subtract(money(1, 'VND'), money(1, 'USD'))).toThrow(TypeError);
+    expect(() => compare(money(1, 'VND'), money(1, 'USD'))).toThrow(TypeError);
+    expect(() => sum([money(1, 'USD')], 'VND')).toThrow(TypeError);
+  });
 });

@@ -7,7 +7,14 @@ describe('quantity', () => {
     expect(result).toEqual({ ok: true, value: 3 });
   });
 
-  it.each([0, -1, 1.5, Number.NaN])('refuses %s', (value) => {
+  it.each([
+    0,
+    -1,
+    1.5,
+    Number.NaN,
+    Number.MAX_SAFE_INTEGER + 1,
+    Number.POSITIVE_INFINITY,
+  ])('refuses %s', (value) => {
     expect(quantity(value)).toEqual({ ok: false, error: 'invalid-quantity' });
   });
 });
