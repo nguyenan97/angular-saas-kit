@@ -94,6 +94,8 @@ its tags.
   and excludes `*.spec.ts` and `*.stories.ts` with `@source not`, or test strings become utilities.
 - **Docs links are relative and end in `.md`**, so they work on GitHub and on the site. A
   folder's `README.md` becomes its index page. `docs/superpowers` is working material, not published.
+- **A new or changed `uses:` in a workflow** is pinned to a full commit SHA with the version in a
+  comment, and a checkout sets `persist-credentials: false`; zizmor fails the PR otherwise.
 - **Dependency changes:** keep `package-lock.json` in sync with npm 11, and run `npm audit`. A
   Dependabot PR that fails `npm ci` is never merged.
 

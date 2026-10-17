@@ -47,6 +47,11 @@ _Amended 2026-09-28:_ `e2e` is required now, after passing on all 13 pull reques
 [#47](https://github.com/nguyenan97/angular-saas-kit/pull/47). That makes seven required checks:
 the five CI checks, `e2e` and `Build site`.
 
+_Amended 2026-10-17:_ a `Security` workflow runs zizmor on the workflows and dependency review on
+pull requests, and a `Scorecard` workflow grades the repository weekly
+([0024](0024-pin-actions-and-check-the-ci-supply-chain.md)). Neither is required yet; zizmor and
+dependency review become required after a run of clean results, as `e2e` did.
+
 **Protection on `main`.** The five checks above are required, and the branch must
 be up to date before merging. No review approval is required and administrators are
 not forced through the rules, because there is one maintainer and a required

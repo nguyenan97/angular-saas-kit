@@ -8,12 +8,14 @@ not do redundant work when commits arrive in bursts. The reasoning is in
 
 ## The workflows
 
-| Workflow       | Runs on                                        | What it does                                                                                      |
-| -------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| **CI**         | every pull request to `main`, and pushes to it | Lint, test, build, typecheck, format, the architecture and package checks, and the browser tests. |
-| **CodeQL**     | every pull request to `main`, and weekly       | Static analysis of the JavaScript and TypeScript for vulnerabilities.                             |
-| **Pages**      | every pull request to `main`, and pushes to it | Builds the demo site and these docs. Deploys only from `main`.                                    |
-| **Dependabot** | weekly for npm, monthly for GitHub Actions     | Opens pull requests for dependency updates.                                                       |
+| Workflow       | Runs on                                             | What it does                                                                                           |
+| -------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| **CI**         | every pull request to `main`, and pushes to it      | Lint, test, build, typecheck, format, the architecture and package checks, and the browser tests.      |
+| **CodeQL**     | every pull request to `main`, and weekly            | Static analysis of the JavaScript and TypeScript for vulnerabilities.                                  |
+| **Pages**      | every pull request to `main`, and pushes to it      | Builds the demo site and these docs. Deploys only from `main`.                                         |
+| **Security**   | every pull request to `main`, and pushes to it      | zizmor on the workflows; on pull requests, dependency review of what the change adds.                  |
+| **Scorecard**  | pushes to `main`, weekly, branch-protection changes | OpenSSF Scorecard: grades the repository's security practices, results in code scanning and the badge. |
+| **Dependabot** | weekly for npm, monthly for GitHub Actions          | Opens pull requests for dependency updates.                                                            |
 
 CodeQL's weekly run is Monday at 03:17 UTC, and it does not run on pushes to `main`.
 
@@ -88,6 +90,18 @@ Because the branch must be up to date, merging several pull requests in a row ne
 - **CodeQL** on pull requests and weekly, as above.
 - **Dependabot alerts and security updates** are on, alongside the weekly version updates.
 - **Secret scanning and push protection** are on.
+- **Every action is pinned to a commit SHA**, with its version in a comment
+  (`uses: actions/checkout@<sha> # v7.0.1`). A tag can be moved to other code, as happened to
+  `tj-actions/changed-files` in March 2025; a SHA cannot. Dependabot updates the SHA and the
+  comment together. Checkouts set `persist-credentials: false`, so no job leaves the token in
+  `.git/config`.
+- **zizmor** checks the workflows on every pull request: template injection, broad permissions,
+  an unpinned action, credentials left behind. A finding fails the job.
+- **Dependency review** fails a pull request that adds, or upgrades to, a dependency with a known
+  vulnerability at `high` or above, or under a licence outside the allow list in
+  `.github/workflows/security.yml`. It judges only what the change adds.
+- **OpenSSF Scorecard** runs weekly and on every push to `main`; its score is the badge in the
+  README.
 - To report a vulnerability, see the
   [security policy](https://github.com/nguyenan97/angular-saas-kit/blob/main/SECURITY.md).
 
