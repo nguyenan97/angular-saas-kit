@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { err, ok, type Result } from './result';
 
 describe('Result', () => {
