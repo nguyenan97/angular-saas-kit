@@ -3,17 +3,15 @@ import { describe, expect, it } from 'vitest';
 import { money } from '@angular-saas-kit/shared-kernel';
 
 import { addLine, createDraft, type SalesOrder } from './sales-order';
-import { line } from './testing';
+import { line, unwrap } from './testing';
 import { orderTotals } from './totals';
+
+const empty = (): SalesOrder =>
+  createDraft({ id: 'SO-1', customerId: 'C-1', currency: 'VND' });
 
 describe('orderTotals', () => {
   it('is zero for an empty order', () => {
-    const order = createDraft({
-      id: 'SO-1',
-      customerId: 'C-1',
-      currency: 'VND',
-    });
-    expect(orderTotals(order)).toEqual({
+    expect(orderTotals(empty())).toEqual({
       subtotal: money(0, 'VND'),
       vat: money(0, 'VND'),
       total: money(0, 'VND'),
@@ -21,11 +19,7 @@ describe('orderTotals', () => {
   });
 
   it('sums nets, VAT per line at its own rate, and the total', () => {
-    let order: SalesOrder = createDraft({
-      id: 'SO-1',
-      customerId: 'C-1',
-      currency: 'VND',
-    });
+    let order = empty();
     for (const l of [
       // 2 x 250,000 = 500,000 net, 8% = 40,000
       line({
@@ -50,9 +44,7 @@ describe('orderTotals', () => {
         vatRate: 0,
       }),
     ]) {
-      const next = addLine(order, l);
-      if (!next.ok) throw new Error(next.error.code);
-      order = next.value;
+      order = unwrap(addLine(order, l));
     }
 
     expect(orderTotals(order)).toEqual({
@@ -60,5 +52,33 @@ describe('orderTotals', () => {
       vat: money(50_000, 'VND'),
       total: money(665_005, 'VND'),
     });
+  });
+
+  it('rounds VAT per line, not once on the summed net', () => {
+    let order = empty();
+    for (const [productId, net] of [
+      ['P-1', 5],
+      ['P-2', 15],
+    ] as const) {
+      order = unwrap(
+        addLine(
+          order,
+          line({
+            productId,
+            quantity: 1,
+            unitPrice: money(net, 'VND'),
+            vatRate: 10,
+          }),
+        ),
+      );
+    }
+    // 10% of 5 rounds to 1 and of 15 to 2; of the summed 20 it would be 2.
+    expect(orderTotals(order).vat).toEqual(money(3, 'VND'));
+  });
+
+  it('accepts anything with lines and a currency', () => {
+    expect(orderTotals({ lines: [line()], currency: 'VND' }).subtotal).toEqual(
+      money(500_000, 'VND'),
+    );
   });
 });

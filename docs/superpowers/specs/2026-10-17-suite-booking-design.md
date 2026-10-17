@@ -54,8 +54,11 @@ layers each".
 
 ### Model
 
-- **`SalesOrder`** (aggregate root): `id` (`SO-0001` style), `customerId`, `lines`, `slot`,
-  `status`, `cancelReason?`, `placedAt?`.
+- **`SalesOrder`** (aggregate root): `id` (`SO-0001` style), `customerId`, `currency`, `lines`,
+  and a shape that depends on `status`: a `draft` has nothing more; a `placed` or `confirmed`
+  order has `slotId` and `placedAt`; a `cancelled` order has `cancelReason`, and keeps the
+  `slotId` and `placedAt` it had, if it had been placed. A cancelled order keeps its `slotId` for
+  history, so read models such as booked-per-slot must skip cancelled orders.
 - **`OrderLine`**: `productId`, `name`, `quantity: Quantity`, `unitPrice: Money`,
   `discount: Money` (per line, between zero and the line total), `vatRate: 0 | 8 | 10`.
 - **`DeliverySlot`**: `id`, `date`, `window` (`08-12`, `13-17`), `capacity`, `booked`. The date is
@@ -80,10 +83,15 @@ Every rule below has at least one unit test, written before the code.
 4. `confirm()`: only from `placed` (`invalid-transition`).
 5. `cancel(reason)`: from `draft`, `placed` or `confirmed`; a non-empty reason (`reason-required`);
    emits `OrderCancelled`. Cancelling a placed or confirmed order frees its slot.
-6. Totals: `subtotal = Σ quantity × unitPrice − discount`; `vat = Σ round(lineNet × rate / 100)`
+6. Changing a quantity re-validates the whole line, including the discount (a smaller quantity
+   can make `discount-too-large`).
+7. Totals: `subtotal = Σ quantity × unitPrice − discount`; `vat = Σ round(lineNet × rate / 100)`
    per line, rounded half up in minor units; `total = subtotal + vat`.
 
-Domain operations return `Result<SalesOrder, DomainError>`; they do not throw. `DomainError`
+Draft edits (`addLine`, `changeQuantity`, `removeLine`) return `Result<SalesOrder, DomainError>`.
+`place`, `confirm` and `cancel` return `Result<Transition, DomainError>`: the new order and the
+events it raised (none for `confirm`), and for `place` also the booked slot. The backend saves
+the order and the slot from one synchronous handler. Business failures do not throw. `DomainError`
 carries a `code` from the list above and the UI maps each code to a message.
 
 ## Data flow

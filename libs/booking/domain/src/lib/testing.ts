@@ -30,3 +30,12 @@ export function slot(overrides: Partial<DeliverySlot> = {}): DeliverySlot {
 
 /** Before the fixture slot opens. */
 export const NOW = new Date(2026, 9, 18, 9);
+
+/** Unwraps an ok `Result`, or fails the test with the error. */
+export function unwrap<T>(
+  result: { ok: true; value: T } | { ok: false; error: unknown },
+): T {
+  if (!result.ok)
+    throw new Error(`expected ok, got ${JSON.stringify(result.error)}`);
+  return result.value;
+}

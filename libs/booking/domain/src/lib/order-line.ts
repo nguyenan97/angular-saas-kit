@@ -21,6 +21,10 @@ export const MAX_LINE_QUANTITY = 100_000;
 
 export type VatRate = 0 | 8 | 10;
 
+/**
+ * Build a line only through `orderLine`, or validate it when loading it from
+ * storage. The arithmetic trusts its input, and totals may throw otherwise.
+ */
 export interface OrderLine {
   readonly productId: string;
   readonly name: string;
@@ -40,9 +44,7 @@ export interface OrderLineInput {
 }
 
 /** A quantity a line may hold: a positive integer, at most `MAX_LINE_QUANTITY`. */
-export function lineQuantity(
-  value: number,
-): Result<Quantity, 'invalid-quantity'> {
+function lineQuantity(value: number): Result<Quantity, 'invalid-quantity'> {
   const quantity = toQuantity(value);
   return quantity.ok && quantity.value <= MAX_LINE_QUANTITY
     ? quantity

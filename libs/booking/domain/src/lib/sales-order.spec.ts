@@ -11,20 +11,22 @@ import {
   createDraft,
   place,
   removeLine,
+  type OrderStatus,
   type SalesOrder,
 } from './sales-order';
-import { NOW, line, slot } from './testing';
-
-function unwrap<T>(
-  result: { ok: true; value: T } | { ok: false; error: unknown },
-): T {
-  if (!result.ok)
-    throw new Error(`expected ok, got ${JSON.stringify(result.error)}`);
-  return result.value;
-}
+import { NOW, line, slot, unwrap } from './testing';
 
 const draft = (): SalesOrder =>
   createDraft({ id: 'SO-0001', customerId: 'C-001', currency: 'VND' });
+
+const withLine = (): SalesOrder => unwrap(addLine(draft(), line()));
+
+/** Freezes an order deeply enough to catch an in-place edit. */
+function freeze<T extends SalesOrder>(order: T): T {
+  for (const l of order.lines) Object.freeze(l);
+  Object.freeze(order.lines);
+  return Object.freeze(order);
+}
 
 describe('SalesOrder draft', () => {
   it('starts empty, in draft', () => {
@@ -35,6 +37,16 @@ describe('SalesOrder draft', () => {
       lines: [],
       status: 'draft',
     });
+  });
+
+  it('copies only the fields it defines', () => {
+    const input = {
+      id: 'SO-1',
+      customerId: 'C-1',
+      currency: 'VND' as const,
+      extra: 'leak',
+    };
+    expect('extra' in createDraft(input)).toBe(false);
   });
 
   it('adds a line', () => {
@@ -85,16 +97,37 @@ describe('SalesOrder draft', () => {
     );
   });
 
+  it('keeps the line invariants when a quantity drops below the discount', () => {
+    const order = unwrap(
+      addLine(
+        draft(),
+        line({
+          quantity: 2,
+          unitPrice: money(250_000, 'VND'),
+          discount: money(400_000, 'VND'),
+        }),
+      ),
+    );
+    expect(changeQuantity(order, 'P-001', 1)).toMatchObject({
+      ok: false,
+      error: { code: 'discount-too-large' },
+    });
+  });
+
   it('removes a line', () => {
     const order = unwrap(addLine(draft(), line()));
     expect(unwrap(removeLine(order, 'P-001')).lines).toEqual([]);
   });
 
+  it('refuses to remove an unknown product', () => {
+    expect(removeLine(withLine(), 'P-404')).toMatchObject({
+      ok: false,
+      error: { code: 'line-not-found' },
+    });
+  });
+
   it('refuses line changes outside draft', () => {
-    const placed: SalesOrder = {
-      ...unwrap(addLine(draft(), line())),
-      status: 'placed',
-    };
+    const placed = unwrap(place(withLine(), slot(), NOW)).order;
     const notDraft = { ok: false, error: { code: 'not-draft' } };
     expect(addLine(placed, line({ productId: 'P-002' }))).toMatchObject(
       notDraft,
@@ -102,10 +135,34 @@ describe('SalesOrder draft', () => {
     expect(changeQuantity(placed, 'P-001', 3)).toMatchObject(notDraft);
     expect(removeLine(placed, 'P-001')).toMatchObject(notDraft);
   });
+
+  it('does not mutate its input', () => {
+    const order = withLine();
+    const before = structuredClone(order);
+    freeze(order);
+    addLine(order, line({ productId: 'P-002' }));
+    changeQuantity(order, 'P-001', 5);
+    removeLine(order, 'P-001');
+    expect(order).toEqual(before);
+  });
 });
 
 describe('SalesOrder transitions', () => {
-  const withLine = (): SalesOrder => unwrap(addLine(draft(), line()));
+  const placedOrder = (): SalesOrder =>
+    unwrap(place(withLine(), slot(), NOW)).order;
+  const confirmedOrder = (): SalesOrder => unwrap(confirm(placedOrder())).order;
+  const cancelledOrder = (): SalesOrder =>
+    unwrap(cancel(withLine(), 'Duplicate', NOW)).order;
+
+  it('has a status for every shape', () => {
+    const statuses: OrderStatus[] = [
+      draft().status,
+      placedOrder().status,
+      confirmedOrder().status,
+      cancelledOrder().status,
+    ];
+    expect(statuses).toEqual(['draft', 'placed', 'confirmed', 'cancelled']);
+  });
 
   describe('place', () => {
     it('places a draft with lines into a bookable slot and raises OrderPlaced', () => {
@@ -131,6 +188,11 @@ describe('SalesOrder transitions', () => {
       ]);
     });
 
+    it('returns the slot with one more place booked', () => {
+      const result = unwrap(place(withLine(), slot({ booked: 2 }), NOW));
+      expect(result.slot.booked).toBe(3);
+    });
+
     it('refuses an empty order', () => {
       expect(place(draft(), slot(), NOW)).toMatchObject({
         ok: false,
@@ -152,25 +214,49 @@ describe('SalesOrder transitions', () => {
     });
 
     it('refuses an order that is not a draft', () => {
-      const { order } = unwrap(place(withLine(), slot(), NOW));
-      expect(place(order, slot(), NOW)).toMatchObject({
-        ok: false,
-        error: { code: 'invalid-transition' },
-      });
+      for (const order of [placedOrder(), confirmedOrder(), cancelledOrder()]) {
+        expect(place(order, slot(), NOW)).toMatchObject({
+          ok: false,
+          error: { code: 'invalid-transition' },
+        });
+      }
+    });
+
+    it('does not mutate its input', () => {
+      const order = withLine();
+      const before = structuredClone(order);
+      freeze(order);
+      place(order, slot(), NOW);
+      expect(order).toEqual(before);
     });
   });
 
   describe('confirm', () => {
-    it('confirms a placed order', () => {
-      const { order } = unwrap(place(withLine(), slot(), NOW));
-      expect(unwrap(confirm(order)).status).toBe('confirmed');
+    it('confirms a placed order and raises no event', () => {
+      const result = unwrap(confirm(placedOrder()));
+      expect(result.events).toEqual([]);
+      expect(result.order).toMatchObject({
+        status: 'confirmed',
+        slotId: 'slot-2026-10-20-am',
+        placedAt: NOW.toISOString(),
+      });
     });
 
     it('refuses anything but a placed order', () => {
-      expect(confirm(withLine())).toMatchObject({
-        ok: false,
-        error: { code: 'invalid-transition' },
-      });
+      for (const order of [withLine(), confirmedOrder(), cancelledOrder()]) {
+        expect(confirm(order)).toMatchObject({
+          ok: false,
+          error: { code: 'invalid-transition' },
+        });
+      }
+    });
+
+    it('does not mutate its input', () => {
+      const order = placedOrder();
+      const before = structuredClone(order);
+      freeze(order);
+      confirm(order);
+      expect(order).toEqual(before);
     });
   });
 
@@ -183,6 +269,7 @@ describe('SalesOrder transitions', () => {
         status: 'cancelled',
         cancelReason: 'Customer changed mind',
       });
+      expect(order).not.toHaveProperty('slotId');
       expect(events[0]?.payload).toEqual({
         orderId: 'SO-0001',
         reason: 'Customer changed mind',
@@ -190,9 +277,7 @@ describe('SalesOrder transitions', () => {
     });
 
     it('cancels a placed or confirmed order and names the slot to release', () => {
-      const placed = unwrap(place(withLine(), slot(), NOW)).order;
-      const confirmed = unwrap(confirm(placed));
-      for (const order of [placed, confirmed]) {
+      for (const order of [placedOrder(), confirmedOrder()]) {
         const { events } = unwrap(cancel(order, 'Out of budget', NOW));
         expect(events).toEqual([
           {
@@ -208,6 +293,25 @@ describe('SalesOrder transitions', () => {
       }
     });
 
+    it('keeps the slot and placement time of a cancelled placed order', () => {
+      for (const order of [placedOrder(), confirmedOrder()]) {
+        expect(unwrap(cancel(order, 'Out of budget', NOW)).order).toMatchObject(
+          {
+            status: 'cancelled',
+            cancelReason: 'Out of budget',
+            slotId: 'slot-2026-10-20-am',
+            placedAt: NOW.toISOString(),
+          },
+        );
+      }
+    });
+
+    it('trims the reason', () => {
+      const { order, events } = unwrap(cancel(withLine(), '  x  ', NOW));
+      expect(order).toMatchObject({ cancelReason: 'x' });
+      expect(events[0]?.payload).toMatchObject({ reason: 'x' });
+    });
+
     it('needs a reason', () => {
       expect(cancel(withLine(), '   ', NOW)).toMatchObject({
         ok: false,
@@ -216,11 +320,18 @@ describe('SalesOrder transitions', () => {
     });
 
     it('refuses to cancel twice', () => {
-      const { order } = unwrap(cancel(withLine(), 'Duplicate', NOW));
-      expect(cancel(order, 'Again', NOW)).toMatchObject({
+      expect(cancel(cancelledOrder(), 'Again', NOW)).toMatchObject({
         ok: false,
         error: { code: 'invalid-transition' },
       });
+    });
+
+    it('does not mutate its input', () => {
+      const order = placedOrder();
+      const before = structuredClone(order);
+      freeze(order);
+      cancel(order, 'Out of budget', NOW);
+      expect(order).toEqual(before);
     });
   });
 });
