@@ -14,7 +14,11 @@ export interface DeliverySlot {
 }
 
 export function slotStart(slot: DeliverySlot): Date {
-  const [year, month, day] = slot.date.split('-').map(Number);
+  const [year, month, day] = slot.date.split('-').map(Number) as [
+    number,
+    number,
+    number,
+  ];
   const hour = Number(slot.window.slice(0, 2));
   return new Date(year, month - 1, day, hour);
 }
