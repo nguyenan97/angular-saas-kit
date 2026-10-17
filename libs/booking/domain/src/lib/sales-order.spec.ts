@@ -79,6 +79,16 @@ describe('SalesOrder draft', () => {
     expect(changed.lines[0]?.quantity).toBe(5);
   });
 
+  it('changes only the named line and leaves the others alone', () => {
+    const other = line({ productId: 'P-002', quantity: 1 });
+    const order = unwrap(addLine(withLine(), other));
+    const changed = unwrap(changeQuantity(order, 'P-001', 7));
+    expect(changed.lines.map((l) => [l.productId, l.quantity])).toEqual([
+      ['P-001', 7],
+      ['P-002', 1],
+    ]);
+  });
+
   it('refuses an invalid quantity or an unknown product', () => {
     const order = unwrap(addLine(draft(), line()));
     expect(changeQuantity(order, 'P-001', 0)).toMatchObject({
