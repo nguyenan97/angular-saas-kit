@@ -104,6 +104,18 @@ The server serves the static files, then hands every other request to Angular. I
 > value is your domain. With `NG_ALLOWED_HOSTS=localhost` the server returns `200` for `/`
 > and `404` for a path that does not exist.
 
+Every response, files and pages alike, carries security headers (`src/security-headers.ts`):
+`Strict-Transport-Security`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, a
+`Referrer-Policy`, a `Permissions-Policy` that turns off the camera, microphone and location, and
+a `Content-Security-Policy` that forbids plugins, framing by another site, a foreign `<base>` and
+forms posting elsewhere. `X-Powered-By` is not sent.
+
+> [!NOTE]
+> The policy does not restrict scripts yet. The page runs two inline scripts, the theme snippet
+> and Angular's event-replay bootstrap, and Angular's `autoCsp` does not work with server
+> rendering, so a `script-src` policy needs a nonce per request. That is planned, not built. If a
+> proxy or CDN in front of the server sets its own headers, check that the two do not conflict.
+
 ## Static hosting
 
 The `pages` build configuration produces plain static files with a base path, and is what the
