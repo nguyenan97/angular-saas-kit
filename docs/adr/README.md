@@ -32,6 +32,7 @@ _why_ something is the way it is before changing it. The reasoning for
 | [0021](0021-bounded-contexts-as-nx-libraries.md)                    | Bounded contexts as Nx libraries                          | Proposed |
 | [0022](0022-the-token-and-signal-rules-are-checked-by-machine.md)   | The token and signal rules are checked by machine         | Proposed |
 | [0023](0023-a-development-process-with-a-written-quality-bar.md)    | A development process with a written quality bar          | Proposed |
+| [0024](0024-pin-actions-and-check-the-ci-supply-chain.md)           | Pin actions and check the CI supply chain                 | Proposed |
 
 Records 0002-0008 were written after the fact, from the code and its history, and
 describe what is true today - including what is unfinished.

@@ -12,6 +12,7 @@ Signals-first, zoneless, Tailwind v4, and not locked to any UI library.
 
 [![CI](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/codeql.yml/badge.svg)](https://github.com/nguyenan97/angular-saas-kit/actions/workflows/codeql.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/nguyenan97/angular-saas-kit/badge)](https://scorecard.dev/viewer/?uri=github.com/nguyenan97/angular-saas-kit)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![Angular](https://img.shields.io/badge/Angular-22-dd0031.svg)](https://angular.dev)
 [![Sponsor](https://img.shields.io/badge/sponsor-%E2%9D%A4-db61a2.svg)](https://github.com/sponsors/nguyenan97)
