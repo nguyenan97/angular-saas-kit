@@ -141,6 +141,7 @@ export default defineConfig({
           { text: 'Components', link: '/guide/components' },
           { text: 'Mock API', link: '/guide/mock-api' },
           { text: 'The landing page', link: '/guide/landing-page' },
+          { text: 'Development process', link: '/guide/development-process' },
           { text: 'Testing', link: '/guide/testing' },
           { text: 'Deploying', link: '/guide/deploying' },
           { text: 'Continuous integration', link: '/guide/ci' },

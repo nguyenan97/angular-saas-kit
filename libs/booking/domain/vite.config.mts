@@ -21,6 +21,9 @@ export default defineConfig(() => ({
       reportsDirectory: '../../../coverage/libs/booking/domain',
       provider: 'v8' as const,
       reporter: ['lcov', 'text-summary'],
+      // A ratchet (CONSTRAINTS.md): the domain is pure and tested at its
+      // functions, so coverage stays near full. Raise these, never lower them.
+      thresholds: { lines: 98, branches: 95, functions: 100 },
     },
   },
 }));
