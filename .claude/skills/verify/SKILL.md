@@ -5,8 +5,9 @@ description: Run the checks CI runs (lint, test, build, typecheck, the architect
 
 # Verify a change
 
-CI runs these on every pull request, and five of them are required to merge. A green local run is
-a green CI run, so run them here first.
+CI runs these on every pull request; the ones required to merge are listed in
+`docs/adr/0009-strict-ci-gates-and-a-protected-main.md`. A green local run is a green CI run, so run
+them here first.
 
 ## Run
 
@@ -44,7 +45,10 @@ Chromium, as a required check): they prove what jsdom cannot, such as radio-grou
 `legacy-peer-deps=false` on purpose; a user-level `legacy-peer-deps=true` once hid a conflict that
 failed CI. Do not add `--legacy-peer-deps`. Fix the versions instead.
 
-## Report honestly
+## Done when
 
-Say which of these you ran and what they printed. If something could not be run, say that, rather
-than reporting the change as verified.
+- `npm run verify` and `npm run format:check` both exit 0 on the final state of the change, after
+  your last edit.
+- Each conditional check that applies (docs, Pages, e2e, above) has run and passed.
+- Your report names every command you ran and its result, and every check you could not run, with
+  the reason. A change with an unrun check is reported as not verified.

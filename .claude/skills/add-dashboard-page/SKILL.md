@@ -23,11 +23,11 @@ request.
 
 ## Rules
 
-- **Semantic tokens only** (`bg-card`, `text-muted-foreground`, `text-success`, `text-destructive`).
-  No colour literals. Check the page in light and dark and with all four accents.
-- **Signals, not RxJS state.** Keep RxJS at the edges (HTTP).
-- **Accessibility is a gate.** Headings in order (one `h1` per page), labelled controls, tables with
-  headers, visible focus, live regions for async results.
+The rules in `AGENTS.md` apply. What they mean for a page:
+
+- Status colours are tokens too: `text-success`, `text-destructive`. Check the page in light and
+  dark and with all four accents.
+- Headings in order, labelled controls, tables with headers, live regions for async results.
 - Use components from `@angular-saas-kit/ui` where one exists. If you need one that does not, use the
   `add-ui-component` skill instead of building it inline in the page.
 
@@ -83,8 +83,12 @@ The Pages demo runs the dashboard with hash routing (`routing-mode.pages.ts`), s
 work as `#/<path>`. `npm run pages && npm run pages:preview` serves it at
 `http://localhost:8123/angular-saas-kit/demo/`; click through to the new page and reload it.
 
-## Finish
+## Done when
 
-`npx nx test dashboard`, then the `verify` skill, then `open-pr`. If the page changes what the
-dashboard is (a new dependency on a library, say), update `docs/architecture` (see
-`update-architecture`).
+- The route is lazy, has a `title`, and sits before the `**` redirect; the sidebar entry is a link
+  (no `soon`).
+- The spec covers the loading, error (with retry) and empty states for every request the page
+  makes; `npx nx test dashboard` passes.
+- The page works at `#/<path>` on the Pages preview, including after a reload.
+- A new dependency on a library is in `docs/architecture` (the `update-architecture` skill).
+- The `verify` skill is done. Then `open-pr`.

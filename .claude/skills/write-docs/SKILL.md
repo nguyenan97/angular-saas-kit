@@ -40,7 +40,9 @@ npm run pages && npm run pages:preview    # the site as Pages serves it, under /
 The last one is the truth for links and assets, because the site lives under a repository path.
 Open the page you changed there.
 
-## Finish
+## Done when
 
-`npm run format:check` (Prettier formats Markdown; the commit hook does it for staged files), then
-`verify` and `open-pr`. Documentation goes in the same pull request as the change it describes.
+- `npm run docs:build` passes and the changed page reads correctly on the Pages preview.
+- Every snippet on the page was run, compiled or tested in the repo.
+- A new page is in the sidebar and linked from its neighbours.
+- It is in the same pull request as the change it describes. Then the `verify` skill and `open-pr`.

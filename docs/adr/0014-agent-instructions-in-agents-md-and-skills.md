@@ -34,6 +34,16 @@ does not. The tools disagree about where guidance lives: `AGENTS.md` for a growi
 - **Enforce everything with hooks and lint instead** - the right home for what can be enforced, and
   most of it already is (CI, commitlint, the architecture check). Instructions cover the rest.
 
+_Amended 2026-10-17:_ every skill ends in a `## Done when` list of checks that can be read off a
+diff or a command's output, in place of a closing "Finish" paragraph. `open-pr` and
+`dependabot-triage`, which push, merge and close pull requests, set `disable-model-invocation: true`,
+so Claude Code runs them only when the user types them; other agents ignore the field and read them
+as before. A skill states what its task adds and points to `AGENTS.md` or an ADR for the rules,
+rather than restating them: a restated count of required checks in `verify` had gone stale. The
+review behind this, which borrows these habits from
+[mattpocock/skills](https://github.com/mattpocock/skills), is in
+`docs/superpowers/specs/2026-10-17-agent-environment-review.md`.
+
 ## Consequences
 
 - **The instructions can rot.** They describe commands, paths and gaps that change. Nothing checks

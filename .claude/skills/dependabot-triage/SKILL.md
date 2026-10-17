@@ -1,6 +1,7 @@
 ---
 name: dependabot-triage
-description: Triage and merge Dependabot pull requests safely - read each bump, reproduce a strict install, close unsupported majors with a reason, read the dependency chain before accepting a security fix, and merge in order. Use when asked to check, review or merge dependency updates.
+description: Read, reproduce, close or merge the open Dependabot pull requests, oldest first, under the policy in ADR 0010.
+disable-model-invocation: true
 ---
 
 # Triage Dependabot pull requests
@@ -53,7 +54,10 @@ Oldest first, and only with the required checks green (see `open-pr` for the mer
 or comment `@dependabot rebase` (a lockfile conflict needs the latter), then wait for a fresh run.
 Do not enable auto-merge.
 
-## 6. After
+## Done when
 
-Check that `main` CI is green. Note anything you closed and why in your report, so the person can see
-what did not land.
+- No Dependabot PR is left open without a reason: each one is merged, closed with a comment saying
+  why, or named in your report with what blocks it.
+- `main` CI is green after the last merge (`gh run list --branch main --limit 3`).
+- `npm audit` was run before and after, and the report gives both counts.
+- The report lists what was closed and why, so the person can see what did not land.
