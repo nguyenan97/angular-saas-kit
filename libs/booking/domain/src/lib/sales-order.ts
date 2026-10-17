@@ -1,12 +1,16 @@
 import {
+  domainEvent,
   err,
   ok,
   type Currency,
   type Result,
 } from '@angular-saas-kit/shared-kernel';
 
+import { isBookable, type DeliverySlot } from './delivery-slot';
 import { domainError, type DomainError } from './errors';
+import type { BookingEvent, OrderCancelled, OrderPlaced } from './events';
 import { lineQuantity, type OrderLine } from './order-line';
+import { orderTotals } from './totals';
 
 export type OrderStatus = 'draft' | 'placed' | 'confirmed' | 'cancelled';
 
@@ -102,4 +106,84 @@ export function removeLine(
     ...order,
     lines: order.lines.filter((line) => line.productId !== productId),
   });
+}
+
+/** A state change and what it raised, for the caller to save and publish. */
+export interface Transition<E extends BookingEvent = BookingEvent> {
+  readonly order: SalesOrder;
+  readonly events: readonly E[];
+}
+
+function invalidTransition(order: SalesOrder, to: OrderStatus): DomainError {
+  return domainError(
+    'invalid-transition',
+    `${order.id}: ${order.status} -> ${to}`,
+  );
+}
+
+export function place(
+  order: SalesOrder,
+  slot: DeliverySlot,
+  now: Date,
+): Result<Transition<OrderPlaced>, DomainError> {
+  if (order.status !== 'draft') return err(invalidTransition(order, 'placed'));
+  if (order.lines.length === 0) {
+    return err(domainError('empty-order', `${order.id} has no lines`));
+  }
+  const bookable = isBookable(slot, now);
+  if (!bookable.ok) return bookable;
+
+  const placed: SalesOrder = {
+    ...order,
+    status: 'placed',
+    slotId: slot.id,
+    placedAt: now.toISOString(),
+  };
+  const event: OrderPlaced = domainEvent(
+    'OrderPlaced',
+    {
+      orderId: placed.id,
+      customerId: placed.customerId,
+      slotId: slot.id,
+      total: orderTotals(placed).total,
+      lines: placed.lines.map(({ productId, quantity }) => ({
+        productId,
+        quantity,
+      })),
+    },
+    now,
+  );
+  return ok({ order: placed, events: [event] });
+}
+
+export function confirm(order: SalesOrder): Result<SalesOrder, DomainError> {
+  return order.status === 'placed'
+    ? ok({ ...order, status: 'confirmed' })
+    : err(invalidTransition(order, 'confirmed'));
+}
+
+export function cancel(
+  order: SalesOrder,
+  reason: string,
+  now: Date,
+): Result<Transition<OrderCancelled>, DomainError> {
+  if (order.status === 'cancelled')
+    return err(invalidTransition(order, 'cancelled'));
+  const trimmed = reason.trim();
+  if (trimmed === '') {
+    return err(domainError('reason-required', `${order.id}: no reason given`));
+  }
+  const cancelled: SalesOrder = {
+    ...order,
+    status: 'cancelled',
+    cancelReason: trimmed,
+  };
+  const event: OrderCancelled = domainEvent(
+    'OrderCancelled',
+    order.slotId
+      ? { orderId: order.id, reason: trimmed, slotId: order.slotId }
+      : { orderId: order.id, reason: trimmed },
+    now,
+  );
+  return ok({ order: cancelled, events: [event] });
 }
