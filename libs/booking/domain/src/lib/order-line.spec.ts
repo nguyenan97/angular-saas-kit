@@ -30,7 +30,8 @@ describe('orderLine', () => {
 
   it('does not copy properties the line does not define', () => {
     const result = orderLine({ ...input, extra: 'leak' } as typeof input);
-    expect(result.ok && 'extra' in result.value).toBe(false);
+    expect(result.ok).toBe(true);
+    if (result.ok) expect('extra' in result.value).toBe(false);
   });
 
   it('refuses a negative unit price', () => {
@@ -92,7 +93,7 @@ describe('line money', () => {
     expect(lineNet(line)).toEqual(money(700_000, 'VND'));
   });
 
-  it('charges VAT on the net, rounded half up', () => {
+  it('charges VAT on the net', () => {
     expect(lineVat(line)).toEqual(money(56_000, 'VND'));
   });
 

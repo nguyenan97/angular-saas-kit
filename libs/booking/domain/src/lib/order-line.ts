@@ -13,7 +13,10 @@ import {
 
 import { domainError, type DomainError } from './errors';
 
-/** Keeps line arithmetic well inside safe integers, so it never throws. */
+/**
+ * Caps a line's quantity. Prices come from the catalog, so the cap keeps
+ * quantity times price well inside safe integers for any realistic price.
+ */
 export const MAX_LINE_QUANTITY = 100_000;
 
 export type VatRate = 0 | 8 | 10;

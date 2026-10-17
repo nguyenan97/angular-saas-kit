@@ -57,7 +57,7 @@ layers each".
 - **`SalesOrder`** (aggregate root): `id` (`SO-0001` style), `customerId`, `lines`, `slot`,
   `status`, `cancelReason?`, `placedAt?`.
 - **`OrderLine`**: `productId`, `name`, `quantity: Quantity`, `unitPrice: Money`,
-  `discount: Money` (per line, not above the line total), `vatRate: 0 | 8 | 10`.
+  `discount: Money` (per line, between zero and the line total), `vatRate: 0 | 8 | 10`.
 - **`DeliverySlot`**: `id`, `date`, `window` (`08-12`, `13-17`), `capacity`, `booked`. The date is
   a calendar date in the store's local zone (`Asia/Ho_Chi_Minh`); a malformed date is a data
   error and throws.
