@@ -9,6 +9,34 @@ import tseslint from 'typescript-eslint';
  * Individual projects extend this and add only their own selector prefix, so
  * a rule change here reaches every app and library at once.
  */
+/**
+ * Domain purity (ADR 0021). Domain libraries (the shared kernel and each
+ * context's `domain`) are plain TypeScript, so they may not import Angular or
+ * RxJS. The tag rule limits which projects they depend on; this limits packages.
+ *
+ * It is exported rather than scoped here with `files`: ESLint resolves a
+ * `files` glob against the config file of the project being linted, so a
+ * `libs/...` path in this file never matches. Each domain library's own
+ * eslint.config.mjs adds it.
+ */
+export const domainPurity = {
+  files: ['**/*.ts'],
+  rules: {
+    'no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['@angular/*', 'rxjs', 'rxjs/*'],
+            message:
+              'The domain layer is plain TypeScript: no Angular, no RxJS.',
+          },
+        ],
+      },
+    ],
+  },
+};
+
 export default tseslint.config(
   {
     ignores: [

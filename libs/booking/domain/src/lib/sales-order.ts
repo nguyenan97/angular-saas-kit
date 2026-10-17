@@ -71,7 +71,7 @@ function notDraft(order: SalesOrder): DomainError {
 export function addLine(
   order: SalesOrder,
   line: OrderLine,
-): Result<SalesOrder, DomainError> {
+): Result<DraftOrder, DomainError> {
   if (order.status !== 'draft') return err(notDraft(order));
   if (line.unitPrice.currency !== order.currency) {
     return err(
@@ -97,7 +97,7 @@ export function changeQuantity(
   order: SalesOrder,
   productId: string,
   value: number,
-): Result<SalesOrder, DomainError> {
+): Result<DraftOrder, DomainError> {
   if (order.status !== 'draft') return err(notDraft(order));
   const target = order.lines.find((line) => line.productId === productId);
   if (!target) {
@@ -125,7 +125,7 @@ export function changeQuantity(
 export function removeLine(
   order: SalesOrder,
   productId: string,
-): Result<SalesOrder, DomainError> {
+): Result<DraftOrder, DomainError> {
   if (order.status !== 'draft') return err(notDraft(order));
   if (!order.lines.some((line) => line.productId === productId)) {
     return err(
@@ -219,7 +219,7 @@ export function cancel(
   order: SalesOrder,
   reason: string,
   now: Date,
-): Result<Transition<OrderCancelled>, DomainError> {
+): Result<Transition<OrderCancelled, CancelledOrder>, DomainError> {
   if (order.status === 'cancelled') {
     return err(invalidTransition(order, 'cancelled'));
   }
