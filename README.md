@@ -65,14 +65,16 @@ resolution bug on this tree.
 
 ## What's in the box
 
-| Package          | Purpose                                                   |
-| ---------------- | --------------------------------------------------------- |
-| `apps/dashboard` | The admin application                                     |
-| `apps/landing`   | Marketing site, SSR + prerendered                         |
-| `libs/tokens`    | Design tokens, Tailwind theme mapping, `ThemeService`     |
-| `libs/ui`        | Shared component library (npm package, not yet published) |
-| `libs/mock-api`  | In-memory backend with realistic latency                  |
-| `docs`           | Guides, C4 diagrams and decision records (VitePress)      |
+| Package               | Purpose                                                   |
+| --------------------- | --------------------------------------------------------- |
+| `apps/dashboard`      | The admin application                                     |
+| `apps/landing`        | Marketing site, SSR + prerendered                         |
+| `libs/tokens`         | Design tokens, Tailwind theme mapping, `ThemeService`     |
+| `libs/ui`             | Shared component library (npm package, not yet published) |
+| `libs/mock-api`       | In-memory backend with realistic latency                  |
+| `libs/shared/kernel`  | Plain-TypeScript domain library, not used by an app yet   |
+| `libs/booking/domain` | Plain-TypeScript domain library, not used by an app yet   |
+| `docs`                | Guides, C4 diagrams and decision records (VitePress)      |
 
 ## Documentation
 

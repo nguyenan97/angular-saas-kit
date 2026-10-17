@@ -25,7 +25,9 @@ contracts library arrives with the second context.
   context uses live in `shared-kernel`, in the `shared` scope and the domain layer.
 - **Operations:** domain operations are pure functions. Each returns a `Result`; a successful state
   change returns a transition: the new state plus the domain events it raised. Placing an order
-  also returns the booked slot, and the caller saves both.
+  also returns the booked slot, and the caller saves both. Cancelling a placed or confirmed order
+  emits `OrderCancelled` with the `slotId`; the caller releases the slot with `releaseSlot` and
+  saves it with the order.
 - **Aggregate shape:** `SalesOrder` is a discriminated union by `status` (draft, placed or
   confirmed, cancelled), so a field that exists only after placing is not optional on a draft.
 - **Failures:** a business failure (an empty order, a full slot, an invalid transition) is an error

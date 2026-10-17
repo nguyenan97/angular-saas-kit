@@ -1,6 +1,6 @@
 # Suite app: walking skeleton and the Booking context
 
-Date: 2026-10-17. Status: draft, awaiting review.
+Date: 2026-10-17. Status: approved. Plan 1 (kernel and Booking domain) is implemented; the rest is planned.
 
 ## Goal
 
@@ -25,7 +25,7 @@ It is a showcase: it runs on the in-memory mock API, has no real backend and no 
 | ----------------------------- | ------------------------------------------------ | ----------------------------------------------------------------------------------------- |
 | `apps/suite`                  | `type:app`, `scope:suite`                        | Shell, module switcher, Overview page, mock backend wiring                                |
 | `apps/suite-e2e`              | same tags as `dashboard-e2e`                     | Playwright with `playwright-bdd`; `.feature` files                                        |
-| `libs/shared/kernel`          | `type:lib`, `layer:domain`, `scope:shared`       | `Money`, `Quantity`, `EntityId`, `Result`, `DomainEvent`, `InMemoryEventBus`              |
+| `libs/shared/kernel`          | `type:lib`, `layer:domain`, `scope:shared`       | `Money`, `Quantity`, `Result`, `DomainEvent`, `InMemoryEventBus`                          |
 | `libs/booking/domain`         | `type:lib`, `layer:domain`, `scope:booking`      | `SalesOrder` aggregate, `OrderLine`, `DeliverySlot`, `OrderStatus`, events, `DomainError` |
 | `libs/booking/contracts`      | `type:lib`, `layer:contracts`, `scope:booking`   | `OrderPlacedV1`, `OrderCancelledV1`, order DTOs, API paths                                |
 | `libs/booking/data-access`    | `type:lib`, `layer:data-access`, `scope:booking` | `OrdersRepository` (HttpClient), `OrdersStore` (signals), Booking mock routes and seed    |
@@ -82,13 +82,15 @@ Every rule below has at least one unit test, written before the code.
    emits `OrderPlaced`.
 4. `confirm()`: only from `placed` (`invalid-transition`).
 5. `cancel(reason)`: from `draft`, `placed` or `confirmed`; a non-empty reason (`reason-required`);
-   emits `OrderCancelled`. Cancelling a placed or confirmed order frees its slot.
+   emits `OrderCancelled`. Cancelling a placed or confirmed order frees its slot: it emits
+   `OrderCancelled` with the `slotId`; the caller releases the slot with `releaseSlot` and saves it
+   with the order.
 6. Changing a quantity re-validates the whole line, including the discount (a smaller quantity
    can make `discount-too-large`).
 7. Totals: `subtotal = Σ quantity × unitPrice − discount`; `vat = Σ round(lineNet × rate / 100)`
    per line, rounded half up in minor units; `total = subtotal + vat`.
 
-Draft edits (`addLine`, `changeQuantity`, `removeLine`) return `Result<SalesOrder, DomainError>`.
+Draft edits (`addLine`, `changeQuantity`, `removeLine`) return `Result<DraftOrder, DomainError>`.
 `place`, `confirm` and `cancel` return `Result<Transition, DomainError>`: the new order and the
 events it raised (none for `confirm`), and for `place` also the booked slot. The backend saves
 the order and the slot from one synchronous handler. Business failures do not throw. `DomainError`

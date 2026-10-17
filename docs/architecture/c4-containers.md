@@ -61,6 +61,7 @@ landing ───┐
 dashboard ─┘              ▲
 landing and dashboard ────┘  (directly too: ThemeService and the stylesheet)
 dashboard ───► mock-api      (development and the demo; the production build swaps it out)
+booking-domain ───► shared-kernel
 ```
 
 Two kinds of edge are drawn on purpose, because `npx nx graph` shows only the first:

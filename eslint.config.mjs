@@ -53,7 +53,8 @@ export default tseslint.config(
   },
 
   // -- Module boundaries ----------------------------------------------------
-  // Every project carries a `type:` and a `scope:` tag in its project.json.
+  // Every project carries a `type:` and a `scope:` tag in its project.json, and
+  // bounded-context libraries a `layer:` tag too (ADR 0021).
   // These constraints turn the tags into rules, so a wrong import fails lint
   // instead of waiting for a reviewer to notice it.
   {

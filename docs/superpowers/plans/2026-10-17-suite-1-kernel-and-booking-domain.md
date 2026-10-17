@@ -1,5 +1,10 @@
 # Suite, plan 1: shared kernel and Booking domain
 
+> Implemented on `feat/suite-kernel-booking-domain`. Where this plan differs, the code and ADR 0021
+> win: `SalesOrder` is a status union; `place` returns `PlaceTransition` with the booked slot;
+> `confirm` and `cancel` return `Transition`; `changeQuantity` re-validates the whole line (ignore
+> Task 13 Step 4); `orderTotals` takes `{ lines, currency }`; specs import from `vitest`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development
 > (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use
 > checkbox (`- [ ]`) syntax for tracking.
@@ -2029,10 +2034,10 @@ Fill the template's sections with this content (headings as the template names t
 
 - [ ] **Step 3: Add the index row** in `docs/adr/README.md`, matching the existing rows' format.
 
-- [ ] **Step 4: Record the quantity-versus-discount decision in the spec**
+- [ ] ~~**Step 4: Record the quantity-versus-discount decision in the spec**~~ (Obsolete.)
 
-In the spec's "Out of scope" paragraph, append: "Changing a line's quantity does not re-check its
-discount against the new line total; discounts are validated when the line is added."
+~~In the spec's "Out of scope" paragraph, append: "Changing a line's quantity does not re-check its
+discount against the new line total; discounts are validated when the line is added."~~
 
 - [ ] **Step 5: Format, check, commit**
 
