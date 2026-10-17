@@ -84,6 +84,18 @@ export default tseslint.config(
               sourceTag: 'scope:landing',
               onlyDependOnLibsWithTags: ['scope:landing', 'scope:shared'],
             },
+            // A bounded context's domain layer depends only on other domain
+            // code (its own and the shared kernel): no data access, no UI.
+            {
+              sourceTag: 'layer:domain',
+              onlyDependOnLibsWithTags: ['layer:domain'],
+            },
+            // A business context sees itself and shared code. Other contexts
+            // reach it only through its contracts (added with SCM).
+            {
+              sourceTag: 'scope:booking',
+              onlyDependOnLibsWithTags: ['scope:booking', 'scope:shared'],
+            },
           ],
         },
       ],
