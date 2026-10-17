@@ -77,6 +77,11 @@ export default tseslint.config(
         { prefer: 'type-imports', fixStyle: 'inline-type-imports' },
       ],
       '@typescript-eslint/no-explicit-any': 'error',
+      // Signals-first (ADR 0003, 0022): inputs, outputs and queries are signal
+      // functions. Opting out of OnPush is already an error through
+      // tsRecommended.
+      '@angular-eslint/prefer-signals': 'error',
+      '@angular-eslint/prefer-output-emitter-ref': 'error',
     },
   },
 

@@ -39,7 +39,9 @@ became required on 2026-09-28, after passing on all 13 pull requests since it wa
 flaky required check blocks every merge, so it had to earn the place.
 
 The `lint` job also runs `npm run check:architecture`, which fails when the container map in
-[Architecture](../architecture/c4-containers.md) and the imports in the source disagree. The
+[Architecture](../architecture/c4-containers.md) and the imports in the source disagree, and
+`npm run check:tokens`, which fails when a component names a colour instead of a semantic token
+([ADR 0022](../adr/0022-the-token-and-signal-rules-are-checked-by-machine.md)). The
 `build` job then runs `npm run check:packages` on what it built: it fails when the `tokens` or
 `ui` package imports something its manifest does not declare, or does not ship a file it
 promises ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)). A change that

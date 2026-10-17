@@ -1,6 +1,7 @@
 ---
 name: open-pr
-description: Open a pull request against main the way this repository works - a branch, Conventional Commits, verified locally, the required checks green, a squash merge. Use when a change is ready to go up, when asked to open or merge a PR, or when unsure how changes land on main.
+description: Branch, commit, verify, push, open a pull request against main, and squash-merge it once the required checks are green.
+disable-model-invocation: true
 ---
 
 # Open a pull request
@@ -34,15 +35,14 @@ git push -u origin <branch>
 gh pr create --base main --title "<the squash commit subject>" --body "..."
 ```
 
-The title becomes the commit on `main`, so it has to satisfy commitlint. The body follows the
-repository's template: **What this changes**, **Why**, the checklist, screenshots for visual changes.
-Add **How it was checked** and **Not covered**. Say what you did not verify, plainly.
+The title becomes the commit on `main`, so it has to satisfy commitlint. The body fills every
+section of `.github/pull_request_template.md`, the checklist honestly ticked.
 
 ## 5. Checks
 
-Seven are required and the branch must be up to date with `main`: `lint`, `test`, `build`,
-`typecheck`, `format`, `e2e` and the Pages workflow's `Build site`. `CodeQL` runs too but is not required. Look at the
-result with `gh pr checks <number>`; do not poll it in a loop. A red required check is fixed with a
+The required checks are listed in `docs/adr/0009-strict-ci-gates-and-a-protected-main.md`, and the
+branch must be up to date with `main`. Look at them with `gh pr checks <number> --required`; do not
+poll it in a loop. A red required check is fixed with a
 new commit, not bypassed. If `main` moved, `gh pr update-branch <number>` and wait for a fresh run.
 
 ## 6. Merge
@@ -58,6 +58,15 @@ asked.
 
 ## 7. After
 
-`git fetch origin` and confirm `main` has the commit. A push to `main` runs CI again and, for site
-changes, deploys the Pages site: open `https://nguyenan97.github.io/angular-saas-kit/` (and `/demo/`, `/storybook/`,
-`/docs/`) and check the change is live. If a follow-up is needed, start a new branch from `origin/main`.
+A push to `main` runs CI again and, for site changes, deploys the Pages site. If a follow-up is
+needed, start a new branch from `origin/main`.
+
+## Done when
+
+- The PR is open against `main`, its title passes commitlint, and its body has no empty template
+  section.
+- `gh pr checks <number> --required` shows every required check passing, or the report names the
+  red one and why.
+- If you merged: `git fetch origin && git log origin/main -1` shows the squash commit, and for a
+  site change `https://nguyenan97.github.io/angular-saas-kit/` (or `/demo/`, `/storybook/`,
+  `/docs/`) shows it live.

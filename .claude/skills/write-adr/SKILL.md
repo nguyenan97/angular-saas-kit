@@ -38,7 +38,14 @@ An accepted record is not rewritten. Write a new ADR that supersedes it, set the
 
 ## Also update
 
-- The [C4 pages](../update-architecture/SKILL.md) if the decision changes the shape of the workspace.
+- The C4 pages (the `update-architecture` skill) if the decision changes the shape of the workspace.
 - The guide that describes the behaviour, if there is one.
 
-Then the `verify` skill and `open-pr`. The ADR goes in the same pull request as the change that needs it.
+## Done when
+
+- The file is `docs/adr/NNNN-<title>.md` with the next free number, and its first line is
+  `# NNNN. Title`.
+- No section is empty, and Consequences names at least one cost.
+- `docs/adr/README.md` has its row, with the status.
+- Every claim about the code was checked by a command or a read, and `npm run docs:build` passes.
+- It is in the same pull request as the change that needs it. Then the `verify` skill and `open-pr`.

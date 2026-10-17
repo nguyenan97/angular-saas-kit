@@ -53,7 +53,10 @@ Open `http://localhost:5173/angular-saas-kit/docs/architecture/` and the page yo
 it draws, that no label sits on top of another, and that "View full size" opens it. GitHub renders the
 same source, so a diagram that is clear here is clear there.
 
-## Finish
+## Done when
 
-`npm run check:architecture`, `npm run docs:build`, then `verify` and `open-pr`. If the change was a
-decision worth recording, use `write-adr`.
+- `npm run check:architecture` passes and `npm run docs:build` passes.
+- Every page in the table above that the change touches is edited, in the same pull request.
+- The edited diagram draws on the docs site with no label on top of another.
+- A decision worth recording has an ADR (the `write-adr` skill). Then the `verify` skill and
+  `open-pr`.
