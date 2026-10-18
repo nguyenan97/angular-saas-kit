@@ -193,6 +193,19 @@ describe('Combobox', () => {
     expect(listbox()).toBeNull();
   });
 
+  it('opens with Alt+Down on nothing active, even after the list was left with an option active', async () => {
+    const { input, press } = await render();
+    input.focus();
+    await press('ArrowDown');
+    await press('ArrowDown');
+    await press('Escape');
+
+    await press('ArrowDown', { altKey: true });
+
+    expect(input.getAttribute('aria-expanded')).toBe('true');
+    expect(input.hasAttribute('aria-activedescendant')).toBe(false);
+  });
+
   it('leaves Home and End to the text, and drops the active option when the list closes', async () => {
     const { input, press } = await render();
     input.focus();

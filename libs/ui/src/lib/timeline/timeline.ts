@@ -29,11 +29,13 @@ const STATE_TEXT: Record<TimelineState, string> = {
   upcoming: 'Upcoming: ',
 };
 
-// Each marker has a border as well as a fill: forced colours drop
-// backgrounds, and the border keeps the marker on screen.
+// Forced colours drop backgrounds and shadows. So each marker has a border,
+// a step reached gets a system-colour fill there, and the current step an
+// outline (which survives) rather than a ring (a shadow, which does not).
 const MARKER: Record<TimelineState, string> = {
-  complete: 'border-2 border-primary bg-primary',
-  current: 'border-2 border-primary bg-primary ring-4 ring-primary/20',
+  complete: 'border-2 border-primary bg-primary forced-colors:bg-[CanvasText]',
+  current:
+    'border-2 border-primary bg-primary outline-2 outline-offset-2 outline-primary forced-colors:bg-[CanvasText]',
   upcoming: 'border-2 border-border bg-background',
 };
 
@@ -114,7 +116,7 @@ export class Timeline {
       MARKER[item.state],
       item.tone === 'destructive' &&
         item.state !== 'upcoming' &&
-        'border-destructive bg-destructive ring-destructive/20',
+        'border-destructive bg-destructive outline-destructive',
     );
   }
 }

@@ -106,6 +106,18 @@ describe('Timeline', () => {
     );
   });
 
+  it('tells the states apart in forced colours: a system fill for steps reached, an outline for the current one', async () => {
+    const { items } = await render();
+    const marker = (i: number) =>
+      items()[i]?.querySelector('[data-marker]')?.className ?? '';
+
+    expect(marker(0)).toContain('forced-colors:bg-[CanvasText]');
+    expect(marker(1)).toContain('forced-colors:bg-[CanvasText]');
+    expect(marker(1)).toMatch(/(^| )outline-2( |$)/);
+    expect(marker(2)).not.toContain('forced-colors:bg-[CanvasText]');
+    expect(marker(0)).not.toMatch(/(^| )outline-2( |$)/);
+  });
+
   it("lets a consumer's class win", async () => {
     const { el } = await render();
 

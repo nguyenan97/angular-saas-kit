@@ -235,7 +235,10 @@ export class Combobox {
   protected show(withActive = true): void {
     if (this.disabled() || this.open()) return;
     this.open.set(true);
-    if (!withActive) return;
+    if (!withActive) {
+      this.setActive(-1);
+      return;
+    }
     const selected = this.filtered().findIndex(
       (option) => option.value === this.value(),
     );

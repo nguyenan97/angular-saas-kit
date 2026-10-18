@@ -40,7 +40,8 @@ A `TimelineItem` has a `label`, a `state` (`'complete' | 'current' | 'upcoming'`
 - **The state is spoken:** each step starts with hidden text, "Completed:", "Current:" or
   "Upcoming:", and the current step has `aria-current="step"`. The marker and the line are
   `aria-hidden` decoration; colour is never the only signal.
-- **Forced colours:** each marker has a border as well as a fill, and the line between steps is a
-  border, so both stay on screen when the system replaces backgrounds.
+- **Forced colours:** each marker has a border, a step reached is filled with the system text
+  colour, the current step has an outline, and the line between steps is a border, so the states
+  stay apart when the system replaces colours and drops backgrounds.
 - A time is a `<time>` element with its `datetime`; the time and the description are read after a
   comma.
