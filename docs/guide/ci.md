@@ -14,6 +14,7 @@ not do redundant work when commits arrive in bursts. The reasoning is in
 | **CodeQL**     | every pull request to `main`, and weekly            | Static analysis of the JavaScript and TypeScript for vulnerabilities.                                  |
 | **Pages**      | every pull request to `main`, and pushes to it      | Builds the demo site and these docs. Deploys only from `main`.                                         |
 | **Security**   | every pull request to `main`, and pushes to it      | zizmor on the workflows; on pull requests, dependency review of what the change adds.                  |
+| **PR title**   | every pull request to `main`, and title edits       | commitlint on the title, which becomes the squash commit. Skips Dependabot.                            |
 | **Scorecard**  | pushes to `main`, weekly, branch-protection changes | OpenSSF Scorecard: grades the repository's security practices, results in code scanning and the badge. |
 | **Dependabot** | weekly for npm, monthly for GitHub Actions          | Opens pull requests for dependency updates.                                                            |
 
@@ -48,6 +49,10 @@ The `lint` job also runs `npm run check:architecture`, which fails when the cont
 `ui` package imports something its manifest does not declare, or does not ship a file it
 promises ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)). A change that
 reaches no library builds none, and the check says there is nothing to check.
+
+The `pr title` workflow runs commitlint on the pull request's title, which becomes the squash commit on
+`main` ([ADR 0012](../adr/0012-conventional-commits-and-squash-merges.md)). It reruns when the title is edited, and is not required yet;
+Dependabot's pull requests skip it.
 
 `lint`, `test` and `build` go through `nx affected`, so they only run for the projects your
 change reaches. `typecheck` and `format` always cover the whole workspace.
