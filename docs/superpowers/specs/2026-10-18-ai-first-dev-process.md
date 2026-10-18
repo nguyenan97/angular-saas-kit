@@ -168,7 +168,7 @@ no change SHALL merge with a blocking finding open.
 - **WHEN** the only review of a branch is by the session that wrote it
 - **THEN** the PR body says so and the change is not merged in autonomous mode
 
-### Requirement: Security scans for every project
+### Requirement: Security scans across the repository
 
 The repository SHALL scan for secrets on every pull request, scan the lockfile against OSV and
 produce an SBOM on a schedule, and run a passive DAST baseline against the built site, each recorded
@@ -204,7 +204,7 @@ The work lands as the pull requests in the plan. In outline:
   interpolated into the script); a `gitleaks` job; a scheduled `Security scans` workflow with OSV,
   an SBOM and the ZAP baseline. None is made required here: that is a repository setting.
 - **Docs**: an arc42-short `docs/architecture/overview.md`; a Diátaxis map in `docs/README.md`.
-- **Dependencies**: drop Jest; override `nx`'s `undici` to 7.30.1.
+- **Dependencies**: drop Jest; override `nx`'s `undici` to 7.30.1, the latest 7.x release (the advisories are fixed from 7.29.1).
 - **Performance**: `@defer (on viewport)` for the landing page's sections below the fold.
 
 Rejected: a separate `git-workflow` skill (its steps are `open-pr`'s; two would overlap); a
