@@ -25,41 +25,42 @@ Checked on every diff, at review (`review-change`), because no tool sees all of 
 
 ## Enforced
 
-| Dimension                | Rule                                                                                                          | Checked by                                 | Runs                     |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------ |
-| Lint                     | No errors, a11y template rules included                                                                       | `npm run lint`                             | `verify`, CI `lint`      |
-| Module boundaries        | `type:`, `scope:`, `layer:` tags (ADR 0015, 0021)                                                             | `npm run lint`                             | `verify`, CI `lint`      |
-| Types                    | No errors, specs included                                                                                     | `npm run typecheck`                        | `verify`, CI `typecheck` |
-| Tests                    | All pass                                                                                                      | `npm test`                                 | `verify`, CI `test`      |
-| Domain coverage          | `shared-kernel`, `booking-domain`: lines ≥ 98%, branches ≥ 95%, functions 100%                                | `thresholds` in their `vite.config.mts`    | `npm test`               |
-| Build and bundle         | Builds; each app's initial bundle under 500 kB (warning at 350 kB), a component's styles under 8 kB           | budgets in `project.json`, `npm run build` | `verify`, CI `build`     |
-| Formatting               | Prettier                                                                                                      | `npm run format:check`                     | CI `format`              |
-| Browser flows            | Playwright, Chromium                                                                                          | `npx nx e2e dashboard-e2e`                 | CI `e2e`                 |
-| Accessibility at runtime | Every dashboard page, light and dark: no critical or serious axe violation against WCAG 2.2 A and AA          | `accessibility.spec.ts` in `dashboard-e2e` | CI `e2e`                 |
-| Security headers         | The landing server sends CSP (base, object, framing, forms), HSTS, nosniff, referrer and permissions policies | `security-headers.spec.ts` in `landing`    | `verify`, CI `test`      |
-| Architecture map         | The C4 container map matches the code                                                                         | `npm run check:architecture`               | `verify`, CI `lint`      |
-| Docs and instructions    | Links resolve, named scripts and projects exist, ADR index matches, skills follow the Agent Skills spec       | `npm run check:docs`                       | `verify`, CI `lint`      |
-| Colours                  | Semantic tokens only (ADR 0022)                                                                               | `npm run check:tokens`                     | `verify`, CI `lint`      |
-| Signals                  | No decorator inputs, outputs or queries; no opting out of OnPush                                              | `npm run lint`                             | `verify`, CI `lint`      |
-| Packages                 | Built `tokens` and `ui` declare what they import and ship what they promise                                   | `npm run check:packages`                   | `verify`, CI `build`     |
-| Docs                     | No dead link                                                                                                  | `npm run docs:build`                       | CI `Build site`          |
-| SAST                     | No new CodeQL alert                                                                                           | CodeQL                                     | PRs, weekly              |
-| Secrets                  | Known secret formats rejected on push                                                                         | GitHub push protection                     | every push               |
-| Dependencies             | Install resolves strictly; no `--legacy-peer-deps`                                                            | `npm ci`                                   | CI, every job            |
-| New dependencies         | Nothing added at `high` or above; licence on the allow list                                                   | dependency review (ADR 0024)               | PRs                      |
-| Workflows                | Every action pinned to a SHA; no credentials left in a checkout; no template injection or broad permissions   | zizmor (ADR 0024)                          | PRs, `main`              |
-| Commits                  | Conventional Commits, scopes from `AGENTS.md`                                                                 | commitlint                                 | commit hook              |
-| Pull request title       | The same rules: it becomes the squash commit on `main`                                                        | commitlint, CI `pr title` (not required)   | PRs (not Dependabot)     |
+| Dimension                | Rule                                                                                                          | Checked by                                  | Runs                     |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | ------------------------ |
+| Lint                     | No errors, a11y template rules included                                                                       | `npm run lint`                              | `verify`, CI `lint`      |
+| Module boundaries        | `type:`, `scope:`, `layer:` tags (ADR 0015, 0021)                                                             | `npm run lint`                              | `verify`, CI `lint`      |
+| Types                    | No errors, specs included                                                                                     | `npm run typecheck`                         | `verify`, CI `typecheck` |
+| Tests                    | All pass                                                                                                      | `npm test`                                  | `verify`, CI `test`      |
+| Domain coverage          | `shared-kernel`, `booking-domain`: lines ≥ 98%, branches ≥ 95%, functions 100%                                | `thresholds` in their `vite.config.mts`     | `npm test`               |
+| Build and bundle         | Builds; each app's initial bundle under 500 kB (warning at 350 kB), a component's styles under 8 kB           | budgets in `project.json`, `npm run build`  | `verify`, CI `build`     |
+| Formatting               | Prettier                                                                                                      | `npm run format:check`                      | CI `format`              |
+| Browser flows            | Playwright, Chromium                                                                                          | `npx nx e2e dashboard-e2e`                  | CI `e2e`                 |
+| Accessibility at runtime | Every dashboard page, light and dark: no critical or serious axe violation against WCAG 2.2 A and AA          | `accessibility.spec.ts` in `dashboard-e2e`  | CI `e2e`                 |
+| Security headers         | The landing server sends CSP (base, object, framing, forms), HSTS, nosniff, referrer and permissions policies | `security-headers.spec.ts` in `landing`     | `verify`, CI `test`      |
+| Architecture map         | The C4 container map matches the code                                                                         | `npm run check:architecture`                | `verify`, CI `lint`      |
+| Docs and instructions    | Links resolve, named scripts and projects exist, ADR index matches, skills follow the Agent Skills spec       | `npm run check:docs`                        | `verify`, CI `lint`      |
+| Colours                  | Semantic tokens only (ADR 0022)                                                                               | `npm run check:tokens`                      | `verify`, CI `lint`      |
+| Signals                  | No decorator inputs, outputs or queries; no opting out of OnPush                                              | `npm run lint`                              | `verify`, CI `lint`      |
+| Packages                 | Built `tokens` and `ui` declare what they import and ship what they promise                                   | `npm run check:packages`                    | `verify`, CI `build`     |
+| Docs                     | No dead link                                                                                                  | `npm run docs:build`                        | CI `Build site`          |
+| SAST                     | No new CodeQL alert                                                                                           | CodeQL                                      | PRs, weekly              |
+| Secrets                  | Known secret formats rejected on push; generic keys and private keys found in new commits                     | GitHub push protection; gitleaks (ADR 0026) | every push; PRs, `main`  |
+| Dependencies             | Install resolves strictly; no `--legacy-peer-deps`                                                            | `npm ci`                                    | CI, every job            |
+| New dependencies         | Nothing added at `high` or above; licence on the allow list                                                   | dependency review (ADR 0024)                | PRs                      |
+| Workflows                | Every action pinned to a SHA; no credentials left in a checkout; no template injection or broad permissions   | zizmor (ADR 0024)                           | PRs, `main`              |
+| Commits                  | Conventional Commits, scopes from `AGENTS.md`                                                                 | commitlint                                  | commit hook              |
+| Pull request title       | The same rules: it becomes the squash commit on `main`                                                        | commitlint, CI `pr title` (not required)    | PRs (not Dependabot)     |
 
 `npm run verify` runs the rows marked `verify`. The required checks on `main` are listed in
 [ADR 0009](docs/adr/0009-strict-ci-gates-and-a-protected-main.md).
 
 ## Measured, not yet enforced
 
-| Metric                  | Today                           | Direction               |
-| ----------------------- | ------------------------------- | ----------------------- |
-| Coverage, apps and `ui` | collected, not recorded         | record before enforcing |
-| OpenSSF Scorecard       | measured weekly from 2026-10-17 | must not fall           |
+| Metric                  | Today                           | Direction                 |
+| ----------------------- | ------------------------------- | ------------------------- |
+| Coverage, apps and `ui` | collected, not recorded         | record before enforcing   |
+| OpenSSF Scorecard       | measured weekly from 2026-10-17 | must not fall             |
+| OSV advisories          | reported weekly from 2026-10-18 | none above the exceptions |
 
 ## Exceptions
 
