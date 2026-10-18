@@ -134,6 +134,7 @@ jobs:
       # One engine is enough for what these tests prove, and each extra one adds
       # about a minute. The config lists Firefox and WebKit for a local run.
       - name: Install Chromium
+        id: chromium
         run: npx playwright install --with-deps chromium
 
       # Playwright starts the dashboard dev server itself (see the config).
@@ -143,10 +144,10 @@ jobs:
 
       # The suite's user flows, written as Gherkin: bddgen turns the feature
       # files into tests, then Playwright runs them and the axe checks, on
-      # Chromium, starting the suite's dev server itself. `!cancelled()` runs
-      # them even when the dashboard's failed, so one run reports both.
+      # Chromium, starting the suite's dev server itself. They run even when the
+      # dashboard's failed, so one run reports both, but not when the install did.
       - name: Run the suite's browser tests
-        if: ${{ !cancelled() }}
+        if: ${{ !cancelled() && steps.chromium.outcome == 'success' }}
         working-directory: apps/suite-e2e
         run: |
           npx bddgen

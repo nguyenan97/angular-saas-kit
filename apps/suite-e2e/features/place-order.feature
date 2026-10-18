@@ -20,4 +20,5 @@ Feature: Place an order
     And I am still on the New order page
 
   Scenario: Refuse a full slot
-    Then a full delivery slot cannot be chosen, and says it is full
+    When I try to choose a full delivery slot
+    Then the full slot stays unchosen and says it is full

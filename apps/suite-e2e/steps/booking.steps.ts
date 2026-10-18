@@ -8,6 +8,9 @@ import { createBdd } from 'playwright-bdd';
  */
 const { Given, When, Then } = createBdd();
 
+/** Gherkin text, read literally inside a pattern. */
+const escape = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 // -- New order ---------------------------------------------------------------
 
 Given('I am on the New order page', async ({ page }) => {
@@ -21,7 +24,9 @@ Given('I am on the New order page', async ({ page }) => {
 
 When('I choose the customer {string}', async ({ page }, name: string) => {
   const box = page.getByRole('combobox', { name: 'Customer' });
-  const option = page.getByRole('option', { name: new RegExp(`^${name}`) });
+  const option = page.getByRole('option', {
+    name: new RegExp(`^${escape(name)}`),
+  });
   // The customers load next to the slots; a person reads the list first.
   await box.fill(name.slice(0, 4));
   await expect(option).toBeVisible();
@@ -64,9 +69,10 @@ Then(
     await expect(
       page.getByRole('heading', { level: 2, name: /^SO-\d{4}$/ }),
     ).toBeVisible();
-    await expect(
-      page.getByRole('main').getByText(status, { exact: true }).first(),
-    ).toBeVisible();
+    // The badge next to the heading: the timeline also names steps to come.
+    await expect(page.getByRole('main').locator('ask-badge')).toHaveText(
+      status,
+    );
   },
 );
 
@@ -82,13 +88,20 @@ Then('I am still on the New order page', async ({ page }) => {
   await expect(page).toHaveURL(/\/booking\/orders\/new$/);
 });
 
-Then(
-  'a full delivery slot cannot be chosen, and says it is full',
-  async ({ page }) => {
-    const full = page.getByRole('radio', { name: /\(Full\)/ }).first();
-    await expect(full).toBeDisabled();
-  },
-);
+When('I try to choose a full delivery slot', async ({ page }) => {
+  // A person clicks the label; a disabled radio ignores it. `force`, because
+  // Playwright would otherwise wait for the radio to become enabled.
+  const full = page.getByRole('radio', { name: /\(Full\)/ }).first();
+  await page
+    .locator(`label[for="${await full.getAttribute('id')}"]`)
+    .click({ force: true });
+});
+
+Then('the full slot stays unchosen and says it is full', async ({ page }) => {
+  const full = page.getByRole('radio', { name: /\(Full\)/ }).first();
+  await expect(full).toBeDisabled();
+  await expect(full).not.toBeChecked();
+});
 
 // -- Order detail ------------------------------------------------------------
 
@@ -164,7 +177,7 @@ Then('every order listed is {string}', async ({ page }, status: string) => {
 });
 
 Then('the address says {string}', async ({ page }, part: string) => {
-  await expect(page).toHaveURL(new RegExp(part));
+  await expect(page).toHaveURL((url) => url.href.includes(part));
 });
 
 When('I search for {string}', async ({ page }, text: string) => {
