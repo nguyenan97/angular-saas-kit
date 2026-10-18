@@ -44,6 +44,12 @@ review behind this, which borrows these habits from
 [mattpocock/skills](https://github.com/mattpocock/skills), is in
 `docs/superpowers/specs/2026-10-17-agent-environment-review.md`.
 
+_Amended 2026-10-18:_ `disable-model-invocation` is not an Agent Skills frontmatter field, and the
+spec's validator rejects it, so the skills drop it and `.claude/settings.json` sets the four
+user-invoked skills to `user-invocable-only` through `skillOverrides`, which has the same effect in
+Claude Code. `npm run check:docs` keeps the frontmatter to the spec
+([audit](../superpowers/specs/2026-10-18-audit.md), finding F4).
+
 ## Consequences
 
 - **The instructions can rot.** They describe commands, paths and gaps that change. Nothing checks

@@ -1,7 +1,6 @@
 ---
 name: retro
 description: After a session or a merged change, find what went wrong or cost too much and propose the cheapest durable fix for each - a check, a skill edit or an AGENTS.md line - most severe first.
-disable-model-invocation: true
 ---
 
 # Retrospective

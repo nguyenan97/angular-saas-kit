@@ -1,6 +1,6 @@
 # 0022. The token and signal rules are checked by machine
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-17
 - **Deciders:** @nguyenan97
 

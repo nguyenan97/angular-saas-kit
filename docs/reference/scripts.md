@@ -4,25 +4,27 @@
 
 Run from the repository root with `npm run <name>`. Most of them are thin wrappers over Nx.
 
-| Script               | Runs                                                                                           | Use it to                                                     |
-| -------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
-| `start`              | `nx serve dashboard`                                                                           | Develop the dashboard.                                        |
-| `start:landing`      | `nx serve landing`                                                                             | Develop the landing page.                                     |
-| `build`              | `nx run-many -t build`                                                                         | Build every project into `dist/`.                             |
-| `test`               | `nx run-many -t test`                                                                          | Run every project's unit tests with coverage.                 |
-| `lint`               | `nx run-many -t lint`                                                                          | Lint every project.                                           |
-| `typecheck`          | `tsc -p tsconfig.base.json --noEmit`                                                           | Type-check the whole workspace, spec files included.          |
-| `check:architecture` | `node scripts/check-architecture.mjs`                                                          | Check the C4 container map against the code.                  |
-| `check:tokens`       | `node scripts/check-tokens.mjs`                                                                | Check that components use semantic tokens, not named colours. |
-| `check:packages`     | `node scripts/check-packages.mjs`                                                              | Check what the built `tokens` and `ui` packages ship.         |
-| `format:check`       | `prettier --check .`                                                                           | Check formatting.                                             |
-| `verify`             | lint, test and build, then `typecheck`, `check:architecture`, `check:tokens`, `check:packages` | Run what CI runs, except the format check.                    |
-| `docs:dev`           | `vitepress dev docs`                                                                           | Write these docs with live reload.                            |
-| `docs:build`         | `vitepress build docs`                                                                         | Build these docs into `docs/.vitepress/dist`.                 |
-| `storybook`          | `nx run ui:storybook`                                                                          | Work on the components in Storybook, on port 4400.            |
-| `pages`              | builds landing and dashboard with `-c pages`, Storybook, the docs, assembles                   | Build the whole demo site into `_site/` and check it.         |
-| `pages:preview`      | `node scripts/preview-pages.mjs`                                                               | Serve `_site/` the way GitHub Pages does, on port 8123.       |
-| `prepare`            | `husky`                                                                                        | Install the git hooks. Runs on `npm ci`.                      |
+| Script               | Runs                                                                              | Use it to                                                     |
+| -------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `start`              | `nx serve dashboard`                                                              | Develop the dashboard.                                        |
+| `start:landing`      | `nx serve landing`                                                                | Develop the landing page.                                     |
+| `build`              | `nx run-many -t build`                                                            | Build every project into `dist/`.                             |
+| `test`               | `nx run-many -t test`                                                             | Run every project's unit tests with coverage.                 |
+| `lint`               | `nx run-many -t lint`                                                             | Lint every project.                                           |
+| `typecheck`          | `tsc -p tsconfig.base.json --noEmit`                                              | Type-check the whole workspace, spec files included.          |
+| `check:architecture` | `node scripts/check-architecture.mjs`                                             | Check the C4 container map against the code.                  |
+| `check:docs`         | `node scripts/check-docs.mjs`                                                     | Check links, commands, the ADR index and the skills.          |
+| `test:scripts`       | `node --test "scripts/*.test.mjs"`                                                | Test the check scripts.                                       |
+| `check:tokens`       | `node scripts/check-tokens.mjs`                                                   | Check that components use semantic tokens, not named colours. |
+| `check:packages`     | `node scripts/check-packages.mjs`                                                 | Check what the built `tokens` and `ui` packages ship.         |
+| `format:check`       | `prettier --check .`                                                              | Check formatting.                                             |
+| `verify`             | lint, test and build, then `typecheck`, `test:scripts` and every `check:*` script | Run what CI runs, except the format check.                    |
+| `docs:dev`           | `vitepress dev docs`                                                              | Write these docs with live reload.                            |
+| `docs:build`         | `vitepress build docs`                                                            | Build these docs into `docs/.vitepress/dist`.                 |
+| `storybook`          | `nx run ui:storybook`                                                             | Work on the components in Storybook, on port 4400.            |
+| `pages`              | builds landing and dashboard with `-c pages`, Storybook, the docs, assembles      | Build the whole demo site into `_site/` and check it.         |
+| `pages:preview`      | `node scripts/preview-pages.mjs`                                                  | Serve `_site/` the way GitHub Pages does, on port 8123.       |
+| `prepare`            | `husky`                                                                           | Install the git hooks. Runs on `npm ci`.                      |
 
 ## Nx targets
 

@@ -32,7 +32,9 @@ built on a misunderstanding costs the feature.
 | **Ship**   | A pull request with evidence and a merge-danger call                                | the `open-pr` skill                                                | The required checks pass and a person merges it  |
 | **Learn**  | A mistake turned into a check, a skill edit or a rule                               | the `retro` skill                                                  | The fix lands in its own pull request            |
 
-The skills are in [`.claude/skills`](../../.claude/skills). They are plain Markdown runbooks, so any
+Three more serve any phase: `update-architecture` and `write-docs` keep the C4 diagrams and the
+guides true in the same pull request as the change, and `dependabot-triage` takes the dependency
+updates. The skills are in [`.claude/skills`](../../.claude/skills). They are plain Markdown runbooks, so any
 agent, or a person, can follow them.
 
 ## Specs and scenarios

@@ -60,6 +60,15 @@ jobs:
         if: matrix.target == 'lint' && !cancelled()
         run: node scripts/check-architecture.mjs
 
+      # The instructions agents and people read must stay true: links, the
+      # commands they name, the ADR index and the skills' frontmatter. The check
+      # scripts' own tests run first, so a broken check cannot pass silently.
+      - name: Check the docs and instructions
+        if: matrix.target == 'lint' && !cancelled()
+        run: |
+          npm run test:scripts
+          node scripts/check-docs.mjs
+
       # Components take their colours from the semantic tokens (ADR 0022). Same
       # reasoning as the map: no dependencies, well under a second, the lint leg.
       - name: Check the semantic tokens
