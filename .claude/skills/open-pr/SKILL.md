@@ -83,6 +83,7 @@ Without asking, and only with every required check green, the branch up to date 
 review finding:
 
 ```bash
+git rev-list --count origin/<branch>..<branch>   # 0: nothing local is left unpushed
 gh pr merge <number> --squash --delete-branch
 ```
 
