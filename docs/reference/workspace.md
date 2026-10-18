@@ -32,16 +32,16 @@ scripts/            Build and check scripts: the demo site, the architecture map
 
 Every project carries a `type:`, a `scope:` and, for bounded-context libraries, a `layer:` tag.
 
-| Project          | Tags                                        | Depends on                      |
-| ---------------- | ------------------------------------------- | ------------------------------- |
-| `landing`        | `type:app`, `scope:landing`                 | `tokens`                        |
-| `dashboard`      | `type:app`, `scope:dashboard`               | `tokens`, `ui`                  |
-| `tokens`         | `type:lib`, `scope:shared`                  | none                            |
-| `ui`             | `type:lib`, `scope:shared`                  | `tokens`                        |
-| `mock-api`       | `type:lib`, `scope:shared`                  | none; nothing depends on it yet |
-| `shared-kernel`  | `type:lib`, `scope:shared`, `layer:domain`  | none                            |
-| `booking-domain` | `type:lib`, `scope:booking`, `layer:domain` | `shared-kernel`                 |
-| `dashboard-e2e`  | none                                        | `dashboard`                     |
+| Project          | Tags                                        | Depends on                 |
+| ---------------- | ------------------------------------------- | -------------------------- |
+| `landing`        | `type:app`, `scope:landing`                 | `tokens`, `ui`             |
+| `dashboard`      | `type:app`, `scope:dashboard`               | `tokens`, `ui`, `mock-api` |
+| `tokens`         | `type:lib`, `scope:shared`                  | none                       |
+| `ui`             | `type:lib`, `scope:shared`                  | `tokens`                   |
+| `mock-api`       | `type:lib`, `scope:shared`                  | none                       |
+| `shared-kernel`  | `type:lib`, `scope:shared`, `layer:domain`  | none                       |
+| `booking-domain` | `type:lib`, `scope:booking`, `layer:domain` | `shared-kernel`            |
+| `dashboard-e2e`  | `type:e2e`, `scope:dashboard`               | `dashboard` (implicit)     |
 
 Lint turns the tags into rules with `@nx/enforce-module-boundaries`, so a wrong import fails
 `npm run lint`:

@@ -4,6 +4,7 @@
   "projectType": "application",
   "sourceRoot": "apps/dashboard-e2e/src",
   "implicitDependencies": ["dashboard"],
+  "tags": ["type:e2e", "scope:dashboard"],
   "// targets": "to see all targets run: nx show project dashboard-e2e --web",
   "targets": {}
 }
