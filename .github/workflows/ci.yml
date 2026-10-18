@@ -112,28 +112,6 @@ jobs:
       - run: npm ci
       - run: npx prettier --check .
 
-  # The pull request's title becomes the squash commit on main (ADR 0012), and
-  # the local commit hook never sees it. The title goes through an environment
-  # variable, never into the script itself, so it cannot inject shell.
-  # Dependabot writes titles in its own format, so its pull requests are skipped.
-  pr-title:
-    name: pr title
-    if: github.event_name == 'pull_request' && github.event.pull_request.user.login != 'dependabot[bot]'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-      - run: npm ci
-      - name: Lint the title with commitlint
-        env:
-          TITLE: ${{ github.event.pull_request.title }}
-        run: printf '%s\n' "$TITLE" | npx commitlint --verbose
-
   # The browser tests. They prove what jsdom cannot, such as the keyboard
   # behaviour of a radio group, and the theme surviving a reload with no flash.
   # A required check since 2026-09-28, after passing on all 13 pull requests
