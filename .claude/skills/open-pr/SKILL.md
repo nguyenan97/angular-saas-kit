@@ -89,10 +89,28 @@ gh pr merge <number> --squash --delete-branch
 Squash only, so `main` stays one conventional commit per change. Never merge as an administrator
 around the rules, and do not enable auto-merge unless asked.
 
+Then the branch goes, on GitHub and locally, so only work in progress has a branch.
+`--delete-branch` does both, but it stops short when the local branch cannot be switched away
+from (`main` checked out in another worktree, for one). Once `gh pr view <number> --json state`
+says `MERGED`, finish it by hand; a squash merge leaves the branch looking unmerged to git, hence
+`-D`:
+
+```bash
+git push origin --delete <branch>   # if it is still on GitHub
+git switch --detach origin/main     # if this worktree has it checked out
+git branch -D <branch>
+```
+
 ## 8. After
 
 A push to `main` runs CI again and, for site changes, deploys the Pages site. Each open pull request
 stacked on this one gets retargeted to `main`; each other open one needs `gh pr update-branch`.
+
+Sweep the other branches too: delete each one, on GitHub and locally, whose pull request has merged
+(`gh pr list --state merged --head <branch>`) or whose commits are all in `main`
+(`git rev-list --count origin/main..<branch>` is 0). Leave a branch that has no merged pull request
+and commits of its own, and one checked out in another session's worktree: that session owns it,
+and the report names it.
 
 ## Done when
 
@@ -102,7 +120,8 @@ stacked on this one gets retargeted to `main`; each other open one needs `gh pr 
   why not.
 - `gh pr checks <number> --required` shows every required check passing, or the report names the
   red one and why.
-- If you merged: an independent review had no blocking finding, and
+- If you merged: an independent review had no blocking finding, the branch is gone from GitHub
+  and from the local repository (or the report says which worktree still holds it), and
   `git fetch origin && git log origin/main -1` shows the squash commit; for a site change
   `https://nguyenan97.github.io/angular-saas-kit/` (or `/demo/`, `/storybook/`, `/docs/`) shows it
   live.
