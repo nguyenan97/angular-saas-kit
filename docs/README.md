@@ -13,6 +13,18 @@ everything in it reads fine here on GitHub too.
 | [`superpowers/`](superpowers)   | Working documents: the design and plan of the CI hardening.           |
 | [`.vitepress/`](.vitepress)     | The site's configuration and theme.                                   |
 
+## By what you need
+
+The pages follow [Diátaxis](https://diataxis.fr): each is one of four kinds, and says so by where
+it sits in this table. A new page picks one kind; a page that tries to be two gets split.
+
+| Kind            | For                  | Pages                                                                                                                                                                                                                     |
+| --------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Tutorial**    | learning, by doing   | [Getting started](guide/getting-started.md)                                                                                                                                                                               |
+| **How-to**      | a task, step by step | [Theming](guide/theming.md), [Components](guide/components.md), [Mock API](guide/mock-api.md), [The landing page](guide/landing-page.md), [Testing](guide/testing.md), [Deploying](guide/deploying.md), [CI](guide/ci.md) |
+| **Reference**   | looking something up | [Scripts and targets](reference/scripts.md), [Workspace layout](reference/workspace.md), [`CONSTRAINTS.md`](../CONSTRAINTS.md), each library's README                                                                     |
+| **Explanation** | understanding why    | [Architecture](architecture/README.md) and its [overview](architecture/overview.md), [decision records](adr/README.md), [the development process](guide/development-process.md)                                           |
+
 ## Working on the docs
 
 ```bash

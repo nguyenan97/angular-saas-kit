@@ -8,6 +8,16 @@ description: Write an architecture decision record in docs/adr - pick the number
 The format and the reasoning are in `docs/adr/README.md` and `docs/adr/0001-record-architecture-decisions.md`.
 Read one or two existing records (`0007`, `0013` are good models) before writing.
 
+## When to use
+
+A decision that is expensive to reverse, or that a newcomer would question; or a record to
+supersede. The `solution-design` skill ends here.
+
+## When not to use
+
+A fact about the code (a guide), a version bump, or a small choice inside a spec (its decision
+log).
+
 ## Is it an ADR?
 
 Write one when a decision is **expensive to reverse**, or a newcomer would reasonably ask "why is it
@@ -20,10 +30,16 @@ the code, it belongs in a guide, not an ADR.
 2. **File.** Copy `docs/adr/template.md` to `docs/adr/NNNN-short-title.md`, kebab-case, the decision
    as a noun phrase (`0013-documentation-site-with-vitepress.md`). The first line is `# NNNN. Title`;
    the docs site builds its sidebar from that heading.
-3. **Fill it.** Status `Proposed` while the pull request is open, then `Accepted` when it merges.
+3. **Fill it.** Status `Accepted` in the pull request that carries the decision, since merging it
+   is the acceptance; `Proposed` only for a record opened to discuss before any code, which is set
+   to `Accepted` in the same pull request that acts on it. Four records stayed `Proposed` after
+   merging, and `npm run check:docs` now compares the record with its index row.
    Context is facts and constraints, not opinions. Decision is one or two active-voice sentences plus
    the specifics. Alternatives say **why each lost**. Consequences state the **costs** honestly: a
    record with no downsides is not finished. Delete a section rather than leave it empty.
+   Two sections are optional, after [MADR](https://adr.github.io/madr/): **Decision drivers** (the
+   forces and quality targets the options are judged by) and **Confirmation** (how compliance is
+   checked: a lint rule, a script, a test). Prefer a decision a machine can confirm.
 4. **Index.** Add a row to the table in `docs/adr/README.md`, with the status.
 5. **Check every claim.** Run the command or read the code before you state it. A record that says a
    thing works, or does not, must be right; several here were corrected after being checked.
@@ -46,6 +62,6 @@ An accepted record is not rewritten. Write a new ADR that supersedes it, set the
 - The file is `docs/adr/NNNN-<title>.md` with the next free number, and its first line is
   `# NNNN. Title`.
 - No section is empty, and Consequences names at least one cost.
-- `docs/adr/README.md` has its row, with the status.
+- `docs/adr/README.md` has its row, with the same status as the record (`npm run check:docs`).
 - Every claim about the code was checked by a command or a read, and `npm run docs:build` passes.
 - It is in the same pull request as the change that needs it. Then the `verify` skill and `open-pr`.

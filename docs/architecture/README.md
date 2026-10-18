@@ -5,13 +5,14 @@ of maps at increasing zoom, each answering one question for one audience. The
 _why_ behind the shapes is in the [decision records](../adr/README.md); these pages
 show the shapes.
 
-| Level         | Page                            | Answers                                                                       |
-| ------------- | ------------------------------- | ----------------------------------------------------------------------------- |
-| 1 Context     | [System context](c4-context.md) | Who and what does the kit touch?                                              |
-| 2 Containers  | [Containers](c4-containers.md)  | Which deployable apps and libraries exist, and who uses whom?                 |
-| 3 Components  | [Components](c4-components.md)  | What is inside each app and library?                                          |
-| Supplementary | [Deployment](c4-deployment.md)  | Where does it run: a laptop, CI, GitHub Pages?                                |
-| 4 Code        | _not drawn_                     | Use `npx nx graph` and the source; hand-drawn code diagrams rot within a week |
+| Level         | Page                            | Answers                                                                         |
+| ------------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| All           | [Overview](overview.md)         | Goals, constraints, strategy, risks and the evolution path, on one page (arc42) |
+| 1 Context     | [System context](c4-context.md) | Who and what does the kit touch?                                                |
+| 2 Containers  | [Containers](c4-containers.md)  | Which deployable apps and libraries exist, and who uses whom?                   |
+| 3 Components  | [Components](c4-components.md)  | What is inside each app and library?                                            |
+| Supplementary | [Deployment](c4-deployment.md)  | Where does it run: a laptop, CI, GitHub Pages?                                  |
+| 4 Code        | _not drawn_                     | Use `npx nx graph` and the source; hand-drawn code diagrams rot within a week   |
 
 ## Reading the diagrams
 
