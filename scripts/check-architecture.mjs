@@ -17,6 +17,10 @@
  * boundary rules in eslint.config.mjs match on tags, so an untagged project
  * escapes all of them without an error (ADR 0015).
  *
+ * The projects table in `docs/reference/workspace.md` must agree too: a row per
+ * project, with its tags and the dependencies found here
+ * (`workspace-table.mjs`).
+ *
  * It compares the map with the code. It does not forbid a dependency: lint
  * does that for TypeScript imports (`@nx/enforce-module-boundaries`), and
  * cannot see the stylesheet references this script covers.
@@ -26,6 +30,8 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { checkWorkspaceTable, TABLE } from './workspace-table.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const MAP = 'docs/architecture/c4-containers.md';
@@ -198,14 +204,21 @@ for (const edge of drawn) {
   if (!found.has(edge))
     problems.push(`on the map but not in the code: ${edge}`);
 }
+problems.push(
+  ...checkWorkspaceTable(
+    readFileSync(join(root, TABLE), 'utf8'),
+    projects,
+    found.keys(),
+  ),
+);
 
 if (problems.length > 0) {
   console.error(
-    `\n${MAP} and the source disagree:\n${problems.map((p) => `  - ${p}`).join('\n')}\n\nUpdate the Container and Rel lines in ${MAP}, or the project's tags, in the same change.`,
+    `\n${MAP}, ${TABLE} and the source disagree:\n${problems.map((p) => `  - ${p}`).join('\n')}\n\nUpdate the Container and Rel lines in ${MAP}, the projects table in ${TABLE}, or the project's tags, in the same change.`,
   );
   process.exit(1);
 }
 
 console.log(
-  `The map matches the code: ${names.size} containers, ${found.size} dependencies.`,
+  `The map and the workspace table match the code: ${names.size} containers, ${found.size} dependencies.`,
 );

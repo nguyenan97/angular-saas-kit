@@ -75,8 +75,9 @@ its tags.
 
 ## Traps
 
-- **New project or a dependency between projects:** update `docs/architecture/c4-containers.md`.
-  `npm run check:architecture` compares it with the code (imports, CSS `@import`/`@source`,
+- **New project or a dependency between projects:** update `docs/architecture/c4-containers.md`
+  and the projects table in `docs/reference/workspace.md`. `npm run check:architecture` compares
+  both with the code (imports, CSS `@import`/`@source`,
   `implicitDependencies`), and CI runs it. A stylesheet's `@import` and `@source` count, and lint cannot see them.
 - **Build-specific behaviour** goes through `fileReplacements`, as the `pages` configuration does
   (`routing-mode.ts`, `site-links.ts`). Put shared types in their own file, or the replacement
