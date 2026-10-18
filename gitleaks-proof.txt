@@ -1,0 +1,2 @@
+Throwaway file for a gitleaks proof; the pull request is closed unmerged.
+api_key = "Vk3x9QmZ2pL8rT5wY7nB4cJ6hF1sD0aG"
