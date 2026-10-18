@@ -33,8 +33,9 @@ _why_ something is the way it is before changing it. The reasoning for
 | [0022](0022-the-token-and-signal-rules-are-checked-by-machine.md)   | The token and signal rules are checked by machine         | Accepted                                                                    |
 | [0023](0023-a-development-process-with-a-written-quality-bar.md)    | A development process with a written quality bar          | Superseded by [0025](0025-an-ai-first-lifecycle-with-self-checked-gates.md) |
 | [0024](0024-pin-actions-and-check-the-ci-supply-chain.md)           | Pin actions and check the CI supply chain                 | Accepted                                                                    |
-| [0025](0025-an-ai-first-lifecycle-with-self-checked-gates.md)       | An AI-first lifecycle with self-checked gates             | Accepted                                                                    |
+| [0025](0025-an-ai-first-lifecycle-with-self-checked-gates.md)       | An AI-first lifecycle with self-checked gates             | Superseded by [0027](0027-the-agent-decides-and-merges-by-default.md)       |
 | [0026](0026-secret-scanning-osv-sbom-and-a-dast-baseline.md)        | Secret scanning, OSV, an SBOM and a DAST baseline         | Accepted                                                                    |
+| [0027](0027-the-agent-decides-and-merges-by-default.md)             | The agent decides and merges by default                   | Accepted                                                                    |
 
 Records 0002-0008 were written after the fact, from the code and its history, and
 describe what is true today - including what is unfinished.

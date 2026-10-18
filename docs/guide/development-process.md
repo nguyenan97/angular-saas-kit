@@ -5,7 +5,7 @@ it. The process is sized to the change: a typo does not get a spec, and a new bo
 not skip one. Every phase ends at a gate that a machine or an independent reviewer can check, so an
 agent can carry a change end to end and a person can review it afterwards, from the pull request,
 the ADRs and the report. The reasoning is in
-[ADR 0025](../adr/0025-an-ai-first-lifecycle-with-self-checked-gates.md).
+[ADR 0025](../adr/0025-an-ai-first-lifecycle-with-self-checked-gates.md), and the agent decides and merges by default ([ADR 0027](../adr/0027-the-agent-decides-and-merges-by-default.md)).
 
 > [!NOTE]
 > The kit has no backend, no authentication, no release pipeline and no production
@@ -111,12 +111,13 @@ Tightening the bar is an ordinary change. Loosening it needs a reason in the pul
 
 ## Autonomous mode
 
-By default an agent stops at the end of Inception and Plan for the person to read the spec and the
-plan, and does not merge. In **autonomous mode** it carries the work through every phase, merges
-green pull requests, and reports at the end.
+**Autonomous mode is the default** ([ADR 0027](../adr/0027-the-agent-decides-and-merges-by-default.md)).
+AI first: the agent decides everything itself. It carries the work through every phase, answers
+its own open questions, merges green pull requests, and reports at the end. It does not ask the
+person to choose between options, to approve a spec or a plan, or to allow a merge.
 
-- **When.** Only when the person grants it in words, for a task they name. The grant lasts for
-  that task; it does not carry over to the next one.
+- **When.** Every task, unless the person narrows it in words for that task ("stop after the
+  spec", "do not merge").
 - **Mandatory gates.** Every gate in the lifecycle table, with nothing skipped: the spec's
   self-review, `npm run verify` and `npm run format:check`, an independent review with no blocking
   finding left, every required check green and the branch up to date with `main` before a squash
@@ -141,7 +142,8 @@ green pull requests, and reports at the end.
 ## Working with AI agents
 
 - The agent reads `AGENTS.md`, then `CONSTRAINTS.md`, then the skill for the task.
-- Outside autonomous mode the person reads the spec and the plan before Build, and merges.
+- The person reads the reports and the merged pull requests afterwards; they do not approve them
+  beforehand. Only a task the person narrowed in words stops for them.
 - A check the agent cannot run is reported as not run, never as passed.
 - A correction that would be needed again becomes a check or a skill edit (the `retro` skill), so
   the next agent does not need it.

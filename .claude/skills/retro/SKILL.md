@@ -7,7 +7,8 @@ description: After a session or a batch of merged changes, find what went wrong 
 
 ## When to use
 
-When the person asks, and at the end of an autonomous-mode task, where it feeds the report.
+When the person asks, and at the end of every task (autonomous mode is the default), where it
+feeds the report.
 
 ## When not to use
 
@@ -48,7 +49,7 @@ The candidates, most severe first: what happened, the evidence (a commit, a mess
 line), the proposed fix and where it goes. Write it to
 `docs/superpowers/reports/YYYY-MM-DD-<topic>.md` (its own section in an autonomous-mode report), so
 the next agent can read it. Do not apply the fixes in the retro itself: each accepted fix lands in
-its own pull request, unless the person or autonomous mode has asked for them in this batch.
+its own pull request, which the agent opens and merges itself like any other change.
 
 ## Done when
 

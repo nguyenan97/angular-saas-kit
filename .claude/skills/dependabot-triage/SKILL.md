@@ -10,7 +10,7 @@ and `.github/dependabot.yml` is the source of truth. Weekly npm PRs, monthly Git
 
 ## When to use
 
-When the person asks to triage the Dependabot pull requests, or in autonomous mode for a task that includes them. User-invoked: it merges and closes pull requests.
+When the person asks to triage the Dependabot pull requests, or for any task that includes them (autonomous mode is the default). User-invoked: it merges and closes pull requests, without asking first.
 
 ## When not to use
 

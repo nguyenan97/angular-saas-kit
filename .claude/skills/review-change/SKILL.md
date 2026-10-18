@@ -7,8 +7,9 @@ description: Review a branch or pull request on four separate axes - spec, stand
 
 ## When to use
 
-Before any change of the middle size or larger merges, and on request. In autonomous mode it is a
-mandatory gate (`docs/guide/development-process.md`).
+Before any change of the middle size or larger merges, and on request. It is a mandatory gate,
+and with autonomous mode the default it is the only review before merge
+(`docs/guide/development-process.md`).
 
 ## When not to use
 

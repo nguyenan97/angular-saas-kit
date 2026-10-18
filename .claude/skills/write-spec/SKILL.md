@@ -21,9 +21,9 @@ description: Write the spec for a change before code - goal, non-goals, SHALL re
 
 - Read the code, the ADRs in the area and the context's `GLOSSARY.md`. Use the glossary's words;
   a concept with no entry gets one (the `domain-modeling` skill).
-- Ask what you cannot read: one question at a time, each with your recommended answer. In
-  autonomous mode (`development-process.md`) do not ask: take the answer you would have recommended
-  and write it down under **Assumptions**.
+- Do not ask what you cannot read: autonomous mode is the default (`development-process.md`). Take
+  the answer you would have recommended and write it down under **Assumptions**. Ask only when the
+  person narrowed the task in words to stop for questions.
 
 ## The file
 
@@ -67,8 +67,8 @@ under **Self-review**, ticked:
 - [ ] Every assumption is one the person could reverse without rewriting the spec.
 - [ ] No open question is left.
 
-Outside autonomous mode the person approves it after that; in autonomous mode the ticked list is
-the gate.
+The ticked list is the gate; the person does not approve the spec (autonomous mode is the
+default). Only a task the person narrowed to "stop after the spec" waits for them.
 
 ## Done when
 

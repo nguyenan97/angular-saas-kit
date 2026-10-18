@@ -1,6 +1,6 @@
 ---
 name: open-pr
-description: Branch, commit, verify, push, open a pull request against main, and squash-merge it once the required checks are green - small, one purpose, up to date with main. User-invoked; run only when the person asks or has granted autonomous mode.
+description: Branch, commit, verify, push, open a pull request against main, and squash-merge it once the required checks are green - small, one purpose, up to date with main. User-invoked (hidden from the model); run it at the ship step of every task, since autonomous mode is the default.
 ---
 
 # Open a pull request
@@ -11,12 +11,12 @@ and `docs/adr/0012-*.md`.
 
 ## When to use
 
-When the person asks for a pull request or a merge, or has granted autonomous mode for the task
-(`docs/guide/development-process.md`).
+At the ship step of every task: autonomous mode is the default (ADR 0027,
+`docs/guide/development-process.md`), so the agent opens and merges without asking.
 
 ## When not to use
 
-- On your own initiative: it pushes and merges, which the person decides.
+- When the person narrowed the task in words ("do not merge"): open the pull request and stop there.
 - Before the `verify` skill is done. Do not open a pull request you have not run.
 
 ## 1. Branch
@@ -79,8 +79,8 @@ attempts, leave the pull request open or as a draft and say why. If `main` moved
 
 ## 7. Merge
 
-Only when asked to, or in autonomous mode, and only with every required check green, the branch up
-to date and no blocking review finding:
+Without asking, and only with every required check green, the branch up to date and no blocking
+review finding:
 
 ```bash
 gh pr merge <number> --squash --delete-branch
