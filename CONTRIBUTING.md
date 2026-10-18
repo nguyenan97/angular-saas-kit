@@ -22,6 +22,7 @@ tree has a real conflict - don't paper over it with `--legacy-peer-deps`.
 npx nx run-many -t lint test build
 npm run typecheck
 npm run check:architecture
+npm run check:docs         # links, commands, the ADR index and the skills
 npm run check:tokens       # no named colours in components
 npm run check:packages     # after the build: what the tokens and ui packages would ship
 npm run format:check

@@ -1,6 +1,6 @@
 # 0024. Pin actions and check the CI supply chain
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-17
 - **Deciders:** @nguyenan97
 

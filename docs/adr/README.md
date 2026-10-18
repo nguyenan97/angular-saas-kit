@@ -29,10 +29,10 @@ _why_ something is the way it is before changing it. The reasoning for
 | [0018](0018-charts-as-svg-on-the-chart-tokens-with-a-data-table.md) | Charts: SVG on the chart tokens, with the data as a table | Accepted |
 | [0019](0019-blog-posts-as-prerendered-components.md)                | Blog posts as prerendered Angular components              | Accepted |
 | [0020](0020-storybook-on-the-angular-webpack-builder.md)            | Storybook on the Angular webpack builder                  | Accepted |
-| [0021](0021-bounded-contexts-as-nx-libraries.md)                    | Bounded contexts as Nx libraries                          | Proposed |
-| [0022](0022-the-token-and-signal-rules-are-checked-by-machine.md)   | The token and signal rules are checked by machine         | Proposed |
-| [0023](0023-a-development-process-with-a-written-quality-bar.md)    | A development process with a written quality bar          | Proposed |
-| [0024](0024-pin-actions-and-check-the-ci-supply-chain.md)           | Pin actions and check the CI supply chain                 | Proposed |
+| [0021](0021-bounded-contexts-as-nx-libraries.md)                    | Bounded contexts as Nx libraries                          | Accepted |
+| [0022](0022-the-token-and-signal-rules-are-checked-by-machine.md)   | The token and signal rules are checked by machine         | Accepted |
+| [0023](0023-a-development-process-with-a-written-quality-bar.md)    | A development process with a written quality bar          | Accepted |
+| [0024](0024-pin-actions-and-check-the-ci-supply-chain.md)           | Pin actions and check the CI supply chain                 | Accepted |
 
 Records 0002-0008 were written after the fact, from the code and its history, and
 describe what is true today - including what is unfinished.

@@ -1,7 +1,6 @@
 ---
 name: open-pr
 description: Branch, commit, verify, push, open a pull request against main, and squash-merge it once the required checks are green.
-disable-model-invocation: true
 ---
 
 # Open a pull request

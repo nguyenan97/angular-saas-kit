@@ -1,7 +1,6 @@
 ---
 name: review-change
 description: Review a branch or pull request on four separate axes - spec, standards (including the CONSTRAINTS.md floor), security, accessibility - and report findings by axis with a severity each.
-disable-model-invocation: true
 ---
 
 # Review a change
