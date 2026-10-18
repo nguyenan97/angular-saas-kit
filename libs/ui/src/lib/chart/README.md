@@ -14,7 +14,9 @@ chart tokens, and always with its numbers as a table.
 />
 ```
 
-`data` is a list of `{ label, value }`: `[{ label: 'Sep 26', value: 241000 }, ...]`.
+`data` is a list of `{ label, value }`: `[{ label: 'Sep 26', value: 241000 }, ...]`. A value
+may be negative, a net figure after refunds say: the axis then reaches below zero, a point sits
+under the zero line, and a bar runs down from it.
 
 | Input           | Type                        | Default                   | Notes                                              |
 | --------------- | --------------------------- | ------------------------- | -------------------------------------------------- |
@@ -28,7 +30,8 @@ chart tokens, and always with its numbers as a table.
 | `height`        | `number`                    | `240`                     | Pixels. The width follows the container.           |
 | `class`         | `string`                    | `''`                      | Merged last onto the host.                         |
 
-`niceTicks(max)` is exported too: round axis steps (1, 2, 2.5 or 5 times a power of ten).
+`niceTicks(max, count?, min?)` is exported too: round axis steps (1, 2, 2.5 or 5 times a power
+of ten) through 0, from `min` when it is negative to at least `max`.
 
 ## Accessibility
 

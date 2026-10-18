@@ -49,21 +49,26 @@ const AREA: Record<ChartColor, string> = {
 };
 
 /**
- * Round numbers for an axis from 0 to at least `max`: steps of 1, 2, 2.5 or 5
- * times a power of ten, about `count` of them.
+ * Round numbers for an axis through 0, from `min` (when it is negative) to at
+ * least `max`: steps of 1, 2, 2.5 or 5 times a power of ten, about `count` of
+ * them.
  */
-export function niceTicks(max: number, count = 4): number[] {
-  if (!(max > 0)) {
+export function niceTicks(max: number, count = 4, min = 0): number[] {
+  const low = Math.min(0, min);
+  const high = Math.max(0, max);
+  if (!(high - low > 0)) {
     return [0, 1];
   }
-  const rough = max / count;
+  const rough = (high - low) / count;
   const power = 10 ** Math.floor(Math.log10(rough));
   const step =
     [1, 2, 2.5, 5, 10].map((m) => m * power).find((s) => s >= rough) ??
     10 * power;
+  const first = Math.floor(low / step);
   const ticks: number[] = [];
-  for (let i = 0; i * step < max + step; i++) {
-    ticks.push(Math.round(i * step * 1e6) / 1e6);
+  for (let i = first; i * step < high + step; i++) {
+    // `+ 0` turns -0 into 0, which a format would write as "-0".
+    ticks.push(Math.round(i * step * 1e6) / 1e6 + 0);
   }
   return ticks;
 }
@@ -154,9 +159,9 @@ const PAD = { top: 8, right: 8, bottom: 24, left: 56 };
                 [class]="fill()"
                 rx="2"
                 [attr.x]="x($index) - barWidth() / 2"
-                [attr.y]="y(point.value)"
+                [attr.y]="barTop(point.value)"
                 [attr.width]="barWidth()"
-                [attr.height]="plot().bottom - y(point.value)"
+                [attr.height]="barHeight(point.value)"
               >
                 <title>{{ point.label }}: {{ format()(point.value) }}</title>
               </rect>
@@ -238,9 +243,14 @@ export class Chart {
   protected readonly width = signal(640);
 
   protected readonly ticks = computed(() =>
-    niceTicks(Math.max(0, ...this.data().map((point) => point.value))),
+    niceTicks(
+      Math.max(0, ...this.data().map((point) => point.value)),
+      4,
+      Math.min(0, ...this.data().map((point) => point.value)),
+    ),
   );
   private readonly top = computed(() => this.ticks().at(-1) ?? 1);
+  private readonly bottom = computed(() => this.ticks()[0] ?? 0);
   protected readonly plot = computed(() => ({
     left: PAD.left,
     right: this.width() - PAD.right,
@@ -290,7 +300,8 @@ export class Chart {
     if (data.length === 0) {
       return '';
     }
-    const base = this.plot().bottom;
+    // Filled to the zero line, which is the bottom unless a value is negative.
+    const base = this.y(0);
     return `${this.linePath()} L${this.x(data.length - 1)},${base} L${this.x(0)},${base} Z`;
   });
 
@@ -326,8 +337,19 @@ export class Chart {
     return left + (index / last) * (right - left);
   }
 
+  /** Where a value sits down the plot: the lowest tick at the bottom, the highest at the top. */
   protected y(value: number): number {
     const { top, bottom } = this.plot();
-    return bottom - (value / this.top()) * (bottom - top);
+    const low = this.bottom();
+    return bottom - ((value - low) / (this.top() - low)) * (bottom - top);
+  }
+
+  /** A bar runs from the zero line, up for a positive value and down for a negative one. */
+  protected barTop(value: number): number {
+    return Math.min(this.y(0), this.y(value));
+  }
+
+  protected barHeight(value: number): number {
+    return Math.abs(this.y(0) - this.y(value));
   }
 }

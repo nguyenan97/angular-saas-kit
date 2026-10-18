@@ -1,6 +1,7 @@
 # Avatar
 
-A person or account: a picture, or initials when there is none or it fails to load.
+A person or account: a picture, or initials when there is none or it fails to load. A new
+`src` is tried again, even after an earlier picture failed.
 
 ```html
 <ask-avatar name="Ada Lovelace" src="/ada.png" />

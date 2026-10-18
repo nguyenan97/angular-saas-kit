@@ -59,6 +59,22 @@ describe('Avatar', () => {
     expect(el('a').textContent?.trim()).toBe('AL');
   });
 
+  it('tries a new picture after an earlier one failed', async () => {
+    const { fixture, el } = await render();
+    fixture.componentInstance.src.set('/broken.png');
+    await fixture.whenStable();
+    const broken = el('a').querySelector('img');
+    expect(broken).not.toBeNull();
+    broken?.dispatchEvent(new Event('error'));
+    await fixture.whenStable();
+    expect(el('a').querySelector('img')).toBeNull();
+
+    fixture.componentInstance.src.set('/me.png');
+    await fixture.whenStable();
+
+    expect(el('a').querySelector('img')?.getAttribute('src')).toBe('/me.png');
+  });
+
   it('lets a consumer class win over the size', async () => {
     const { el } = await render();
     expect(el('b').classList).toContain('size-12');
