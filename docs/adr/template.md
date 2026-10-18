@@ -14,6 +14,10 @@ Delete this comment and any section that has nothing to say.
 What is forcing a decision? State the problem and the constraints in a few
 sentences - what someone who was not there needs to know. Facts, not opinions.
 
+## Decision drivers
+
+Optional. The forces and quality targets the options are judged by.
+
 ## Decision
 
 The choice, in one or two sentences, in the active voice ("We use ...").
@@ -22,6 +26,10 @@ The choice, in one or two sentences, in the active voice ("We use ...").
 
 - **Option A** - why it lost.
 - **Option B** - why it lost.
+
+## Confirmation
+
+Optional. How compliance is checked: a lint rule, a script, a test, a review step.
 
 ## Consequences
 

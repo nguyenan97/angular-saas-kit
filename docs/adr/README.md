@@ -45,8 +45,10 @@ describe what is true today - including what is unfinished.
 2. Fill in **Context**, **Decision**, **Alternatives considered** and **Consequences**.
    Delete a section rather than leave it empty. State the costs honestly: a record
    with no downsides is not finished.
-3. Set the status to `Proposed`, open a pull request, and discuss it there. It becomes
-   `Accepted` when the PR merges; add it to the index above in the same PR.
+3. Set the status to `Accepted` in the pull request that carries the decision, since
+   merging it is the acceptance, and add it to the index above with the same status
+   (`npm run check:docs` compares the two). Use `Proposed` only for a record opened to
+   discuss before any code, and set it to `Accepted` in the pull request that acts on it.
 4. Write an ADR when a decision is expensive to reverse, or when a newcomer would
    reasonably ask "why is it like this?". A change of library version is not one; a
    change of testing strategy is.

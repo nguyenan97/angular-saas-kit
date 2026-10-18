@@ -8,14 +8,26 @@ description: Keep the C4 architecture diagrams in docs/architecture true when a 
 The diagrams are Mermaid C4 in `docs/architecture/`. Only the container map is checked by machine;
 the rest is kept true by hand, in the same pull request as the change.
 
+## When to use
+
+A project added or removed, a dependency between projects, an outside system, a deployment target,
+or a red `npm run check:architecture`.
+
+## When not to use
+
+A change inside a component that no diagram shows; a decision with no change of shape (that is an
+ADR alone).
+
 ## Which page
 
-| What changed                                                        | Edit               | Checked by CI? |
-| ------------------------------------------------------------------- | ------------------ | -------------- |
-| A project added or removed; a dependency between projects           | `c4-containers.md` | Yes            |
-| What is inside an app or library (a component, a route, a provider) | `c4-components.md` | No             |
-| A new person, or an outside system the kit talks to                 | `c4-context.md`    | No             |
-| A new host, a new deployment target, a new pipeline stage           | `c4-deployment.md` | No             |
+| What changed                                                        | Edit                                                                      | Checked by CI? |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------------- |
+| A project added or removed; a dependency between projects           | `c4-containers.md`                                                        | Yes            |
+| What is inside an app or library (a component, a route, a provider) | `c4-components.md`                                                        | No             |
+| A new person, or an outside system the kit talks to                 | `c4-context.md`                                                           | No             |
+| A new host, a new deployment target, a new pipeline stage           | `c4-deployment.md`                                                        | No             |
+| A flow whose order of calls across parts matters                    | a `sequenceDiagram` (a dynamic view) on the page of the part it starts in | No             |
+| A quality goal, a constraint, a risk or an evolution path           | `overview.md` (arc42 on one page)                                         | No             |
 
 ## The checked part
 

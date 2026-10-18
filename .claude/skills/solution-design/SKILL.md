@@ -45,8 +45,8 @@ target wins; with a tie, the one easier to reverse.
   system, Containers for a new project or dependency, Components for what changes inside one, and a
   Dynamic view (a sequence diagram) when the order of calls between parts is the point. Deployment
   once there is a deployment beyond Pages.
-- **The overview**: `docs/architecture/overview.md` (when it exists) for a quality goal, a
-  constraint or a risk that changes.
+- **The overview**: `docs/architecture/overview.md`, for a quality goal, a constraint, a risk or
+  an evolution path that changes.
 
 ## 4. Threat model, when data, the network or auth is touched
 
