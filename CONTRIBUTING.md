@@ -159,7 +159,8 @@ Trunk-based: short-lived branches off `main`, small pull requests, squash merges
   open the second pull request against the first branch; once the first merges, retarget the second
   to `main` and rebase it. Keep stacks short: two or three.
 - **Delete the branch once it merges**, on GitHub and locally (`git branch -D`: a squash merge
-  leaves it looking unmerged to git). A branch that is still there is work in progress.
+  leaves it looking unmerged to git), once you have checked it has nothing beyond the pull
+  request's head. A branch that is still there is work in progress.
 - **Revert, do not repair in place.** A merged change that breaks `main` is reverted with its own
   pull request (`git revert <sha>`); the fix comes after, with a test.
 

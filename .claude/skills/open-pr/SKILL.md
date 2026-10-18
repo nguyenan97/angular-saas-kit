@@ -89,16 +89,21 @@ gh pr merge <number> --squash --delete-branch
 Squash only, so `main` stays one conventional commit per change. Never merge as an administrator
 around the rules, and do not enable auto-merge unless asked.
 
-Then the branch goes, on GitHub and locally, so only work in progress has a branch.
-`--delete-branch` does both, but it stops short when the local branch cannot be switched away
-from (`main` checked out in another worktree, for one). Once `gh pr view <number> --json state`
-says `MERGED`, finish it by hand; a squash merge leaves the branch looking unmerged to git, hence
-`-D`:
+Then the branch goes, on GitHub and locally, so only work in progress has a branch. A branch is
+**merged** when its pull request merged and the branch has nothing beyond that pull request's head:
+anything else is work that `main` does not have, and stays. `--delete-branch` does the deleting,
+but it stops short when the local branch cannot be switched away from (`main` checked out in
+another worktree, for one); finish by hand, checking each step:
 
 ```bash
-git push origin --delete <branch>   # if it is still on GitHub
-git switch --detach origin/main     # if this worktree has it checked out
-git branch -D <branch>
+gh pr view <number> --json state,headRefOid --jq '.state + " " + .headRefOid'   # MERGED <head>
+git fetch --prune origin
+gh pr list --state open --base <branch>      # a stacked PR: gh pr edit <n> --base main, first
+git rev-list --count <head>..origin/<branch> # 0, or keep it: someone pushed after the merge
+git push --force-with-lease=<branch>:<head> origin --delete <branch>
+git switch --detach origin/main              # if this worktree has it checked out
+git rev-list --count <head>..<branch>        # 0, or keep it: it has commits the PR did not
+git branch -D <branch>                       # -D: a squash merge looks unmerged to git
 ```
 
 ## 8. After
@@ -106,11 +111,15 @@ git branch -D <branch>
 A push to `main` runs CI again and, for site changes, deploys the Pages site. Each open pull request
 stacked on this one gets retargeted to `main`; each other open one needs `gh pr update-branch`.
 
-Sweep the other branches too: delete each one, on GitHub and locally, whose pull request has merged
-(`gh pr list --state merged --head <branch>`) or whose commits are all in `main`
-(`git rev-list --count origin/main..<branch>` is 0). Leave a branch that has no merged pull request
-and commits of its own, and one checked out in another session's worktree: that session owns it,
-and the report names it.
+Sweep the other branches too, the same way: after `git fetch --prune origin`, delete each branch,
+on GitHub and locally, that is merged as defined in step 7 (its pull request is
+`gh pr list --state merged --head <branch> --json number,headRefOid`; check the head, not just the
+name, since a name can come back). A local branch that was never pushed and has no commits of its
+own (`git rev-list --count origin/main..<branch>` is 0, typically a session's starting branch) goes
+too. Everything else stays: a branch with commits no merged pull request has, a branch an open
+pull request targets as its base, an open Dependabot pull request's branch (Dependabot deletes its
+own once they close), and a branch checked out in another session's worktree, which that session
+owns. The report names what stayed and why.
 
 ## Done when
 
@@ -121,7 +130,8 @@ and the report names it.
 - `gh pr checks <number> --required` shows every required check passing, or the report names the
   red one and why.
 - If you merged: an independent review had no blocking finding, the branch is gone from GitHub
-  and from the local repository (or the report says which worktree still holds it), and
+  and from the local repository (or the report says why it stayed), the report lists
+  `<branch> <sha>` for every branch deleted, so any of them can be restored, and
   `git fetch origin && git log origin/main -1` shows the squash commit; for a site change
   `https://nguyenan97.github.io/angular-saas-kit/` (or `/demo/`, `/storybook/`, `/docs/`) shows it
   live.
