@@ -244,20 +244,18 @@ interface DraftLine {
             </p>
           }
 
-          <dl
-            role="group"
-            aria-label="Totals"
-            class="ml-auto grid w-64 grid-cols-2 gap-1 text-sm"
-          >
-            <dt class="text-muted-foreground">Subtotal</dt>
-            <dd class="text-right tabular-nums">{{ totals().subtotal }}</dd>
-            <dt class="text-muted-foreground">VAT</dt>
-            <dd class="text-right tabular-nums">{{ totals().vat }}</dd>
-            <dt class="font-medium">Total</dt>
-            <dd class="text-right font-medium tabular-nums">
-              {{ totals().total }}
-            </dd>
-          </dl>
+          <div role="group" aria-label="Totals" class="ml-auto w-64">
+            <dl class="grid grid-cols-2 gap-1 text-sm">
+              <dt class="text-muted-foreground">Subtotal</dt>
+              <dd class="text-right tabular-nums">{{ totals().subtotal }}</dd>
+              <dt class="text-muted-foreground">VAT</dt>
+              <dd class="text-right tabular-nums">{{ totals().vat }}</dd>
+              <dt class="font-medium">Total</dt>
+              <dd class="text-right font-medium tabular-nums">
+                {{ totals().total }}
+              </dd>
+            </dl>
+          </div>
         </div>
       </ask-card>
 

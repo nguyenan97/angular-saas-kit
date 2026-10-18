@@ -187,7 +187,10 @@ export class Combobox {
   );
 
   protected readonly activeId = computed(() =>
-    this.expanded() && this.activeIndex() >= 0
+    this.expanded() &&
+    this.activeIndex() >= 0 &&
+    // The options may have changed under an open list.
+    this.activeIndex() < this.filtered().length
       ? this.optionId(this.activeIndex())
       : null,
   );

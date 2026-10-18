@@ -174,7 +174,7 @@ describe('NewOrder', () => {
     await addLine('P-002', '1');
 
     const totals = () =>
-      [...(el().querySelector('[aria-label="Totals"]')?.children ?? [])]
+      [...(el().querySelector('[aria-label="Totals"] dl')?.children ?? [])]
         .map(text)
         .join(' ');
     expect(totals()).toContain('Subtotal ₫565,000');
@@ -203,7 +203,7 @@ describe('NewOrder', () => {
     );
     expect(text(error)).toBe('A quantity is a whole number from 1 to 100,000.');
     const totals = [
-      ...(el().querySelector('[aria-label="Totals"]')?.children ?? []),
+      ...(el().querySelector('[aria-label="Totals"] dl')?.children ?? []),
     ].map(text);
     expect(totals.slice(-2)).toEqual(['Total', '₫0']);
   });
