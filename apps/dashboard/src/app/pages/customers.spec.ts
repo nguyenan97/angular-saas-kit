@@ -106,4 +106,44 @@ describe('Customers', () => {
 
     expect(el.querySelector('[role="alert"]')).toBeNull();
   });
+
+  it('keeps the focus through a retry that fails again, with nothing on screen yet', async () => {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
+    const fixture = TestBed.createComponent(Customers);
+    const http = TestBed.inject(HttpTestingController);
+    const el: HTMLElement = fixture.nativeElement;
+    // jsdom only moves focus to elements in the document.
+    document.body.append(el);
+    const fail = () =>
+      http
+        .expectOne((r) => r.url === '/api/customers')
+        .flush('down', { status: 500, statusText: 'Server Error' });
+    TestBed.tick();
+    fail();
+    await fixture.whenStable();
+
+    const retry = el.querySelector<HTMLButtonElement>('[role="alert"] button');
+    retry?.focus();
+    retry?.click();
+    TestBed.tick();
+
+    // While it reloads, the status says so, and the focus stays in the list.
+    expect(el.querySelector('[role="status"]')?.textContent?.trim()).toBe(
+      'Loading customers...',
+    );
+    expect(el.contains(document.activeElement)).toBe(true);
+
+    fail();
+    await fixture.whenStable();
+
+    expect(el.querySelector('[role="alert"]')).not.toBeNull();
+    expect(el.contains(document.activeElement)).toBe(true);
+    el.remove();
+  });
 });

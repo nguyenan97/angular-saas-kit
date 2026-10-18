@@ -140,7 +140,7 @@ describe('Orders', () => {
 
     // The alert gives way while the list reloads; the results take the focus.
     expect(el.querySelector('[role="alert"]')).toBeNull();
-    expect(document.activeElement).toBe(el.querySelector('[role="region"]'));
+    expect(el.contains(document.activeElement)).toBe(true);
     el.remove();
     expect(retry.request.params.get('status')).toBe('pending');
     retry.flush(page([PENDING]));

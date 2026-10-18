@@ -2,10 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   type ElementRef,
-  Injector,
-  afterNextRender,
   computed,
-  inject,
   viewChild,
 } from '@angular/core';
 import {
@@ -56,134 +53,147 @@ import type { Customer } from '../data/models';
           {{ summary() }}
         </p>
 
-        @if (list.resource.error() && !list.resource.isLoading()) {
-          <!-- Said even when an earlier list is still on screen: a failed
+        <!-- One element around the alert and the results, so the focus
+             has somewhere to stay while Try again swaps one for the other. -->
+        <div
+          #results
+          tabindex="-1"
+          class="flex flex-col gap-4 focus-visible:outline-none"
+        >
+          @if (list.resource.error() && !list.resource.isLoading()) {
+            <!-- Said even when an earlier list is still on screen: a failed
                page, search or sort is not hidden behind the last one. -->
-          <div class="flex flex-wrap items-center gap-3" role="alert">
-            <p class="text-sm">The customers could not be loaded.</p>
-            <button
-              type="button"
-              askButton
-              variant="outline"
-              size="sm"
-              (click)="retry()"
+            <div class="flex flex-wrap items-center gap-3" role="alert">
+              <p class="text-sm">The customers could not be loaded.</p>
+              <button
+                type="button"
+                askButton
+                variant="outline"
+                size="sm"
+                (click)="retry()"
+              >
+                Try again
+              </button>
+            </div>
+          }
+          @if (
+            list.current() ||
+            !list.resource.error() ||
+            list.resource.isLoading()
+          ) {
+            <div
+              class="overflow-x-auto"
+              tabindex="0"
+              role="region"
+              aria-label="Customers"
+              [attr.aria-busy]="list.resource.isLoading()"
             >
-              Try again
-            </button>
-          </div>
-        }
-        @if (
-          list.current() || !list.resource.error() || list.resource.isLoading()
-        ) {
-          <div
-            #results
-            class="overflow-x-auto"
-            tabindex="0"
-            role="region"
-            aria-label="Customers"
-            [attr.aria-busy]="list.resource.isLoading()"
-          >
-            <table
-              askTable
-              class="transition-opacity"
-              [class.opacity-60]="list.resource.isLoading() && !!list.current()"
-            >
-              <thead>
-                <tr>
-                  <th scope="col">
-                    <ask-sort-header column="name" [(sort)]="list.sort"
-                      >Customer</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col">
-                    <ask-sort-header column="country" [(sort)]="list.sort"
-                      >Country</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col" class="text-right">
-                    <ask-sort-header column="orders" [(sort)]="list.sort"
-                      >Orders</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col" class="text-right">
-                    <ask-sort-header column="spentCents" [(sort)]="list.sort"
-                      >Spent</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col">
-                    <ask-sort-header column="joinedAt" [(sort)]="list.sort"
-                      >Joined</ask-sort-header
-                    >
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (
-                  customer of list.current()?.items ?? [];
-                  track customer.id
-                ) {
+              <table
+                askTable
+                class="transition-opacity"
+                [class.opacity-60]="
+                  list.resource.isLoading() && !!list.current()
+                "
+              >
+                <thead>
                   <tr>
-                    <td>
-                      <div class="flex items-center gap-3">
-                        <span
-                          class="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-xs font-medium text-muted-foreground"
-                          aria-hidden="true"
-                          >{{ initials(customer.name) }}</span
-                        >
-                        <div>
-                          <div class="font-medium">{{ customer.name }}</div>
-                          <div class="text-xs text-muted-foreground">
-                            {{ customer.email }}
+                    <th scope="col">
+                      <ask-sort-header column="name" [(sort)]="list.sort"
+                        >Customer</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col">
+                      <ask-sort-header column="country" [(sort)]="list.sort"
+                        >Country</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col" class="text-right">
+                      <ask-sort-header column="orders" [(sort)]="list.sort"
+                        >Orders</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col" class="text-right">
+                      <ask-sort-header column="spentCents" [(sort)]="list.sort"
+                        >Spent</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col">
+                      <ask-sort-header column="joinedAt" [(sort)]="list.sort"
+                        >Joined</ask-sort-header
+                      >
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (
+                    customer of list.current()?.items ?? [];
+                    track customer.id
+                  ) {
+                    <tr>
+                      <td>
+                        <div class="flex items-center gap-3">
+                          <span
+                            class="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-xs font-medium text-muted-foreground"
+                            aria-hidden="true"
+                            >{{ initials(customer.name) }}</span
+                          >
+                          <div>
+                            <div class="font-medium">{{ customer.name }}</div>
+                            <div class="text-xs text-muted-foreground">
+                              {{ customer.email }}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
-                    <td class="whitespace-nowrap">{{ customer.country }}</td>
-                    <td class="text-right tabular-nums">
-                      {{ customer.orders }}
-                    </td>
-                    <td class="text-right tabular-nums">
-                      {{ money(customer.spentCents) }}
-                    </td>
-                    <td class="whitespace-nowrap">
-                      {{ date(customer.joinedAt) }}
-                    </td>
-                  </tr>
-                } @empty {
-                  @if (list.resource.isLoading()) {
-                    @for (placeholder of placeholders; track placeholder) {
-                      <tr aria-hidden="true">
-                        <td colspan="5">
-                          <div class="h-8 animate-pulse rounded bg-muted"></div>
+                      </td>
+                      <td class="whitespace-nowrap">{{ customer.country }}</td>
+                      <td class="text-right tabular-nums">
+                        {{ customer.orders }}
+                      </td>
+                      <td class="text-right tabular-nums">
+                        {{ money(customer.spentCents) }}
+                      </td>
+                      <td class="whitespace-nowrap">
+                        {{ date(customer.joinedAt) }}
+                      </td>
+                    </tr>
+                  } @empty {
+                    @if (list.resource.isLoading()) {
+                      @for (placeholder of placeholders; track placeholder) {
+                        <tr aria-hidden="true">
+                          <td colspan="5">
+                            <div
+                              class="h-8 animate-pulse rounded bg-muted"
+                            ></div>
+                          </td>
+                        </tr>
+                      }
+                    } @else {
+                      <tr>
+                        <td colspan="5" class="text-muted-foreground">
+                          No customers match that search.
                         </td>
                       </tr>
                     }
-                  } @else {
-                    <tr>
-                      <td colspan="5" class="text-muted-foreground">
-                        No customers match that search.
-                      </td>
-                    </tr>
                   }
-                }
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>
 
-          <ask-pagination
-            label="Customers pages"
-            [total]="list.current()?.total ?? 0"
-            [pageSize]="list.pageSize"
-            [(page)]="list.page"
-          />
-        }
+            <ask-pagination
+              label="Customers pages"
+              [total]="list.current()?.total ?? 0"
+              [pageSize]="list.pageSize"
+              [(page)]="list.page"
+            />
+          }
+        </div>
       </div>
     </ask-card>
   `,
 })
 export class Customers {
-  private readonly injector = inject(Injector);
-  private readonly results = viewChild<ElementRef<HTMLElement>>('results');
+  private readonly results =
+    viewChild.required<ElementRef<HTMLElement>>('results');
 
   protected readonly list = listQuery<Customer>({
     url: '/api/customers',
@@ -193,7 +203,9 @@ export class Customers {
   protected readonly summary = computed(() => {
     const range = this.list.range();
     if (!range) {
-      return this.list.resource.error() ? '' : 'Loading customers...';
+      return this.list.resource.error() && !this.list.resource.isLoading()
+        ? ''
+        : 'Loading customers...';
     }
     return range.total === 0
       ? 'No customers match.'
@@ -219,12 +231,10 @@ export class Customers {
 
   /**
    * Asks again. The alert, and the Try again button in it, give way while the
-   * list reloads, so the focus moves to the results.
+   * list reloads, so the focus moves to what holds the alert and the results.
    */
   protected retry(): void {
     this.list.resource.reload();
-    afterNextRender(() => this.results()?.nativeElement.focus(), {
-      injector: this.injector,
-    });
+    this.results().nativeElement.focus();
   }
 }

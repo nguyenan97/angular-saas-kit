@@ -40,7 +40,7 @@ const EMPTY: Profile = { name: '', email: '', company: '', timeZone: 'UTC' };
   template: `
     <!-- One element around every state, so the focus has somewhere to
          stay when Try again swaps the alert for the loading state. -->
-    <div #state tabindex="-1" class="rounded-md focus-visible:outline-none">
+    <div #state tabindex="-1" class="focus-visible:outline-none">
       @if (stored.isLoading()) {
         <!-- Nothing to save until it arrives: an empty form saved now would
            overwrite what is stored. -->

@@ -3,8 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   type ElementRef,
-  Injector,
-  afterNextRender,
   computed,
   inject,
   signal,
@@ -111,133 +109,146 @@ const afterMenuCloses = () =>
           <p class="text-sm" role="status">{{ notice() }}</p>
         </div>
 
-        @if (list.resource.error() && !list.resource.isLoading()) {
-          <!-- Said even when an earlier list is still on screen: a failed
+        <!-- One element around the alert and the results, so the focus
+             has somewhere to stay while Try again swaps one for the other. -->
+        <div
+          #results
+          tabindex="-1"
+          class="flex flex-col gap-4 focus-visible:outline-none"
+        >
+          @if (list.resource.error() && !list.resource.isLoading()) {
+            <!-- Said even when an earlier list is still on screen: a failed
                page, search or sort is not hidden behind the last one. -->
-          <div class="flex flex-wrap items-center gap-3" role="alert">
-            <p class="text-sm">The orders could not be loaded.</p>
-            <button
-              type="button"
-              askButton
-              variant="outline"
-              size="sm"
-              (click)="retry()"
+            <div class="flex flex-wrap items-center gap-3" role="alert">
+              <p class="text-sm">The orders could not be loaded.</p>
+              <button
+                type="button"
+                askButton
+                variant="outline"
+                size="sm"
+                (click)="retry()"
+              >
+                Try again
+              </button>
+            </div>
+          }
+          @if (
+            list.current() ||
+            !list.resource.error() ||
+            list.resource.isLoading()
+          ) {
+            <div
+              class="overflow-x-auto"
+              tabindex="0"
+              role="region"
+              aria-label="Orders"
+              [attr.aria-busy]="list.resource.isLoading()"
             >
-              Try again
-            </button>
-          </div>
-        }
-        @if (
-          list.current() || !list.resource.error() || list.resource.isLoading()
-        ) {
-          <div
-            #results
-            class="overflow-x-auto"
-            tabindex="0"
-            role="region"
-            aria-label="Orders"
-            [attr.aria-busy]="list.resource.isLoading()"
-          >
-            <table
-              askTable
-              class="transition-opacity"
-              [class.opacity-60]="list.resource.isLoading() && !!list.current()"
-            >
-              <thead>
-                <tr>
-                  <th scope="col">
-                    <ask-sort-header column="id" [(sort)]="list.sort"
-                      >Order</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col">
-                    <ask-sort-header column="customer" [(sort)]="list.sort"
-                      >Customer</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col">
-                    <ask-sort-header column="placedAt" [(sort)]="list.sort"
-                      >Date</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col">
-                    <ask-sort-header column="status" [(sort)]="list.sort"
-                      >Status</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col" class="text-right">
-                    <ask-sort-header column="totalCents" [(sort)]="list.sort"
-                      >Total</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col"><span class="sr-only">Actions</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (order of list.current()?.items ?? []; track order.id) {
+              <table
+                askTable
+                class="transition-opacity"
+                [class.opacity-60]="
+                  list.resource.isLoading() && !!list.current()
+                "
+              >
+                <thead>
                   <tr>
-                    <td class="font-medium whitespace-nowrap">
-                      {{ order.id }}
-                    </td>
-                    <td>
-                      <div>{{ order.customer }}</div>
-                      <div class="text-xs text-muted-foreground">
-                        {{ order.email }}
-                      </div>
-                    </td>
-                    <td class="whitespace-nowrap">
-                      {{ date(order.placedAt) }}
-                    </td>
-                    <td>
-                      <ask-badge [variant]="badge[order.status]">{{
-                        label[order.status]
-                      }}</ask-badge>
-                    </td>
-                    <td class="text-right tabular-nums">
-                      {{ money(order.totalCents) }}
-                    </td>
-                    <td class="w-12 text-right">
-                      <button
-                        type="button"
-                        askButton
-                        variant="ghost"
-                        size="icon"
-                        [askMenuTrigger]="actions"
-                        [menuData]="{ $implicit: order }"
-                        [attr.aria-label]="'Actions for ' + order.id"
+                    <th scope="col">
+                      <ask-sort-header column="id" [(sort)]="list.sort"
+                        >Order</ask-sort-header
                       >
-                        <ask-icon [icon]="icons.more" />
-                      </button>
-                    </td>
+                    </th>
+                    <th scope="col">
+                      <ask-sort-header column="customer" [(sort)]="list.sort"
+                        >Customer</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col">
+                      <ask-sort-header column="placedAt" [(sort)]="list.sort"
+                        >Date</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col">
+                      <ask-sort-header column="status" [(sort)]="list.sort"
+                        >Status</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col" class="text-right">
+                      <ask-sort-header column="totalCents" [(sort)]="list.sort"
+                        >Total</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
                   </tr>
-                } @empty {
-                  @if (list.resource.isLoading()) {
-                    @for (placeholder of placeholders; track placeholder) {
-                      <tr aria-hidden="true">
-                        <td colspan="6">
-                          <div class="h-5 animate-pulse rounded bg-muted"></div>
+                </thead>
+                <tbody>
+                  @for (order of list.current()?.items ?? []; track order.id) {
+                    <tr>
+                      <td class="font-medium whitespace-nowrap">
+                        {{ order.id }}
+                      </td>
+                      <td>
+                        <div>{{ order.customer }}</div>
+                        <div class="text-xs text-muted-foreground">
+                          {{ order.email }}
+                        </div>
+                      </td>
+                      <td class="whitespace-nowrap">
+                        {{ date(order.placedAt) }}
+                      </td>
+                      <td>
+                        <ask-badge [variant]="badge[order.status]">{{
+                          label[order.status]
+                        }}</ask-badge>
+                      </td>
+                      <td class="text-right tabular-nums">
+                        {{ money(order.totalCents) }}
+                      </td>
+                      <td class="w-12 text-right">
+                        <button
+                          type="button"
+                          askButton
+                          variant="ghost"
+                          size="icon"
+                          [askMenuTrigger]="actions"
+                          [menuData]="{ $implicit: order }"
+                          [attr.aria-label]="'Actions for ' + order.id"
+                        >
+                          <ask-icon [icon]="icons.more" />
+                        </button>
+                      </td>
+                    </tr>
+                  } @empty {
+                    @if (list.resource.isLoading()) {
+                      @for (placeholder of placeholders; track placeholder) {
+                        <tr aria-hidden="true">
+                          <td colspan="6">
+                            <div
+                              class="h-5 animate-pulse rounded bg-muted"
+                            ></div>
+                          </td>
+                        </tr>
+                      }
+                    } @else {
+                      <tr>
+                        <td colspan="6" class="text-muted-foreground">
+                          No orders match. Try another search or status.
                         </td>
                       </tr>
                     }
-                  } @else {
-                    <tr>
-                      <td colspan="6" class="text-muted-foreground">
-                        No orders match. Try another search or status.
-                      </td>
-                    </tr>
                   }
-                }
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>
 
-          <ask-pagination
-            label="Orders pages"
-            [total]="list.current()?.total ?? 0"
-            [pageSize]="list.pageSize"
-            [(page)]="list.page"
-          />
-        }
+            <ask-pagination
+              label="Orders pages"
+              [total]="list.current()?.total ?? 0"
+              [pageSize]="list.pageSize"
+              [(page)]="list.page"
+            />
+          }
+        </div>
       </div>
     </ask-card>
 
@@ -262,8 +273,8 @@ const afterMenuCloses = () =>
   `,
 })
 export class Orders {
-  private readonly injector = inject(Injector);
-  private readonly results = viewChild<ElementRef<HTMLElement>>('results');
+  private readonly results =
+    viewChild.required<ElementRef<HTMLElement>>('results');
 
   private readonly http = inject(HttpClient);
   private readonly dialogs = inject(DialogService);
@@ -283,7 +294,9 @@ export class Orders {
   protected readonly summary = computed(() => {
     const range = this.list.range();
     if (!range) {
-      return this.list.resource.error() ? '' : 'Loading orders...';
+      return this.list.resource.error() && !this.list.resource.isLoading()
+        ? ''
+        : 'Loading orders...';
     }
     return range.total === 0
       ? 'No orders match.'
@@ -336,12 +349,10 @@ export class Orders {
 
   /**
    * Asks again. The alert, and the Try again button in it, give way while the
-   * list reloads, so the focus moves to the results.
+   * list reloads, so the focus moves to what holds the alert and the results.
    */
   protected retry(): void {
     this.list.resource.reload();
-    afterNextRender(() => this.results()?.nativeElement.focus(), {
-      injector: this.injector,
-    });
+    this.results().nativeElement.focus();
   }
 }
