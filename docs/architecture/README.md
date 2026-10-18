@@ -45,7 +45,9 @@ to compare the `Rel(...)` lines in [`c4-containers.md`](c4-containers.md) with t
 dependencies found in the source: TypeScript imports through the
 `@angular-saas-kit/*` aliases, CSS `@import` and `@source` across project folders,
 and `implicitDependencies` in a `project.json`. It fails on an arrow the code does not
-back, on a dependency the map does not show, and on a project missing from the map.
+back, on a dependency the map does not show, and on a project missing from the map. It
+holds the projects table in the [workspace reference](../reference/workspace.md) to the same
+dependencies, and to each project's tags.
 CI runs it on the lint job, so a new dependency between workspace projects cannot land
 without the map saying so. It checks that the map is true; forbidding a wrong dependency
 is lint's job ([why](c4-containers.md#what-the-map-guarantees-and-what-it-does-not)).

@@ -33,8 +33,9 @@ ADR alone).
 
 `npm run check:architecture` compares the `Container` and `Rel` lines in `c4-containers.md` with the
 source: TypeScript imports through the `@angular-saas-kit/*` aliases, CSS `@import` and `@source`
-across project folders, and `implicitDependencies` in a `project.json`. It reports the exact edge
-that is missing or extra. Fix the diagram to match the code, not the reverse, unless the code is wrong.
+across project folders, and `implicitDependencies` in a `project.json`. It also holds the projects table in
+`docs/reference/workspace.md` to the same graph: a row per project, its tags and its dependencies.
+It reports the exact edge or row that is missing or extra. Fix the diagram to match the code, not the reverse, unless the code is wrong.
 
 - A container's label must be the Nx project name. The diagram id can differ (`mockapi` for `mock-api`).
 - Arrows to people and outside systems are not checked; arrows between two containers are.

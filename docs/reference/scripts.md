@@ -12,7 +12,7 @@ Run from the repository root with `npm run <name>`. Most of them are thin wrappe
 | `test`               | `nx run-many -t test`                                                             | Run every project's unit tests with coverage.                 |
 | `lint`               | `nx run-many -t lint`                                                             | Lint every project.                                           |
 | `typecheck`          | `tsc -p tsconfig.base.json --noEmit`                                              | Type-check the whole workspace, spec files included.          |
-| `check:architecture` | `node scripts/check-architecture.mjs`                                             | Check the C4 container map against the code.                  |
+| `check:architecture` | `node scripts/check-architecture.mjs`                                             | Check the C4 map and the workspace table against the code.    |
 | `check:docs`         | `node scripts/check-docs.mjs`                                                     | Check links, commands, the ADR index and the skills.          |
 | `test:scripts`       | `node --test "scripts/*.test.mjs"`                                                | Test the check scripts.                                       |
 | `check:tokens`       | `node scripts/check-tokens.mjs`                                                   | Check that components use semantic tokens, not named colours. |
