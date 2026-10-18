@@ -115,24 +115,26 @@ Because the branch must be up to date, merging several pull requests in a row ne
   push protection does not know: generic keys, private key blocks
   ([ADR 0026](../adr/0026-secret-scanning-osv-sbom-and-a-dast-baseline.md)).
 - **The `Security scans` workflow** runs weekly, on every push to `main` and on demand: OSV-Scanner on
-  the lockfile, a CycloneDX SBOM of the production dependencies, and a passive ZAP baseline of the
-  built site served locally. It reports and never blocks.
+  the lockfile, a CycloneDX SBOM of the production dependencies, and two passive ZAP baselines: one of the
+  built Pages site served locally, one of the landing page's Node server, which sends the
+  security headers Pages cannot. It reports and never blocks.
 
 - To report a vulnerability, see the
   [security policy](https://github.com/nguyenan97/angular-saas-kit/blob/main/SECURITY.md).
 
-| Scan                | Runs                       | Blocks merge?           | Results                     | Who acts                                    |
-| ------------------- | -------------------------- | ----------------------- | --------------------------- | ------------------------------------------- |
-| CodeQL (SAST)       | PRs, weekly                | No (not required, 0009) | code scanning               | the PR author; the maintainer weekly        |
-| zizmor (workflows)  | PRs, `main`                | Fails the job           | the job log                 | the PR author                               |
-| Dependency review   | PRs                        | Fails the job           | the job log                 | the PR author                               |
-| gitleaks (secrets)  | PRs, `main`                | Fails the job           | the job log, redacted       | the PR author: remove and rotate the secret |
-| Push protection     | every push                 | Rejects the push        | the push                    | whoever pushed                              |
-| OSV-Scanner         | weekly, `main`, on demand  | No                      | code scanning               | the maintainer, with `dependabot-triage`    |
-| SBOM (CycloneDX)    | weekly, `main`, on demand  | No                      | the `sbom` artifact         | consumers of the kit; a future release      |
-| ZAP baseline (DAST) | weekly, `main`, on demand  | No                      | the `zap-baseline` artifact | the maintainer                              |
-| Scorecard           | weekly, `main`             | No                      | code scanning, the badge    | the maintainer                              |
-| Security headers    | every PR (`landing` tests) | Fails `test`            | the test report             | the PR author                               |
+| Scan                          | Runs                       | Blocks merge?           | Results                             | Who acts                                    |
+| ----------------------------- | -------------------------- | ----------------------- | ----------------------------------- | ------------------------------------------- |
+| CodeQL (SAST)                 | PRs, weekly                | No (not required, 0009) | code scanning                       | the PR author; the maintainer weekly        |
+| zizmor (workflows)            | PRs, `main`                | Fails the job           | the job log                         | the PR author                               |
+| Dependency review             | PRs                        | Fails the job           | the job log                         | the PR author                               |
+| gitleaks (secrets)            | PRs, `main`                | Fails the job           | the job log, redacted               | the PR author: remove and rotate the secret |
+| Push protection               | every push                 | Rejects the push        | the push                            | whoever pushed                              |
+| OSV-Scanner                   | weekly, `main`, on demand  | No                      | code scanning                       | the maintainer, with `dependabot-triage`    |
+| SBOM (CycloneDX)              | weekly, `main`, on demand  | No                      | the `sbom` artifact                 | consumers of the kit; a future release      |
+| ZAP baseline (Pages site)     | weekly, `main`, on demand  | No                      | the `zap-baseline` artifact         | the maintainer                              |
+| ZAP baseline (landing server) | weekly, `main`, on demand  | No                      | the `zap-baseline-landing` artifact | the maintainer                              |
+| Scorecard                     | weekly, `main`             | No                      | code scanning, the badge            | the maintainer                              |
+| Security headers              | every PR (`landing` tests) | Fails `test`            | the test report                     | the PR author                               |
 
 "Fails the job" means the check goes red on the pull request; it holds the merge once the
 maintainer makes it required (ADR 0009).
