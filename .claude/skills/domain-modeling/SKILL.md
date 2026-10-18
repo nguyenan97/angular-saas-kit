@@ -8,6 +8,15 @@ description: Build or change a bounded context's domain model the DDD way this r
 The rules are in `docs/adr/0021-bounded-contexts-as-nx-libraries.md`; the Booking context
 (`libs/booking/domain`) and the shared kernel (`libs/shared/kernel`) are the worked examples.
 
+## When to use
+
+Adding or changing a bounded context, an aggregate, an operation, a domain event or a term; or when two words seem to name one concept.
+
+## When not to use
+
+- UI or data access with no domain rule in it: the `add-*` skills.
+- Recording a decision with no model change: `write-adr`.
+
 ## The shape
 
 - **Libraries per layer** under `libs/<context>/`: `domain`, `contracts`, `data-access`,

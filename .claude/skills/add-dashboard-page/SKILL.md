@@ -12,6 +12,15 @@ its own data table. For a searchable, sortable, paged list, use `listQuery`
 (`data/list-query.ts`), as `orders/orders.ts` does: it holds the state as signals and makes the
 request.
 
+## When to use
+
+A new page in `apps/dashboard`, or a planned (`soon: true`) sidebar entry made real.
+
+## When not to use
+
+- A component another page could reuse: build it in `libs/ui` with `add-ui-component` first.
+- A change to the shell or the theme: no page skill covers it; run the browser tests (`verify`).
+
 ## The pieces
 
 | What              | Where                            | Notes                                                                                                                                         |

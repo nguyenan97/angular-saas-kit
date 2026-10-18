@@ -9,6 +9,14 @@ CI runs these on every pull request; the ones required to merge are listed in
 `docs/adr/0009-strict-ci-gates-and-a-protected-main.md`. A green local run is a green CI run, so run
 them here first.
 
+## When to use
+
+Before opening or updating a pull request, before saying a change is done, and when a CI check is red.
+
+## When not to use
+
+- In place of a test for new behaviour: `verify` runs the tests; `test-first` writes them.
+
 ## Run
 
 ```bash

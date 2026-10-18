@@ -8,6 +8,15 @@ description: Read, reproduce, close or merge the open Dependabot pull requests, 
 The policy and its history are in `docs/adr/0010-dependabot-grouping-and-ignored-major-versions.md`,
 and `.github/dependabot.yml` is the source of truth. Weekly npm PRs, monthly GitHub Actions PRs.
 
+## When to use
+
+When the person asks to triage the Dependabot pull requests, or in autonomous mode for a task that includes them. User-invoked: it merges and closes pull requests.
+
+## When not to use
+
+- A dependency you add yourself: that is an ordinary change, with dependency review in CI.
+- A security advisory with no Dependabot pull request: read the chain (step 4) in a change of its own.
+
 ## 1. List
 
 ```bash
