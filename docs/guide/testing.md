@@ -83,7 +83,10 @@ keyboard and follow the period. `settings.spec.ts` moves between tabs with the a
 profile form focuses the field to fix. `auth.spec.ts` signs in from the keyboard alone, and follows
 the links between the sign-in pages and from the shell's Sign out. `orders.spec.ts` drives a row menu by keyboard, keeps
 Tab inside the refund dialog and checks focus comes back to the row. `overview.spec.ts` follows the
-data from the page through the mock API and back. These are here because jsdom lays nothing out,
+data from the page through the mock API and back. `accessibility.spec.ts` runs
+[axe-core](https://github.com/dequelabs/axe-core) on every page, in light and in dark, and fails
+on a critical or serious violation of WCAG 2.2 A or AA: contrast as the tokens actually render,
+names, roles and landmarks. These are here because jsdom lays nothing out,
 applies no stylesheet and implements no Tab order or radio-group keys, so a unit test cannot
 prove them.
 

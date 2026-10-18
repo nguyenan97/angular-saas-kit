@@ -8,11 +8,18 @@ import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { securityHeaders } from './security-headers';
+
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
+
+// No framework banner, and the security headers on every response, the static
+// files included, so this runs before anything else.
+app.disable('x-powered-by');
+app.use(securityHeaders);
 
 /**
  * Example Express Rest API endpoints can be defined here.
