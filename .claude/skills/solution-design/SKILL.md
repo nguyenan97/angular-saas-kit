@@ -23,12 +23,12 @@ Name the qualities this change must hold, each with a number and how it is measu
 comparing options; the options are judged against them. Start from `CONSTRAINTS.md` and add what
 the change needs:
 
-| Quality         | Example target                                                      | Measured by                              |
-| --------------- | ------------------------------------------------------------------- | ---------------------------------------- |
-| Performance     | Initial bundle under 350 kB; a list of 1,000 rows renders in 100 ms | build output; a browser test with timing |
-| Accessibility   | No serious axe violation, light and dark                            | `accessibility.spec.ts`                  |
-| Maintainability | No new cycle; the domain stays free of Angular and RxJS             | `npm run lint`                           |
-| Security        | No new high advisory; inputs validated at the boundary              | dependency review; a test per rule       |
+| Quality         | Example target (the first from `CONSTRAINTS.md`, the rest illustrative)         | Measured by                              |
+| --------------- | ------------------------------------------------------------------------------- | ---------------------------------------- |
+| Performance     | Initial bundle under the 350 kB warning; a list of 1,000 rows renders in 100 ms | build output; a browser test with timing |
+| Accessibility   | No serious axe violation, light and dark                                        | `accessibility.spec.ts`                  |
+| Maintainability | No new cycle; the domain stays free of Angular and RxJS                         | `npm run lint`                           |
+| Security        | No new high advisory; inputs validated at the boundary                          | dependency review; a test per rule       |
 
 ## 2. Context, constraints and options
 

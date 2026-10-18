@@ -26,13 +26,13 @@ A seam is the public boundary a test observes: the place where behaviour can be 
 reaching inside. Write down the seams before the first test, with one line each on what a test
 there catches and misses. Here they are:
 
-| Code                         | Seam                                                                          | Level and tool                                                             |
-| ---------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| A domain library             | The functions exported from `src/index.ts`, with the builders in `testing.ts` | Unit, Vitest, no TestBed; a fixed `NOW`                                    |
-| A `libs/ui` component        | Its inputs, outputs, host classes, ARIA state and keys                        | Component, Vitest and TestBed, zoneless (`provideZonelessChangeDetection`) |
-| A dashboard page             | What it renders for each response, through `HttpTestingController`            | Component, as `overview.spec.ts` does                                      |
-| A user flow, a spec scenario | What a user sees and does in the browser                                      | Browser, Playwright in `apps/dashboard-e2e`, Chromium in CI                |
-| A check script               | Its exported function on a small fixture tree                                 | `node:test`, as `scripts/check-docs.test.mjs` does                         |
+| Code                         | Seam                                                                                                    | Level and tool                                                             |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| A domain library             | The functions exported from `src/index.ts`, with the builders in `testing.ts` where the library has one | Unit, Vitest, no TestBed; a fixed `NOW`                                    |
+| A `libs/ui` component        | Its inputs, outputs, host classes, ARIA state and keys                                                  | Component, Vitest and TestBed, zoneless (`provideZonelessChangeDetection`) |
+| A dashboard page             | What it renders for each response, through `HttpTestingController`                                      | Component, as `overview.spec.ts` does                                      |
+| A user flow, a spec scenario | What a user sees and does in the browser                                                                | Browser, Playwright in `apps/dashboard-e2e`, Chromium in CI                |
+| A check script               | Its exported function on a small fixture tree                                                           | `node:test`, as `scripts/check-docs.test.mjs` does                         |
 
 jsdom implements no layout, focus order or native keyboard behaviour (a radio group's arrow keys):
 prove those in the browser, not in a component test.
@@ -64,7 +64,8 @@ Restructuring is not part of the loop; once green, the `refactor` skill does it.
 
 ## Done when
 
-- Every behaviour added or bug fixed has a test that failed before the change and passes after;
+- Every behaviour added or bug fixed has a test that failed before the change and passes after,
+  with the red run quoted in the pull request body;
   for a bug, the test reproduces the report.
 - Each test sits at a seam from the table, and names a behaviour.
 - `npx nx test <project>` passes for each project touched, with the coverage thresholds in

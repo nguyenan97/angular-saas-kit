@@ -24,7 +24,7 @@ description: Change the structure of code without changing its behaviour - evide
 
 Write down what is wrong and what will improve, with a number where there is one: the initial
 bundle (`npx nx build <app> --skip-nx-cache`, the "Initial total" row), duplication
-(`npx jscpd apps libs --ignore "**/*.spec.ts"`), a file's length, coverage. Take the number now; the
+(`npx --yes jscpd@4 apps libs --ignore "**/*.spec.ts"`, a one-off run; jscpd is not a project dependency), a file's length, coverage. Take the number now; the
 pull request shows it before and after.
 
 ## 2. Pin the behaviour
@@ -48,11 +48,13 @@ at every step.
 
 - **Lazy routes** (`loadComponent`) for whole pages; **`@defer (on viewport)`** for content below
   the fold or behind an interaction, with a `@placeholder` that keeps the layout's height. A
-  prerendered page renders the placeholder on the server, so content that must be in the HTML for
+  prerendered page (`apps/landing`; the dashboard renders only in the browser) renders the
+  placeholder on the server, so content that must be in the HTML for
   search engines or for reading without JavaScript is not deferred.
 - **OnPush and signals** everywhere already (`CONSTRAINTS.md`); a `computed` instead of work in a
   template.
-- **Dead code** goes; a test that only covered dead code goes with it, and the commit says so.
+- **Dead code** goes; a test that only covered the deleted code goes with it, and the commit says
+  so. That is the one test a refactor may delete.
 
 ## 5. Make it a check
 
@@ -64,7 +66,7 @@ not need doing again.
 
 - The evidence and the before and after numbers are in the pull request body.
 - Every touched path was covered by a test before the change, and no test was changed to pass
-  except a characterization test that the PR says it rewrote.
+  except a characterization test that the PR says it rewrote, or a test of deleted code.
 - The pull request changes no behaviour: the same tests pass, before and after, with no assertion
-  removed.
+  removed outside the tests of deleted code.
 - `npm run verify` and `npm run format:check` pass. Then `open-pr`.
