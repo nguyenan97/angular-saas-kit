@@ -38,6 +38,11 @@ ships with `@angular/cli` at the same version and matches neither pattern, still
 `dev-minor` ([#52](https://github.com/nguyenan97/angular-saas-kit/pull/52)), so each PR
 installed a nested copy of the other's version. Both groups now name it.
 
+_Amended 2026-10-18:_ major updates of `typescript` are ignored too. Dependabot proposed
+TypeScript 7.0.2, and its update job failed with `ERESOLVE`: `@angular/compiler-cli`,
+`@angular/build` and `@angular-devkit/build-angular` 22.2 want `>=6.0 <6.1`. The entry comes out
+when an Angular release widens that range.
+
 Dependabot security updates are enabled, and PRs are triaged before merging: a PR
 that fails `npm ci` is never merged, and unsupported bumps are closed with the
 reason.

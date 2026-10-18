@@ -53,6 +53,12 @@ updates:
       # engines), not the newest one.
       - dependency-name: '@types/node'
         update-types: ['version-update:semver-major']
+      # The compiler follows Angular: @angular/compiler-cli, @angular/build and
+      # @angular-devkit/build-angular 22.2 want typescript >=6.0 <6.1, so a major
+      # fails `npm ci` with ERESOLVE. Drop this when an Angular release widens
+      # that range; the Angular group's PR brings the TypeScript bump with it.
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /

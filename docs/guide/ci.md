@@ -113,8 +113,8 @@ Because the branch must be up to date, merging several pull requests in a row ne
 Angular packages move together in one pull request, and so do the Nx packages, because
 `@angular/compiler` and `@angular/compiler-cli` peer-depend on each other's exact version and
 neither installs alone. Everything else that is a dev dependency and only a minor or patch
-bump is grouped separately. Major updates are ignored for `vitest`, `@vitest/*` and
-`@types/node`, which the toolchain does not support yet.
+bump is grouped separately. Major updates are ignored for `vitest`, `@vitest/*`,
+`@types/node` and `typescript`, which the toolchain does not support yet.
 
 A Dependabot pull request that fails `npm ci` is never merged. Read the dependency chain
 before accepting a security fix: the proposed one can be worse than removing an unused
