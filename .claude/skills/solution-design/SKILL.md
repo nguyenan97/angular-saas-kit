@@ -54,8 +54,8 @@ STRIDE, one line each for what the change adds: **S**poofing (who can pretend to
 **T**ampering (what input or stored data can be altered), **R**epudiation (what must be logged),
 **I**nformation disclosure (what leaks, to whom), **D**enial of service (what can be exhausted),
 **E**levation of privilege (what grants more than it should). Each threat gets a mitigation and the
-test or check that holds it, or is accepted in the ADR with a reason. The security axis of
-`review-change` checks the result before the merge.
+test or check that holds it, or is accepted in the ADR with a reason. The `security-review` skill
+checks the result before the pull request.
 
 ## 5. The evolution path, for what does not exist
 
