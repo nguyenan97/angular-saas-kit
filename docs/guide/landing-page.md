@@ -116,6 +116,16 @@ forms posting elsewhere. `X-Powered-By` is not sent.
 > rendering, so a `script-src` policy needs a nonce per request. That is planned, not built. If a
 > proxy or CDN in front of the server sets its own headers, check that the two do not conflict.
 
+A request that fails gets a status and one line of text, never the error (`src/server-responses.ts`):
+a URL the router cannot decode, such as `/%E0%A4%A`, is a `400`, and anything unexpected is a
+`500` whose stack goes to the server's log. Express's own handler would put the stack in the
+page whenever `NODE_ENV` is not `production`.
+
+The bundles the build names after their content (`chunk-C7wytggW.js`) are cached for a year as
+`immutable`. Everything else, the pages and the favicon, is sent with `Cache-Control: no-cache`,
+so a browser checks it again on each visit and never holds an `index.html` that points at
+bundles a later deploy removed.
+
 ## Static hosting
 
 The `pages` build configuration produces plain static files with a base path, and is what the
