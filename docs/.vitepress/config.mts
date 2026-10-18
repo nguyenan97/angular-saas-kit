@@ -152,6 +152,7 @@ export default defineConfig({
         collapsed: true,
         items: [
           { text: 'Overview', link: '/architecture/' },
+          { text: 'Architecture on one page', link: '/architecture/overview' },
           { text: '1. System context', link: '/architecture/c4-context' },
           { text: '2. Containers', link: '/architecture/c4-containers' },
           { text: '3. Components', link: '/architecture/c4-components' },

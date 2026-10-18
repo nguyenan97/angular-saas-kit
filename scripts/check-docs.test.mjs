@@ -22,7 +22,7 @@ const write = (path, text) => {
 const skill = (name, front = `name: ${name}\ndescription: Does a thing.`) =>
   write(
     `.claude/skills/${name}/SKILL.md`,
-    `---\n${front}\n---\n\n# ${name}\n\n## Done when\n\n- It is done.\n`,
+    `---\n${front}\n---\n\n# ${name}\n\n## When to use\n\nNow.\n\n## When not to use\n\nLater.\n\n## Done when\n\n- It is done.\n`,
   );
 
 const problems = () => check(root).problems;
@@ -212,10 +212,20 @@ describe('check-docs', () => {
   test('rejects a skill with no Done when list', () => {
     write(
       '.claude/skills/verify/SKILL.md',
-      '---\nname: verify\ndescription: x\n---\n\n# Verify\n',
+      '---\nname: verify\ndescription: x\n---\n\n# Verify\n\n## When to use\n\nNow.\n\n## When not to use\n\nLater.\n',
     );
     assert.deepEqual(problems(), [
       '.claude/skills/verify/SKILL.md: no "## Done when" section',
+    ]);
+  });
+
+  test('rejects a skill that does not say when not to use it', () => {
+    write(
+      '.claude/skills/verify/SKILL.md',
+      '---\nname: verify\ndescription: x\n---\n\n# Verify\n\n## When to use\n\nNow.\n\n## Done when\n\n- Done.\n',
+    );
+    assert.deepEqual(problems(), [
+      '.claude/skills/verify/SKILL.md: no "## When not to use" section',
     ]);
   });
 

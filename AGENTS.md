@@ -75,8 +75,9 @@ its tags.
 
 ## Traps
 
-- **New project or a dependency between projects:** update `docs/architecture/c4-containers.md`.
-  `npm run check:architecture` compares it with the code (imports, CSS `@import`/`@source`,
+- **New project or a dependency between projects:** update `docs/architecture/c4-containers.md`
+  and the projects table in `docs/reference/workspace.md`. `npm run check:architecture` compares
+  both with the code (imports, CSS `@import`/`@source`,
   `implicitDependencies`), and CI runs it. A stylesheet's `@import` and `@source` count, and lint cannot see them.
 - **Build-specific behaviour** goes through `fileReplacements`, as the `pages` configuration does
   (`routing-mode.ts`, `site-links.ts`). Put shared types in their own file, or the replacement
@@ -86,6 +87,8 @@ its tags.
 - **The theme init script lives in three places** (`THEME_INIT_SCRIPT` and each app's
   `index.html`); `theme-init.spec.ts` fails when they drift. Change all three.
 - **Coverage instrumentation breaks `__dirname`** in specs; use `workspaceRoot` from `@nx/devkit`.
+- **CI runs on Linux.** A script test must hold on a case-sensitive file system with `/`
+  separators; an assertion that only Windows or macOS produces fails CI (`check-docs.test.mjs` did once).
 - **The landing Node server answers 400 to everything** until `NG_ALLOWED_HOSTS` is set.
 - **`libs/ui` and `libs/tokens` build as npm packages** (not published yet). A runtime dependency of a
   component goes in `libs/ui/package.json` and in `allowedNonPeerDependencies` in its

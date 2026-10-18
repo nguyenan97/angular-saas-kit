@@ -19,14 +19,12 @@ tree has a real conflict - don't paper over it with `--legacy-peer-deps`.
 ## Before you open a PR
 
 ```bash
-npx nx run-many -t lint test build
-npm run typecheck
-npm run check:architecture
-npm run check:docs         # links, commands, the ADR index and the skills
-npm run check:tokens       # no named colours in components
-npm run check:packages     # after the build: what the tokens and ui packages would ship
-npm run format:check
+npm run verify         # lint, test, build, typecheck, the script tests and every check:* script
+npm run format:check   # Prettier
 ```
+
+`verify` stops at the first failure; the [verify skill](.claude/skills/verify/SKILL.md) lists the
+steps one by one and what each failure usually means.
 
 If you touched the theme or the dashboard shell, also run the browser tests
 (`npx playwright install` once, then `npx nx e2e dashboard-e2e`).
@@ -64,8 +62,10 @@ before changing a shape.
 
 - **Adding a project, or a dependency between projects?** Update the `Container`
   and `Rel` lines in [`c4-containers.md`](./docs/architecture/c4-containers.md) in
-  the same PR. `npm run check:architecture` compares that map with the imports and
-  stylesheet references in the source, and CI runs it.
+  the same PR, and the projects table in
+  [`docs/reference/workspace.md`](./docs/reference/workspace.md).
+  `npm run check:architecture` compares both with the imports and stylesheet references in
+  the source, and CI runs it.
 - **Making a decision that is expensive to reverse?** Write an ADR: copy
   [`docs/adr/template.md`](./docs/adr/template.md), open the PR with it as
   `Proposed`, and it becomes `Accepted` when the PR merges.
@@ -133,11 +133,33 @@ A component in `libs/ui` is done when it has:
 - unit tests covering behaviour and the a11y contract, not just "it renders"
 - a short README next to it: usage, API table, a11y notes
 
-## Commits
+## Git workflow
 
-[Conventional Commits](https://www.conventionalcommits.org/):
-`feat(ui): add combobox`, `fix(tokens): correct dark ring contrast`,
-`docs(readme): ...`. The changelog is generated from these.
+Trunk-based: short-lived branches off `main`, small pull requests, squash merges
+([ADR 0012](docs/adr/0012-conventional-commits-and-squash-merges.md)).
+
+- **One task, one branch.** Name it `<type>/<scope>-<slug>`: `feat/ui-combobox`,
+  `fix/tokens-dark-ring`, `refactor/dashboard-list-query`, `docs/theming-accents`,
+  `chore/repo-check-docs`. The type and scope are the commit's. Agents working in parallel each use
+  their own [git worktree](https://git-scm.com/docs/git-worktree), so no two share a checkout.
+- **Small commits, each green.** One idea per commit, in
+  [Conventional Commits](https://www.conventionalcommits.org/): `feat(ui): add combobox`,
+  `fix(tokens): correct dark ring contrast`, `docs: explain the accent tokens`. The scope, if
+  any, is one of those in `AGENTS.md`; `docs` is a type, never a scope. A refactor and a feature
+  are separate commits, and separate pull requests.
+- **Small pull requests.** One purpose, about 400 changed lines at most, not counting the lockfile,
+  generated files or working documents in `docs/superpowers`. A larger one is split, or its body
+  says why it cannot be.
+- **Up to date before review.** `git fetch origin && git rebase origin/main` before opening, or
+  **Update branch** on the pull request; `main` only accepts a branch that is up to date.
+- **The title is the commit.** Squash merging makes the pull request's title the commit on
+  `main`, so CI's `pr title` check runs commitlint on it. Dependabot's titles follow its own
+  format and are not checked.
+- **Stacked pull requests.** When one change needs another that is still open, branch from it and
+  open the second pull request against the first branch; once the first merges, retarget the second
+  to `main` and rebase it. Keep stacks short: two or three.
+- **Revert, do not repair in place.** A merged change that breaks `main` is reverted with its own
+  pull request (`git revert <sha>`); the fix comes after, with a test.
 
 ## Reporting a bug
 

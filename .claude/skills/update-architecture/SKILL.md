@@ -8,21 +8,34 @@ description: Keep the C4 architecture diagrams in docs/architecture true when a 
 The diagrams are Mermaid C4 in `docs/architecture/`. Only the container map is checked by machine;
 the rest is kept true by hand, in the same pull request as the change.
 
+## When to use
+
+A project added or removed, a dependency between projects, an outside system, a deployment target,
+or a red `npm run check:architecture`.
+
+## When not to use
+
+A change inside a component that no diagram shows; a decision with no change of shape (that is an
+ADR alone).
+
 ## Which page
 
-| What changed                                                        | Edit               | Checked by CI? |
-| ------------------------------------------------------------------- | ------------------ | -------------- |
-| A project added or removed; a dependency between projects           | `c4-containers.md` | Yes            |
-| What is inside an app or library (a component, a route, a provider) | `c4-components.md` | No             |
-| A new person, or an outside system the kit talks to                 | `c4-context.md`    | No             |
-| A new host, a new deployment target, a new pipeline stage           | `c4-deployment.md` | No             |
+| What changed                                                        | Edit                                                                      | Checked by CI? |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------------- |
+| A project added or removed; a dependency between projects           | `c4-containers.md`                                                        | Yes            |
+| What is inside an app or library (a component, a route, a provider) | `c4-components.md`                                                        | No             |
+| A new person, or an outside system the kit talks to                 | `c4-context.md`                                                           | No             |
+| A new host, a new deployment target, a new pipeline stage           | `c4-deployment.md`                                                        | No             |
+| A flow whose order of calls across parts matters                    | a `sequenceDiagram` (a dynamic view) on the page of the part it starts in | No             |
+| A quality goal, a constraint, a risk or an evolution path           | `overview.md` (arc42 on one page)                                         | No             |
 
 ## The checked part
 
 `npm run check:architecture` compares the `Container` and `Rel` lines in `c4-containers.md` with the
 source: TypeScript imports through the `@angular-saas-kit/*` aliases, CSS `@import` and `@source`
-across project folders, and `implicitDependencies` in a `project.json`. It reports the exact edge
-that is missing or extra. Fix the diagram to match the code, not the reverse, unless the code is wrong.
+across project folders, and `implicitDependencies` in a `project.json`. It also holds the projects table in
+`docs/reference/workspace.md` to the same graph: a row per project, its tags and its dependencies.
+It reports the exact edge or row that is missing or extra. Fix the diagram to match the code, not the reverse, unless the code is wrong.
 
 - A container's label must be the Nx project name. The diagram id can differ (`mockapi` for `mock-api`).
 - Arrows to people and outside systems are not checked; arrows between two containers are.

@@ -34,6 +34,7 @@ _why_ something is the way it is before changing it. The reasoning for
 | [0023](0023-a-development-process-with-a-written-quality-bar.md)    | A development process with a written quality bar          | Superseded by [0025](0025-an-ai-first-lifecycle-with-self-checked-gates.md) |
 | [0024](0024-pin-actions-and-check-the-ci-supply-chain.md)           | Pin actions and check the CI supply chain                 | Accepted                                                                    |
 | [0025](0025-an-ai-first-lifecycle-with-self-checked-gates.md)       | An AI-first lifecycle with self-checked gates             | Accepted                                                                    |
+| [0026](0026-secret-scanning-osv-sbom-and-a-dast-baseline.md)        | Secret scanning, OSV, an SBOM and a DAST baseline         | Accepted                                                                    |
 
 Records 0002-0008 were written after the fact, from the code and its history, and
 describe what is true today - including what is unfinished.
@@ -44,8 +45,10 @@ describe what is true today - including what is unfinished.
 2. Fill in **Context**, **Decision**, **Alternatives considered** and **Consequences**.
    Delete a section rather than leave it empty. State the costs honestly: a record
    with no downsides is not finished.
-3. Set the status to `Proposed`, open a pull request, and discuss it there. It becomes
-   `Accepted` when the PR merges; add it to the index above in the same PR.
+3. Set the status to `Accepted` in the pull request that carries the decision, since
+   merging it is the acceptance, and add it to the index above with the same status
+   (`npm run check:docs` compares the two). Use `Proposed` only for a record opened to
+   discuss before any code, and set it to `Accepted` in the pull request that acts on it.
 4. Write an ADR when a decision is expensive to reverse, or when a newcomer would
    reasonably ask "why is it like this?". A change of library version is not one; a
    change of testing strategy is.

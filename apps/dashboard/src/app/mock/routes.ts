@@ -55,8 +55,10 @@ function sorted<T>(
   fallback: { readonly key: string; readonly dir: 'asc' | 'desc' },
 ): T[] {
   const requested = query.get('sort') ?? '';
-  const key = requested in keys ? requested : fallback.key;
-  const dir = requested in keys ? query.get('dir') : fallback.dir;
+  // Own keys only: `in` would also accept `__proto__` or `toString`.
+  const known = Object.hasOwn(keys, requested);
+  const key = known ? requested : fallback.key;
+  const dir = known ? query.get('dir') : fallback.dir;
   const value = keys[key] as (item: T) => string | number;
   const sign = dir === 'desc' ? -1 : 1;
   return [...items].sort((a, b) => {

@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  type ElementRef,
+  computed,
+  viewChild,
+} from '@angular/core';
 import {
   Badge,
   type BadgeVariant,
@@ -88,126 +94,148 @@ const LOW_STOCK = 5;
           {{ summary() }}
         </p>
 
-        @if (list.resource.error() && !list.current()) {
-          <div class="flex flex-wrap items-center gap-3" role="alert">
-            <p class="text-sm">The products could not be loaded.</p>
-            <button
-              type="button"
-              askButton
-              variant="outline"
-              size="sm"
-              (click)="list.resource.reload()"
+        <!-- One element around the alert and the results, so the focus
+             has somewhere to stay while Try again swaps one for the other. -->
+        <div
+          #results
+          tabindex="-1"
+          class="flex flex-col gap-4 focus-visible:outline-none"
+        >
+          @if (list.resource.error() && !list.resource.isLoading()) {
+            <!-- Said even when an earlier list is still on screen: a failed
+               page, search or sort is not hidden behind the last one. -->
+            <div class="flex flex-wrap items-center gap-3" role="alert">
+              <p class="text-sm">The products could not be loaded.</p>
+              <button
+                type="button"
+                askButton
+                variant="outline"
+                size="sm"
+                (click)="retry()"
+              >
+                Try again
+              </button>
+            </div>
+          }
+          @if (
+            list.current() ||
+            !list.resource.error() ||
+            list.resource.isLoading()
+          ) {
+            <div
+              class="overflow-x-auto"
+              tabindex="0"
+              role="region"
+              aria-label="Products"
+              [attr.aria-busy]="list.resource.isLoading()"
             >
-              Try again
-            </button>
-          </div>
-        } @else {
-          <div
-            class="overflow-x-auto"
-            tabindex="0"
-            role="region"
-            aria-label="Products"
-            [attr.aria-busy]="list.resource.isLoading()"
-          >
-            <table
-              askTable
-              class="transition-opacity"
-              [class.opacity-60]="list.resource.isLoading() && !!list.current()"
-            >
-              <thead>
-                <tr>
-                  <th scope="col">
-                    <ask-sort-header column="name" [(sort)]="list.sort"
-                      >Product</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col">
-                    <ask-sort-header column="category" [(sort)]="list.sort"
-                      >Category</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col" class="text-right">
-                    <ask-sort-header column="priceCents" [(sort)]="list.sort"
-                      >Price</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col" class="text-right">
-                    <ask-sort-header column="stock" [(sort)]="list.sort"
-                      >Stock</ask-sort-header
-                    >
-                  </th>
-                  <th scope="col">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (
-                  product of list.current()?.items ?? [];
-                  track product.id
-                ) {
+              <table
+                askTable
+                class="transition-opacity"
+                [class.opacity-60]="
+                  list.resource.isLoading() && !!list.current()
+                "
+              >
+                <thead>
                   <tr>
-                    <td>
-                      <div class="font-medium">{{ product.name }}</div>
-                      <div class="text-xs text-muted-foreground">
-                        {{ product.sku }}
-                      </div>
-                    </td>
-                    <td>{{ product.category }}</td>
-                    <td class="text-right tabular-nums">
-                      {{ money(product.priceCents) }}
-                    </td>
-                    <td class="text-right tabular-nums whitespace-nowrap">
-                      @if (product.stock === 0) {
-                        <ask-badge variant="destructive"
-                          >Out of stock</ask-badge
-                        >
-                      } @else {
-                        @if (product.stock <= lowStock) {
-                          <ask-badge variant="warning" class="mr-2"
-                            >Low</ask-badge
-                          >
-                        }
-                        {{ product.stock }}
-                      }
-                    </td>
-                    <td>
-                      <ask-badge [variant]="badge[product.status]">{{
-                        label[product.status]
-                      }}</ask-badge>
-                    </td>
+                    <th scope="col">
+                      <ask-sort-header column="name" [(sort)]="list.sort"
+                        >Product</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col">
+                      <ask-sort-header column="category" [(sort)]="list.sort"
+                        >Category</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col" class="text-right">
+                      <ask-sort-header column="priceCents" [(sort)]="list.sort"
+                        >Price</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col" class="text-right">
+                      <ask-sort-header column="stock" [(sort)]="list.sort"
+                        >Stock</ask-sort-header
+                      >
+                    </th>
+                    <th scope="col">Status</th>
                   </tr>
-                } @empty {
-                  @if (list.resource.isLoading()) {
-                    @for (placeholder of placeholders; track placeholder) {
-                      <tr aria-hidden="true">
-                        <td colspan="5">
-                          <div class="h-8 animate-pulse rounded bg-muted"></div>
+                </thead>
+                <tbody>
+                  @for (
+                    product of list.current()?.items ?? [];
+                    track product.id
+                  ) {
+                    <tr>
+                      <td>
+                        <div class="font-medium">{{ product.name }}</div>
+                        <div class="text-xs text-muted-foreground">
+                          {{ product.sku }}
+                        </div>
+                      </td>
+                      <td>{{ product.category }}</td>
+                      <td class="text-right tabular-nums">
+                        {{ money(product.priceCents) }}
+                      </td>
+                      <td class="text-right tabular-nums whitespace-nowrap">
+                        @if (product.stock === 0) {
+                          <ask-badge variant="destructive"
+                            >Out of stock</ask-badge
+                          >
+                        } @else {
+                          @if (product.stock <= lowStock) {
+                            <ask-badge variant="warning" class="mr-2"
+                              >Low</ask-badge
+                            >
+                          }
+                          {{ product.stock }}
+                        }
+                      </td>
+                      <td>
+                        <ask-badge [variant]="badge[product.status]">{{
+                          label[product.status]
+                        }}</ask-badge>
+                      </td>
+                    </tr>
+                  } @empty {
+                    @if (list.resource.isLoading()) {
+                      @for (placeholder of placeholders; track placeholder) {
+                        <tr aria-hidden="true">
+                          <td colspan="5">
+                            <div
+                              class="h-8 animate-pulse rounded bg-muted"
+                            ></div>
+                          </td>
+                        </tr>
+                      }
+                    } @else {
+                      <tr>
+                        <td colspan="5" class="text-muted-foreground">
+                          No products match. Try another search or status.
                         </td>
                       </tr>
                     }
-                  } @else {
-                    <tr>
-                      <td colspan="5" class="text-muted-foreground">
-                        No products match. Try another search or status.
-                      </td>
-                    </tr>
                   }
-                }
-              </tbody>
-            </table>
-          </div>
+                </tbody>
+              </table>
+            </div>
 
-          <ask-pagination
-            label="Products pages"
-            [total]="list.current()?.total ?? 0"
-            [pageSize]="list.pageSize"
-            [(page)]="list.page"
-          />
-        }
+            <ask-pagination
+              label="Products pages"
+              [total]="list.current()?.total ?? 0"
+              [pageSize]="list.pageSize"
+              [(page)]="list.page"
+            />
+          }
+        </div>
       </div>
     </ask-card>
   `,
 })
 export class Products {
+  private readonly results =
+    viewChild.required<ElementRef<HTMLElement>>('results');
+
   protected readonly list = listQuery<Product>({
     url: '/api/products',
     sort: { column: 'name', direction: 'asc' },
@@ -220,7 +248,9 @@ export class Products {
   protected readonly summary = computed(() => {
     const range = this.list.range();
     if (!range) {
-      return this.list.resource.error() ? '' : 'Loading products...';
+      return this.list.resource.error() && !this.list.resource.isLoading()
+        ? ''
+        : 'Loading products...';
     }
     return range.total === 0
       ? 'No products match.'
@@ -236,5 +266,14 @@ export class Products {
 
   protected value(event: Event): string {
     return (event.target as HTMLInputElement | HTMLSelectElement).value;
+  }
+
+  /**
+   * Asks again. The alert, and the Try again button in it, give way while the
+   * list reloads, so the focus moves to what holds the alert and the results.
+   */
+  protected retry(): void {
+    this.list.resource.reload();
+    this.results().nativeElement.focus();
   }
 }

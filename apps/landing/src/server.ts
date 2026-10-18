@@ -9,6 +9,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { securityHeaders } from './security-headers';
+import { cacheControlFor, serverErrors } from './server-responses';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -34,13 +35,17 @@ app.use(securityHeaders);
  */
 
 /**
- * Serve static files from /browser
+ * Serve static files from /browser: hashed bundles for a year, everything
+ * else checked again on each visit (`cacheControlFor`).
  */
 app.use(
   express.static(browserDistFolder, {
-    maxAge: '1y',
+    cacheControl: false,
     index: false,
     redirect: false,
+    setHeaders: (res, path) => {
+      res.setHeader('Cache-Control', cacheControlFor(path));
+    },
   }),
 );
 
@@ -59,6 +64,9 @@ app.use((req, res, next) => {
     )
     .catch(next);
 });
+
+/** Last: a failed request gets a status and a line of text, never a stack trace. */
+app.use(serverErrors);
 
 /**
  * Start the server if this module is the main entry point, or it is ran via PM2.

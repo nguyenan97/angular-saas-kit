@@ -89,11 +89,12 @@ HTML and assets) and `server` (the Node server).
 
 ```bash
 npx nx build landing
-NG_ALLOWED_HOSTS=example.com PORT=4000 node dist/apps/landing/server/server.mjs
+NODE_ENV=production NG_ALLOWED_HOSTS=example.com PORT=4000 node dist/apps/landing/server/server.mjs
 ```
 
 The server serves the static files, then hands every other request to Angular. It listens on
-`PORT`, or 4000 when that is unset.
+`PORT`, or 4000 when that is unset. `NODE_ENV=production` is what Express and its dependencies
+expect in production; the server does not depend on it to keep errors out of its answers.
 
 > [!WARNING]
 > **The server refuses every request until it is told its hostname.** Angular's
@@ -115,6 +116,18 @@ forms posting elsewhere. `X-Powered-By` is not sent.
 > and Angular's event-replay bootstrap, and Angular's `autoCsp` does not work with server
 > rendering, so a `script-src` policy needs a nonce per request. That is planned, not built. If a
 > proxy or CDN in front of the server sets its own headers, check that the two do not conflict.
+
+A request that fails gets a status and one line of text, never the error (`src/server-responses.ts`):
+a URL the router cannot decode, such as `/%E0%A4%A`, is a `400`, and anything unexpected is a
+`500` whose stack goes to the server's log. Express's own handler would put the stack in the
+page whenever `NODE_ENV` is not `production`.
+
+Of the files in `dist/apps/landing/browser`, the bundles the build names after their content
+(`chunk-C7wytggW.js`) are cached for a year as `immutable`. The rest, such as `index.html`,
+`index.csr.html` and the favicon, is sent with `Cache-Control: no-cache`, so a browser checks it
+again on each visit and never holds an `index.html` that points at bundles a later deploy
+removed. A page at its own path, `/` or `/blog/`, is answered by Angular, which sends an `ETag`
+and no `Cache-Control`. Set one at a proxy or CDN in front of it if your host needs one.
 
 ## Static hosting
 

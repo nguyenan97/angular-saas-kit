@@ -16,7 +16,8 @@
  *   status, and its heading carries its number.
  * - **Skills**: every `.claude/skills/<name>/SKILL.md` has Agent Skills
  *   frontmatter (https://agentskills.io/specification): a `name` that matches
- *   its folder, a `description`, no other field; and a `## Done when` list.
+ *   its folder, a `description`, no other field; and `## When to use`,
+ *   `## When not to use` and `## Done when` sections.
  *   `CLAUDE.md`, `docs/guide/development-process.md` and the skills README name
  *   every skill.
  *
@@ -287,6 +288,9 @@ export function checkSkills(root) {
       problems.push(`${where}: description must be 1 to 1024 characters`);
     if (!/^## Done when$/m.test(text))
       problems.push(`${where}: no "## Done when" section`);
+    for (const section of ['When to use', 'When not to use'])
+      if (!new RegExp(`^## ${section}$`, 'm').test(text))
+        problems.push(`${where}: no "## ${section}" section`);
   }
   for (const list of [
     'CLAUDE.md',

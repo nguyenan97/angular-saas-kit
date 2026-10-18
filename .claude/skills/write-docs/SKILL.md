@@ -5,11 +5,26 @@ description: Add or change a page on the documentation site (docs/guide, docs/re
 
 # Write documentation
 
+## When to use
+
+A page in `docs/` to add or change: a feature to document, behaviour a guide describes that
+changed, a reference table out of date.
+
+## When not to use
+
+- A C4 diagram: the `update-architecture` skill. A decision record: `write-adr`.
+- A working document (a spec, a plan, a report): it goes in `docs/superpowers`, which is not
+  published; use `write-spec` or `plan-tasks`.
+
 Everything is Markdown in `docs/`. It is published at `/docs/` on the Pages site by VitePress, and it
 must also read correctly on GitHub. `docs/README.md` has the conventions; `docs/adr/0013-*.md` has the reasons.
 
 ## Rules
 
+- **One kind per page** ([Diátaxis](https://diataxis.fr)): a tutorial teaches by doing, a how-to
+  takes a reader through one task, a reference states facts to look up, an explanation says why.
+  Pick the kind before writing, and put the page in the table in `docs/README.md`. A page that
+  becomes two kinds is split.
 - **True before pretty.** State what exists. If something is planned or unfinished, say so, as the
   guides do for the mock API and the publish gap. Do not document a feature you have not seen work.
 - **Every snippet is verified.** Compile it, run it or test it in the repo before it goes in. The guides
@@ -42,7 +57,9 @@ Open the page you changed there.
 
 ## Done when
 
-- `npm run docs:build` passes and the changed page reads correctly on the Pages preview.
+- `npm run docs:build` and `npm run check:docs` pass, and the changed page reads correctly on the
+  Pages preview.
+- A new page has its kind in the table in `docs/README.md`.
 - Every snippet on the page was run, compiled or tested in the repo.
 - A new page is in the sidebar and linked from its neighbours.
 - It is in the same pull request as the change it describes. Then the `verify` skill and `open-pr`.
