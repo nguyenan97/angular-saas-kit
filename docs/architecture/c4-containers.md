@@ -110,7 +110,7 @@ check.
 `libs/tokens/src/lib/theme-init.spec.ts` reads `apps/dashboard/src/index.html` and
 `apps/landing/src/index.html` to prove each still carries the same anti-flash script as
 `THEME_INIT_SCRIPT`. It is a test reading files, not an import, so it is not an edge;
-it is why editing that script means editing three places
+it is why editing that script means editing four places
 ([components](c4-components.md#tokens)).
 
 Next: [components](c4-components.md).

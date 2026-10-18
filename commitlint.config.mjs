@@ -10,6 +10,7 @@ export default {
         'mock-api',
         'dashboard',
         'landing',
+        'suite',
         'ci',
         'deps',
         'repo',

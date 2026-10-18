@@ -1,0 +1,100 @@
+<div class="flex min-h-dvh flex-col bg-background text-foreground lg:flex-row">
+  <a
+    href="#main-content"
+    class="sr-only rounded-md border border-border bg-background px-3 py-2 text-sm font-medium focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
+    (click)="skipToContent($event)"
+    >Skip to content</a
+  >
+
+  <aside
+    class="border-b border-border bg-card lg:fixed lg:inset-y-0 lg:left-0 lg:w-sidebar lg:border-r lg:border-b-0"
+  >
+    <div class="flex h-topbar items-center gap-2 border-b border-border px-4">
+      <span class="size-6 shrink-0 rounded-md bg-primary" aria-hidden="true"></span>
+      <span class="truncate text-sm font-semibold">Angular SaaS Kit Suite</span>
+      @if (!isDesktop()) {
+        <button
+          type="button"
+          class="ml-auto rounded-md border border-border px-2.5 py-1 text-xs hover:bg-accent hover:text-accent-foreground"
+          aria-controls="suite-nav"
+          [attr.aria-expanded]="menuOpen()"
+          (click)="menuOpen.set(!menuOpen())"
+        >
+          Menu
+        </button>
+      }
+    </div>
+
+    <nav
+      id="suite-nav"
+      class="flex flex-col gap-4 overflow-y-auto p-3"
+      aria-label="Modules"
+      [hidden]="!isDesktop() && !menuOpen()"
+    >
+      @for (module of modules; track module.id) {
+        <div role="group" [attr.aria-labelledby]="'module-' + module.id">
+          <h2
+            class="flex items-center gap-2 px-3 pb-1 text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+            [id]="'module-' + module.id"
+          >
+            {{ module.name }}
+            @if (module.pages.length === 0) {
+              <span
+                class="rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-medium tracking-normal normal-case"
+                >Soon</span
+              >
+            }
+          </h2>
+          @if (module.pages.length > 0) {
+            <ul class="space-y-1">
+              @for (page of module.pages; track page.path) {
+                <li>
+                  <a
+                    routerLinkActive="bg-accent text-accent-foreground"
+                    ariaCurrentWhenActive="page"
+                    class="flex rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                    [routerLink]="page.path"
+                    [routerLinkActiveOptions]="{ exact: true }"
+                    (click)="navigated()"
+                    >{{ page.label }}</a
+                  >
+                </li>
+              }
+            </ul>
+          } @else {
+            <p class="px-3 text-xs text-muted-foreground">Planned, not built yet.</p>
+          }
+        </div>
+      }
+    </nav>
+  </aside>
+
+  <div class="flex min-w-0 flex-1 flex-col lg:ml-sidebar">
+    <header
+      class="sticky top-0 z-20 flex h-topbar items-center gap-3 border-b border-border bg-background/80 px-4 backdrop-blur"
+    >
+      <!-- The one h1 of the page. Pages start their own headings at h2. -->
+      <h1 class="truncate text-sm font-medium">{{ pageTitle() }}</h1>
+
+      @if (demoData) {
+        <span
+          class="rounded-md border border-border px-2 py-0.5 text-xs font-medium whitespace-nowrap"
+          title="Served by an in-memory mock API"
+          >Demo data</span
+        >
+      }
+
+      <button
+        type="button"
+        class="ml-auto rounded-md border border-border px-2.5 py-1 text-xs hover:bg-accent hover:text-accent-foreground"
+        (click)="theme.toggleMode()"
+      >
+        {{ theme.isDark() ? 'Light' : 'Dark' }} mode
+      </button>
+    </header>
+
+    <main #content id="main-content" tabindex="-1" class="flex-1 p-6 focus-visible:outline-none">
+      <router-outlet />
+    </main>
+  </div>
+</div>

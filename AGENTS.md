@@ -75,7 +75,7 @@ its tags.
 ## Commits, PRs and `main`
 
 - **Conventional Commits.** The scope, if any, is one of `ui`, `tokens`, `mock-api`, `dashboard`,
-  `landing`, `ci`, `deps`, `repo`. `docs` is a type, not a scope. The PR title becomes the squash
+  `landing`, `suite`, `ci`, `deps`, `repo`. `docs` is a type, not a scope. The PR title becomes the squash
   commit, so it follows the same rules.
 - `main` is protected: the required checks (ADR 0009) must pass and the branch must be up to date.
   Work on a branch and open a PR; never push to `main`, never `--no-verify`.
@@ -95,8 +95,8 @@ its tags.
   file becomes their source.
 - **Nx does not merge comma-separated configurations** for this executor: `-c production,pages`
   silently builds plain production. The `pages` configuration stands alone.
-- **The theme init script lives in three places** (`THEME_INIT_SCRIPT` and each app's
-  `index.html`); `theme-init.spec.ts` fails when they drift. Change all three.
+- **The theme init script lives in four places** (`THEME_INIT_SCRIPT` and each app's
+  `index.html`: dashboard, landing, suite); `theme-init.spec.ts` fails when they drift. Change all four.
 - **Coverage instrumentation breaks `__dirname`** in specs; use `workspaceRoot` from `@nx/devkit`.
 - **CI runs on Linux.** A script test must hold on a case-sensitive file system with `/`
   separators; an assertion that only Windows or macOS produces fails CI (`check-docs.test.mjs` did once).

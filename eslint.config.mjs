@@ -121,6 +121,15 @@ export default tseslint.config(
               sourceTag: 'scope:landing',
               onlyDependOnLibsWithTags: ['scope:landing', 'scope:shared'],
             },
+            // The suite app composes the business contexts (ADR 0021).
+            {
+              sourceTag: 'scope:suite',
+              onlyDependOnLibsWithTags: [
+                'scope:suite',
+                'scope:shared',
+                'scope:booking',
+              ],
+            },
             // A bounded context's domain layer depends only on other domain
             // code (its own and the shared kernel): no data access, no UI.
             {
@@ -135,6 +144,17 @@ export default tseslint.config(
             },
             // Data access talks HTTP: it sees the domain, the contracts and
             // the mock API (for its mock entry point), never UI or a feature.
+            // A feature is pages: it uses its context's data access, domain and
+            // contracts, and shared libraries without a layer (ui, tokens).
+            {
+              sourceTag: 'layer:feature',
+              onlyDependOnLibsWithTags: [
+                'layer:data-access',
+                'layer:domain',
+                'layer:contracts',
+                'scope:shared',
+              ],
+            },
             {
               sourceTag: 'layer:data-access',
               onlyDependOnLibsWithTags: [
