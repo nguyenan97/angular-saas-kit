@@ -49,6 +49,10 @@ The `lint` job also runs `npm run check:architecture`, which fails when the cont
 promises ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)). A change that
 reaches no library builds none, and the check says there is nothing to check.
 
+The `pr title` job runs commitlint on the pull request's title, which becomes the squash commit on
+`main` ([ADR 0012](../adr/0012-conventional-commits-and-squash-merges.md)). It is not required yet;
+Dependabot's pull requests skip it.
+
 `lint`, `test` and `build` go through `nx affected`, so they only run for the projects your
 change reaches. `typecheck` and `format` always cover the whole workspace.
 

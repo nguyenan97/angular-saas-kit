@@ -1,9 +1,17 @@
 ---
 name: retro
-description: After a session or a merged change, find what went wrong or cost too much and propose the cheapest durable fix for each - a check, a skill edit or an AGENTS.md line - most severe first.
+description: After a session or a batch of merged changes, find what went wrong or cost too much and propose the cheapest durable fix for each - a check, a skill edit or an AGENTS.md line - most severe first, in a report under docs/superpowers/reports. User-invoked.
 ---
 
 # Retrospective
+
+## When to use
+
+When the person asks, and at the end of an autonomous-mode task, where it feeds the report.
+
+## When not to use
+
+To fix the code of the change itself: that is review. The retro fixes the environment.
 
 Look at the session the user names (the current one if they name none) and its pull requests.
 The aim is the environment, not the code: what would make the next agent, or person, get it right
@@ -37,11 +45,14 @@ the wrong fix.
 ## Report
 
 The candidates, most severe first: what happened, the evidence (a commit, a message, a file and
-line), the proposed fix and where it goes. Do not apply them. Each accepted fix lands in its own
-pull request.
+line), the proposed fix and where it goes. Write it to
+`docs/superpowers/reports/YYYY-MM-DD-<topic>.md` (its own section in an autonomous-mode report), so
+the next agent can read it. Do not apply the fixes in the retro itself: each accepted fix lands in
+its own pull request, unless the person or autonomous mode has asked for them in this batch.
 
 ## Done when
 
 - Every candidate has evidence, a fix from the table, and a severity.
 - No candidate proposes prose where a check would do.
-- The report says which candidates you would skip, and why.
+- The report says which candidates you would skip, and why, and is saved under
+  `docs/superpowers/reports/`.
