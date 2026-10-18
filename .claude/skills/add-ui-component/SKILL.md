@@ -12,6 +12,15 @@ component, `button` or `input` for a directive that styles a native element, `ta
 controls, `tabs` for roving focus with the CDK's `FocusKeyManager`, `menu` for wrapping CDK
 directives with `hostDirectives`, and `dialog` for an overlay opened from a service.
 
+## When to use
+
+A component, directive or primitive for `libs/ui`: new, ported from another library, or extracted from a page that another page now needs.
+
+## When not to use
+
+- Markup used by one page only: keep it in the page (`add-dashboard-page`).
+- A new colour or token: change `libs/tokens` first; this skill only consumes tokens.
+
 ## Before you write anything
 
 - Is there a WAI-ARIA pattern for it? Read it, and note the keyboard interactions it requires.
