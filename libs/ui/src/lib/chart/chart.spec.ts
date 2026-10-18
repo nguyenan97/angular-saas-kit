@@ -54,6 +54,11 @@ describe('niceTicks', () => {
     expect(niceTicks(2410)).toEqual([0, 1000, 2000, 3000]);
   });
 
+  it('reaches below zero when a value is negative', () => {
+    expect(niceTicks(30, 4, -10)).toEqual([-10, 0, 10, 20, 30]);
+    expect(niceTicks(-10, 4, -30)).toEqual([-30, -20, -10, 0]);
+  });
+
   it('still draws an axis for nothing', () => {
     expect(niceTicks(0)).toEqual([0, 1]);
   });
@@ -135,6 +140,57 @@ describe('Chart', () => {
       (text) => text.textContent?.trim(),
     );
     expect(axis).toEqual(['0 orders', '10 orders', '20 orders', '30 orders']);
+  });
+
+  it('draws a negative bar down from the zero line, inside the plot', async () => {
+    const { fixture, el } = await render();
+    fixture.componentInstance.type.set('bar');
+    fixture.componentInstance.data.set([
+      { label: 'Mon', value: 20 },
+      { label: 'Tue', value: -10 },
+    ]);
+    await fixture.whenStable();
+
+    const zero = Number(
+      [...el.querySelectorAll('svg text[text-anchor="end"]')]
+        .find((text) => text.textContent?.trim() === '0 orders')
+        ?.getAttribute('y'),
+    );
+    const [up, down] = [...el.querySelectorAll('rect')].map((bar) => ({
+      y: Number(bar.getAttribute('y')),
+      height: Number(bar.getAttribute('height')),
+    }));
+
+    expect(up?.height).toBeGreaterThan(0);
+    expect(down?.height).toBeGreaterThan(0);
+    // The positive bar ends on the zero line; the negative one starts there.
+    expect((up?.y ?? 0) + (up?.height ?? 0)).toBeCloseTo(zero, 5);
+    expect(down?.y).toBeCloseTo(zero, 5);
+    expect((up?.height ?? 0) / (down?.height ?? 1)).toBeCloseTo(2, 5);
+    // Still above the category labels at the bottom of the plot.
+    expect((down?.y ?? 0) + (down?.height ?? 0)).toBeLessThanOrEqual(240 - 24);
+  });
+
+  it('draws a negative point below the zero line, inside the plot', async () => {
+    const { fixture, el } = await render();
+    fixture.componentInstance.data.set([
+      { label: 'Mon', value: 20 },
+      { label: 'Tue', value: -10 },
+    ]);
+    await fixture.whenStable();
+
+    const zero = Number(
+      [...el.querySelectorAll('svg text[text-anchor="end"]')]
+        .find((text) => text.textContent?.trim() === '0 orders')
+        ?.getAttribute('y'),
+    );
+    const cy = Number(el.querySelectorAll('circle')[1]?.getAttribute('cy'));
+
+    expect(cy).toBeGreaterThan(zero);
+    expect(cy).toBeLessThanOrEqual(240 - 24);
+    expect(el.querySelector('figcaption')?.textContent).toContain(
+      'Lowest: Tue, -10 orders.',
+    );
   });
 
   it('says so when there is nothing to draw', async () => {

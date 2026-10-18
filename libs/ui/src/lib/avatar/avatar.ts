@@ -3,7 +3,7 @@ import {
   Component,
   computed,
   input,
-  signal,
+  linkedSignal,
 } from '@angular/core';
 
 import { cn } from '../utils/cn';
@@ -43,7 +43,11 @@ export class Avatar {
   /** Consumer classes are merged last, so they win over the defaults. */
   readonly class = input('');
 
-  protected readonly failed = signal(false);
+  /** The picture failed to load. A new `src` gets its own try. */
+  protected readonly failed = linkedSignal({
+    source: this.src,
+    computation: () => false,
+  });
 
   protected readonly initials = computed(() => {
     const words = this.name().trim().split(/\s+/).filter(Boolean);
