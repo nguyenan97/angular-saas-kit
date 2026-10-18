@@ -139,6 +139,25 @@ describe('OrdersStore', () => {
       .flush(order({ status: 'placed' }));
   });
 
+  it('never places a draft it did not make, such as one loaded for viewing', async () => {
+    const loading = store.load('SO-0005');
+    http
+      .expectOne('/api/booking/orders/SO-0005')
+      .flush(order({ id: 'SO-0005' }));
+    await loading;
+
+    const placing = store.placeNew(REQUEST, 'slot-a');
+    http
+      .expectOne('/api/booking/orders')
+      .flush(order(), { status: 201, statusText: 'Created' });
+    await settle();
+    http
+      .expectOne('/api/booking/orders/SO-0061/place')
+      .flush(order({ status: 'placed' }));
+
+    expect((await placing)?.id).toBe('SO-0061');
+  });
+
   it('reports a refused draft and does not try to place it', async () => {
     const placing = store.placeNew(REQUEST, 'slot-a');
     const { status, statusText, body } = conflict('invalid-quantity');

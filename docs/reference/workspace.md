@@ -33,6 +33,7 @@ scripts/            Build and check scripts: the demo site, the architecture map
 ## Projects and tags
 
 Every project carries a `type:`, a `scope:` and, for bounded-context libraries, a `layer:` tag.
+`mock-api` also carries `role:mock-backend`, so a data-access library may import it and not `ui`.
 
 | Project               | Tags                                             | Depends on                                                         |
 | --------------------- | ------------------------------------------------ | ------------------------------------------------------------------ |
@@ -40,7 +41,7 @@ Every project carries a `type:`, a `scope:` and, for bounded-context libraries, 
 | `dashboard`           | `type:app`, `scope:dashboard`                    | `tokens`, `ui`, `mock-api`                                         |
 | `tokens`              | `type:lib`, `scope:shared`                       | none                                                               |
 | `ui`                  | `type:lib`, `scope:shared`                       | `tokens`                                                           |
-| `mock-api`            | `type:lib`, `scope:shared`                       | none                                                               |
+| `mock-api`            | `type:lib`, `scope:shared`, `role:mock-backend`  | none                                                               |
 | `shared-kernel`       | `type:lib`, `scope:shared`, `layer:domain`       | none                                                               |
 | `booking-domain`      | `type:lib`, `scope:booking`, `layer:domain`      | `shared-kernel`                                                    |
 | `booking-contracts`   | `type:lib`, `scope:booking`, `layer:contracts`   | `booking-domain`, `shared-kernel`                                  |
@@ -58,8 +59,8 @@ Lint turns the tags into rules with `@nx/enforce-module-boundaries`, so a wrong 
   RxJS imports;
 - a `layer:contracts` library may depend only on `layer:domain` libraries, and refuses Angular and
   RxJS imports too;
-- a `layer:data-access` library may depend on `layer:domain`, `layer:contracts` and shared
-  libraries, never on a feature;
+- a `layer:data-access` library may depend on `layer:domain`, `layer:contracts` and
+  `role:mock-backend` (`mock-api`) libraries, never on UI or a feature;
 - `scope:booking` may depend on itself and on shared code;
 - a buildable library (`tokens`, `ui`) may depend only on other buildable libraries;
 - projects may not depend on each other in a circle.

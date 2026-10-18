@@ -214,4 +214,29 @@ describe('mockApiInterceptor', () => {
     expect(() => mockResponse(600, null)).toThrow(RangeError);
     expect(() => mockResponse(201.5, null)).toThrow(RangeError);
   });
+
+  it('delays an error answer like a success, so a refusal is not instant', () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    registerMockRoutes({
+      method: 'POST',
+      path: '/api/orders',
+      handler: () => mockResponse(409, { code: 'slot-full' }),
+    });
+    const errors: unknown[] = [];
+
+    try {
+      mockApiInterceptor(
+        new HttpRequest('POST', '/api/orders', {}),
+        passthrough(),
+      ).subscribe({ error: (error: unknown) => errors.push(error) });
+      vi.advanceTimersByTime(199);
+      expect(errors).toEqual([]);
+      vi.advanceTimersByTime(1);
+      expect(errors).toHaveLength(1);
+    } finally {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    }
+  });
 });

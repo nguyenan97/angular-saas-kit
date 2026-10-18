@@ -32,7 +32,7 @@ export interface OrderCancelledV1 {
   readonly slotId?: string;
 }
 
-export type BookingIntegrationEvent = OrderPlacedV1 | OrderCancelledV1;
+export type BookingPublishedEvent = OrderPlacedV1 | OrderCancelledV1;
 
 function placedV1({ occurredAt, payload }: OrderPlaced): OrderPlacedV1 {
   return {
@@ -65,8 +65,6 @@ function cancelledV1({
 }
 
 /** The published form of a Booking domain event. */
-export function toIntegrationEvent(
-  event: BookingEvent,
-): BookingIntegrationEvent {
+export function toPublishedEvent(event: BookingEvent): BookingPublishedEvent {
   return event.type === 'OrderPlaced' ? placedV1(event) : cancelledV1(event);
 }

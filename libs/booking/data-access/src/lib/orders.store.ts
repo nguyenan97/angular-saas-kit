@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import type {
   CreateOrderRequest,
   OrderDto,
@@ -20,13 +20,14 @@ export class OrdersStore {
   private readonly current = signal<OrderDto | undefined>(undefined);
   private readonly busy = signal<'loading' | 'saving' | null>(null);
   private readonly lastFailure = signal<BookingFailure | null>(null);
-  /** The request the current draft was made from, to reuse it on a retry. */
-  private draftRequest: string | null = null;
+  /** The draft `placeNew` made and the request it came from, to reuse it on a retry. */
+  private madeDraft: { readonly id: string; readonly request: string } | null =
+    null;
 
   readonly order = this.current.asReadonly();
   readonly failure = this.lastFailure.asReadonly();
-  readonly loading = () => this.busy() === 'loading';
-  readonly saving = () => this.busy() === 'saving';
+  readonly loading = computed(() => this.busy() === 'loading');
+  readonly saving = computed(() => this.busy() === 'saving');
 
   clearFailure(): void {
     this.lastFailure.set(null);
@@ -47,10 +48,14 @@ export class OrdersStore {
   ): Promise<OrderDto | undefined> {
     const key = JSON.stringify(request);
     let draft = this.current();
-    if (draft?.status !== 'draft' || this.draftRequest !== key) {
+    const reusable =
+      draft?.status === 'draft' &&
+      draft.id === this.madeDraft?.id &&
+      this.madeDraft.request === key;
+    if (!reusable || !draft) {
       draft = await this.run('saving', this.repository.create(request));
       if (!draft) return undefined;
-      this.draftRequest = key;
+      this.madeDraft = { id: draft.id, request: key };
     }
     return this.run('saving', this.repository.place(draft.id, slotId));
   }

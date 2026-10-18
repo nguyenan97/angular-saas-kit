@@ -87,6 +87,15 @@ describe('GET /api/booking/orders', () => {
     expect(page.items[0]?.id).toBe('SO-0060');
   });
 
+  it('serves a later page, and holds the page and its size to what exists', () => {
+    expect(list('page=2&pageSize=25').items[0]?.id).toBe('SO-0035');
+    expect(list('page=99&pageSize=25')).toMatchObject({ page: 3 });
+    expect(list('page=-1&pageSize=500')).toMatchObject({
+      page: 1,
+      pageSize: 50,
+    });
+  });
+
   it('filters by status', () => {
     const page = list('status=cancelled&pageSize=50');
 
@@ -167,12 +176,42 @@ describe('POST /api/booking/orders', () => {
     expect(list().total).toBe(60);
   });
 
+  it.each([
+    ['a line that is not an object', [null]],
+    ['a product id that is not a string', [{ productId: 7, quantity: 1 }]],
+    [
+      'a quantity that is not a number',
+      [{ productId: 'P-001', quantity: '2' }],
+    ],
+    [
+      'a discount that is not a whole amount',
+      [{ productId: 'P-001', quantity: 1, discount: 1.5 }],
+    ],
+  ])('answers 400, rather than failing, for %s', (_, lines) => {
+    const refused = answer(
+      call('POST', BOOKING_API.orders, { body: { customerId: 'C-01', lines } }),
+    );
+
+    expect(refused).toMatchObject({
+      status: 400,
+      body: { code: 'invalid-request' },
+    });
+  });
+
   it('answers 409 with the domain code when a line breaks a rule', () => {
     const refused = answer(
       call('POST', BOOKING_API.orders, {
         body: {
           customerId: 'C-01',
           lines: [{ productId: 'P-001', quantity: 0 }],
+        },
+      }),
+    );
+    const negative = answer(
+      call('POST', BOOKING_API.orders, {
+        body: {
+          customerId: 'C-01',
+          lines: [{ productId: 'P-001', quantity: 1, discount: -1000 }],
         },
       }),
     );
@@ -191,6 +230,10 @@ describe('POST /api/booking/orders', () => {
     expect(refused).toMatchObject({
       status: 409,
       body: { code: 'invalid-quantity' },
+    });
+    expect(negative).toMatchObject({
+      status: 409,
+      body: { code: 'negative-discount' },
     });
     expect(duplicate).toMatchObject({
       status: 409,
@@ -232,6 +275,9 @@ describe('POST /api/booking/orders/:id/place', () => {
     );
 
     expect(refused).toMatchObject({ status: 409, body: { code: 'slot-full' } });
+    expect(data.slots.find((s) => s.id === full.id)?.booked).toBe(
+      full.capacity,
+    );
     expect(
       (call('GET', BOOKING_API.order, { id: draft.id }) as OrderDto).status,
     ).toBe('draft');
@@ -349,9 +395,12 @@ describe('POST /api/booking/orders/:id/confirm and /cancel', () => {
   it('answers 409 reason-required without a reason, and 404 for an unknown order', () => {
     const order = placedOrder();
 
+    const booked = data.slots.find((s) => s.id === order.slotId)?.booked;
+
     expect(
       answer(call('POST', BOOKING_API.cancel, { id: order.id, body: {} })),
     ).toMatchObject({ status: 409, body: { code: 'reason-required' } });
+    expect(data.slots.find((s) => s.id === order.slotId)?.booked).toBe(booked);
     expect(
       answer(
         call('POST', BOOKING_API.cancel, {
@@ -364,6 +413,13 @@ describe('POST /api/booking/orders/:id/confirm and /cancel', () => {
 });
 
 describe('reference data and the overview', () => {
+  it('serves copies of the reference data, so a caller cannot change the seed', () => {
+    const customers = call('GET', BOOKING_API.customers) as CustomerDto[];
+    customers.length = 0;
+
+    expect(data.customers).toHaveLength(20);
+  });
+
   it('serves the customers and the catalogue', () => {
     expect(call('GET', BOOKING_API.customers) as CustomerDto[]).toHaveLength(
       20,
@@ -379,18 +435,62 @@ describe('reference data and the overview', () => {
     expect(slots.at(-1)?.date).toBe(localDate(NOW, 13));
   });
 
-  it('counts the figures of the Overview from the orders', () => {
-    const overview = call('GET', BOOKING_API.overview) as BookingOverviewDto;
-    const placed = data.orders.filter((r) => r.order.status === 'placed');
+  it('counts the figures of the Overview: revenue over seven days, cancellations over 30', () => {
+    let clock = NOW;
+    data.orders.length = 0;
+    data.slots.forEach((slot, i) => (data.slots[i] = { ...slot, booked: 0 }));
+    routes = bookingMockRoutes(data, {
+      now: () => clock,
+      publish: () => undefined,
+    });
+    const at = (days: number) =>
+      new Date(NOW.getTime() - days * 24 * 3600 * 1000);
+    const slotAfter = (date: Date) =>
+      data.slots.find((s) => s.date > localDate(date, 0)) as SlotDto;
+    const placeNew = (days: number) => {
+      clock = at(days);
+      const draft = newDraft();
+      return call('POST', BOOKING_API.place, {
+        id: draft.id,
+        body: { slotId: slotAfter(clock).id },
+      }) as OrderDto;
+    };
 
-    expect(overview.awaitingConfirmation).toBe(placed.length);
-    expect(overview.ordersToday).toBe(overview.daily.at(-1)?.orders as number);
-    expect(overview.ordersToday).toBeGreaterThan(0);
-    expect(overview.revenueThisWeek.currency).toBe('VND');
-    expect(overview.revenueThisWeek.amount).toBeGreaterThan(0);
-    expect(overview.cancellationRate).toBeGreaterThan(0);
-    expect(overview.cancellationRate).toBeLessThan(1);
+    placeNew(10); // placed before the week: awaiting, not this week's revenue
+    const recent = placeNew(2);
+    call('POST', BOOKING_API.confirm, { id: recent.id });
+    const cancelled = placeNew(1); // placed this week, but cancelled
+    call('POST', BOOKING_API.cancel, {
+      id: cancelled.id,
+      body: { reason: 'x' },
+    });
+    clock = NOW;
+    newDraft(); // today, a draft: counted today, no revenue
+
+    const overview = call('GET', BOOKING_API.overview) as BookingOverviewDto;
+
+    expect(overview).toMatchObject({
+      ordersToday: 1,
+      awaitingConfirmation: 1,
+      revenueThisWeek: recent.totals.total,
+      cancellationRate: 0.25,
+    });
     expect(overview.daily).toHaveLength(14);
-    expect(overview.daily.at(-1)?.date).toBe(localDate(NOW, 0));
+    expect(overview.daily.at(-1)).toEqual({
+      date: localDate(NOW, 0),
+      orders: 1,
+    });
+    expect(
+      overview.daily.find((d) => d.date === localDate(at(2), 0))?.orders,
+    ).toBe(1);
+  });
+
+  it('counts a cancellation rate of zero when nothing was created in 30 days', () => {
+    data.orders.length = 0;
+
+    expect(
+      (call('GET', BOOKING_API.overview) as BookingOverviewDto)
+        .cancellationRate,
+    ).toBe(0);
   });
 });

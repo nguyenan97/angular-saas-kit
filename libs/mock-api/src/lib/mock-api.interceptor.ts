@@ -4,8 +4,8 @@ import {
   HttpResponse,
   HttpStatusCode,
 } from '@angular/common/http';
-import { of, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { type Observable, of, throwError, timer } from 'rxjs';
+import { delay, mergeMap } from 'rxjs/operators';
 
 import { randomLatency } from './latency';
 
@@ -81,15 +81,14 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
     if (!(error instanceof URIError)) {
       throw error;
     }
-    return throwError(
-      () =>
-        new HttpErrorResponse({
-          status: 400,
-          statusText: 'Bad Request',
-          url: req.url,
-          error: { message: 'The path is not valid URL encoding.' },
-        }),
-    ).pipe(delay(randomLatency()));
+    return failAfterLatency(
+      new HttpErrorResponse({
+        status: 400,
+        statusText: 'Bad Request',
+        url: req.url,
+        error: { message: 'The path is not valid URL encoding.' },
+      }),
+    );
   }
 
   if (!match) {
@@ -110,23 +109,30 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
     }
     const { status, body } = answer;
     if (status >= 400) {
-      return throwError(
-        () =>
-          new HttpErrorResponse({
-            status,
-            statusText: statusText(status),
-            url: req.url,
-            error: body,
-          }),
-      ).pipe(delay(randomLatency()));
+      return failAfterLatency(
+        new HttpErrorResponse({
+          status,
+          statusText: statusText(status),
+          url: req.url,
+          error: body,
+        }),
+      );
     }
     return of(
       new HttpResponse({ status, statusText: statusText(status), body }),
     ).pipe(delay(randomLatency()));
   } catch (error) {
-    return throwError(() => error).pipe(delay(randomLatency()));
+    return failAfterLatency(error);
   }
 };
+
+/**
+ * Fails with `error` after the same delay a success gets. `delay` holds back
+ * values only, so an error piped through it would arrive at once.
+ */
+function failAfterLatency(error: unknown): Observable<never> {
+  return timer(randomLatency()).pipe(mergeMap(() => throwError(() => error)));
+}
 
 /** The first route for the method whose pattern matches, with its params. */
 function findRoute(

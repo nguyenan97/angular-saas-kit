@@ -134,13 +134,13 @@ export default tseslint.config(
               onlyDependOnLibsWithTags: ['layer:domain'],
             },
             // Data access talks HTTP: it sees the domain, the contracts and
-            // shared libraries (the mock API), never a feature.
+            // the mock API (for its mock entry point), never UI or a feature.
             {
               sourceTag: 'layer:data-access',
               onlyDependOnLibsWithTags: [
                 'layer:domain',
                 'layer:contracts',
-                'scope:shared',
+                'role:mock-backend',
               ],
             },
             // A business context sees itself and shared code. Other contexts

@@ -13,8 +13,24 @@ describe('createBookingDataset', () => {
     expect(new Set(data.products.map((p) => p.id)).size).toBe(30);
   });
 
-  it('is the same data for the same day, so every load shows the same distributor', () => {
+  it('is the same data for the same moment, and the same distributor all day', () => {
+    const later = createBookingDataset(new Date(2026, 9, 18, 16));
+
     expect(createBookingDataset(NOW)).toEqual(data);
+    expect(later.customers).toEqual(data.customers);
+    expect(later.products).toEqual(data.products);
+    expect(later.orders.map((r) => r.order.id)).toEqual(
+      data.orders.map((r) => r.order.id),
+    );
+  });
+
+  it('keeps the orders of today on today just after midnight', () => {
+    const early = new Date(2026, 9, 18, 0, 30);
+    const today = createBookingDataset(early).orders.filter(
+      (r) => localDate(new Date(r.createdAt), 0) === localDate(early, 0),
+    );
+
+    expect(today.length).toBeGreaterThanOrEqual(3);
   });
 
   it('has a morning and an afternoon slot for each of the 14 days back and the 14 ahead', () => {

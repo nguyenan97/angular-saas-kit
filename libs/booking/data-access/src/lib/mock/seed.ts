@@ -170,12 +170,18 @@ export function createBookingDataset(now: Date): BookingDataset {
     ];
   }
 
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  ).getTime();
   // The first orders are from today, so the Overview has some; the rest
   // spread over the last 20 days. Oldest first, so the ids follow.
   const created = statuses
     .map((_, i) =>
       i < 3
-        ? now.getTime() - (i + 1) * HOUR
+        ? // Still today when the demo opens just after midnight.
+          Math.max(startOfToday, now.getTime() - (i + 1) * HOUR)
         : now.getTime() - Math.floor((1 + random() * 19) * DAY),
     )
     .sort((a, b) => a - b);

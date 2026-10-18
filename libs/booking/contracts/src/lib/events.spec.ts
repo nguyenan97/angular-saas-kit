@@ -5,7 +5,7 @@ import type {
 } from '@angular-saas-kit/booking-domain';
 import { describe, expect, it } from 'vitest';
 
-import { toIntegrationEvent } from './events';
+import { toPublishedEvent } from './events';
 
 const AT = new Date(Date.UTC(2026, 9, 18, 2));
 
@@ -21,9 +21,9 @@ const placed: OrderPlaced = domainEvent(
   AT,
 );
 
-describe('toIntegrationEvent', () => {
+describe('toPublishedEvent', () => {
   it('publishes OrderPlaced as OrderPlacedV1, with every field of the payload', () => {
-    expect(toIntegrationEvent(placed)).toEqual({
+    expect(toPublishedEvent(placed)).toEqual({
       type: 'booking.order-placed.v1',
       occurredAt: '2026-10-18T02:00:00.000Z',
       orderId: 'SO-0001',
@@ -41,7 +41,7 @@ describe('toIntegrationEvent', () => {
       AT,
     );
 
-    expect(toIntegrationEvent(cancelled)).toEqual({
+    expect(toPublishedEvent(cancelled)).toEqual({
       type: 'booking.order-cancelled.v1',
       occurredAt: '2026-10-18T02:00:00.000Z',
       orderId: 'SO-0001',
@@ -57,14 +57,14 @@ describe('toIntegrationEvent', () => {
       AT,
     );
 
-    expect(toIntegrationEvent(cancelled)).not.toHaveProperty('slotId');
+    expect(toPublishedEvent(cancelled)).not.toHaveProperty('slotId');
   });
 
   it('copies the lines, so a consumer cannot change the order they came from', () => {
-    const event = toIntegrationEvent(placed);
+    const event = toPublishedEvent(placed);
+    if (event.type !== 'booking.order-placed.v1') throw new Error(event.type);
 
-    expect(event.type === 'booking.order-placed.v1' && event.lines).not.toBe(
-      placed.payload.lines,
-    );
+    expect(event.lines).toEqual(placed.payload.lines);
+    expect(event.lines).not.toBe(placed.payload.lines);
   });
 });

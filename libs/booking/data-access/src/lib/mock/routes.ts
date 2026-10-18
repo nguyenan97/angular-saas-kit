@@ -75,6 +75,19 @@ function paginate<T>(items: readonly T[], query: URLSearchParams): Page<T> {
   };
 }
 
+/** A line as JSON can carry it; the domain checks the values themselves. */
+function isLineInput(
+  line: unknown,
+): line is CreateOrderRequest['lines'][number] {
+  if (typeof line !== 'object' || line === null) return false;
+  const { productId, quantity, discount } = line as Record<string, unknown>;
+  return (
+    typeof productId === 'string' &&
+    typeof quantity === 'number' &&
+    (discount === undefined || Number.isSafeInteger(discount))
+  );
+}
+
 const isOccupying = (order: SalesOrder): order is PlacedOrder =>
   order.status === 'placed' || order.status === 'confirmed';
 
@@ -142,7 +155,11 @@ export function bookingMockRoutes(
     if (!data.customers.some((c) => c.id === request?.customerId)) {
       return invalid('Choose a customer from the list.');
     }
-    if (!Array.isArray(request?.lines)) return invalid('An order has lines.');
+    if (!Array.isArray(request?.lines) || !request.lines.every(isLineInput)) {
+      return invalid(
+        'Each line needs a product, a quantity and a whole discount.',
+      );
+    }
     let order: SalesOrder = createDraft({
       id: `SO-${String(data.nextId).padStart(4, '0')}`,
       customerId: request.customerId as string,
@@ -291,9 +308,13 @@ export function bookingMockRoutes(
     {
       method: 'GET',
       path: BOOKING_API.customers,
-      handler: () => data.customers,
+      handler: () => [...data.customers],
     },
-    { method: 'GET', path: BOOKING_API.products, handler: () => data.products },
+    {
+      method: 'GET',
+      path: BOOKING_API.products,
+      handler: () => [...data.products],
+    },
     {
       method: 'GET',
       path: BOOKING_API.slots,

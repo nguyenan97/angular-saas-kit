@@ -20,7 +20,7 @@ feature layer arrives with the suite app.
 
 - **Tags:** every library keeps `type:lib`, takes `scope:<context>`, and adds a `layer:` tag.
 - **Lint:** `layer:domain` may depend only on `layer:domain`, `layer:contracts` only on
-  `layer:domain`, `layer:data-access` on those two and shared libraries, and a context only on
+  `layer:domain`, `layer:data-access` on those two and `mock-api` (tagged `role:mock-backend`), and a context only on
   itself and `scope:shared`. Domain and contracts libraries also refuse `@angular/*` and `rxjs`
   imports.
 - **Shared kernel:** the value types (`Money`, quantities, `Result`) and the event bus that every

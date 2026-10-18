@@ -125,9 +125,11 @@ Questions the spec left open, answered here instead of asked.
 
 ## Decision log
 
-| Decision                         | Options                                                  | Chosen and why                                                                                                    |
-| -------------------------------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| Non-200 answers in `mock-api`    | throw `HttpErrorResponse`; a `mockResponse` return value | `mockResponse`: a handler can also answer 201, and a business refusal is not an exception in the handler's code   |
-| Where the order list state lives | `OrdersStore`; a list query in the feature               | The feature, like the dashboard's `listQuery`: the URL owns it. The store owns the current order and the commands |
-| Combobox popup                   | CDK Overlay; an inline listbox under the input           | Inline, positioned under the input: fewer moving parts, and CDK `ActiveDescendantKeyManager` gives the keys       |
-| Four PRs over the 400-line limit | split further; keep the spec's four                      | Keep four: the person asked for the spec's split; each body says why it is larger                                 |
+| Decision                                               | Options                                                  | Chosen and why                                                                                                                  |
+| ------------------------------------------------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Non-200 answers in `mock-api`                          | throw `HttpErrorResponse`; a `mockResponse` return value | `mockResponse`: a handler can also answer 201, and a business refusal is not an exception in the handler's code                 |
+| Where the order list state lives                       | `OrdersStore`; a list query in the feature               | The feature, like the dashboard's `listQuery`: the URL owns it. The store owns the current order and the commands               |
+| Combobox popup                                         | CDK Overlay; an inline listbox under the input           | Inline, positioned under the input: fewer moving parts, and CDK `ActiveDescendantKeyManager` gives the keys                     |
+| Four PRs over the 400-line limit                       | split further; keep the spec's four                      | Keep four: the person asked for the spec's split; each body says why it is larger                                               |
+| How data access may reach `mock-api` only              | allow all of `scope:shared`; a tag on `mock-api`         | `role:mock-backend` on `mock-api`, listed in the `layer:data-access` rule: `ui` and `tokens` stay out of reach (review of PR A) |
+| DTO shapes that reuse domain types (`SlotDto`, totals) | flat copies; aliases                                     | Aliases for now: one context, one backend. `booking-contracts` turns them into flat types when a second context consumes them   |
