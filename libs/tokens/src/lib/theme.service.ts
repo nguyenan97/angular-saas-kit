@@ -10,9 +10,12 @@ import {
 } from '@angular/core';
 
 import {
+  ACCENTS,
   type Accent,
+  COLOR_MODES,
   type ColorMode,
   DEFAULT_THEME,
+  RADII,
   type Radius,
   type ResolvedColorMode,
   THEME_STORAGE_KEY,
@@ -135,8 +138,7 @@ export class ThemeService {
       if (!raw) {
         return DEFAULT_THEME;
       }
-      // Spread over the default so a partial or older payload still boots.
-      return { ...DEFAULT_THEME, ...(JSON.parse(raw) as Partial<ThemeState>) };
+      return fromStorage(JSON.parse(raw));
     } catch {
       // Private mode, disabled storage, corrupt JSON - none are worth failing
       // the app over.
@@ -157,4 +159,28 @@ export class ThemeService {
       /* storage unavailable - the theme still works for this session */
     }
   }
+}
+
+/**
+ * The theme in a stored payload, axis by axis: each one the kit knows is
+ * kept, and anything else (missing, renamed in an older version, edited by
+ * hand) falls back to the default, so a partial or stale payload still boots
+ * and no unknown value reaches `<html>`.
+ */
+function fromStorage(payload: unknown): ThemeState {
+  const stored: Partial<Record<keyof ThemeState, unknown>> =
+    typeof payload === 'object' && payload !== null ? payload : {};
+  return {
+    mode: known(COLOR_MODES, stored.mode, DEFAULT_THEME.mode),
+    accent: known(ACCENTS, stored.accent, DEFAULT_THEME.accent),
+    radius: known(RADII, stored.radius, DEFAULT_THEME.radius),
+  };
+}
+
+function known<T extends string>(
+  allowed: readonly T[],
+  value: unknown,
+  fallback: T,
+): T {
+  return allowed.find((option) => option === value) ?? fallback;
 }
