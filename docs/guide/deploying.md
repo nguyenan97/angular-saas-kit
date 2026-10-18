@@ -17,6 +17,7 @@ One site at `https://nguyenan97.github.io/angular-saas-kit/`:
 | ------------- | --------------------------------------------- |
 | `/`           | The landing page, prerendered to static files |
 | `/demo/`      | The dashboard, a single-page app              |
+| `/suite/`     | The suite, a single-page app                  |
 | `/docs/`      | These docs                                    |
 | `/storybook/` | The components in Storybook                   |
 
@@ -30,10 +31,11 @@ live previews for pull requests, is in
 
 A project site lives under a repository path, so nothing can assume it is at the root:
 
-- **Base hrefs.** Both apps get a `pages` build configuration with an explicit base href
-  (`/angular-saas-kit/` for the landing page and `/angular-saas-kit/demo/` for the
-  dashboard), and these docs build with `base: '/angular-saas-kit/docs/'`.
-- **Hash routing for the dashboard.** Pages cannot rewrite an unknown path back to
+- **Base hrefs.** Each app gets a `pages` build configuration with an explicit base href
+  (`/angular-saas-kit/` for the landing page, `/angular-saas-kit/demo/` for the dashboard and
+  `/angular-saas-kit/suite/` for the suite), and these docs build with
+  `base: '/angular-saas-kit/docs/'`.
+- **Hash routing for the dashboard and the suite.** Pages cannot rewrite an unknown path back to
   `index.html`, so a refresh on a path-based deep link would 404. The Pages build swaps in
   `withHashLocation()` with a file replacement, and every other build keeps path URLs.
 - **A `404.html`** answers unknown paths.
@@ -63,13 +65,14 @@ repository path, serves a folder from its `index.html`, and answers anything els
    | `scripts/preview-pages.mjs`    | `base` to `/my-kit/`                        |
    | `apps/landing/project.json`    | the `pages` `baseHref` to `/my-kit/`        |
    | `apps/dashboard/project.json`  | the `pages` `baseHref` to `/my-kit/demo/`   |
+   | `apps/suite/project.json`      | the `pages` `baseHref` to `/my-kit/suite/`  |
    | `apps/landing/public/404.html` | the two absolute links                      |
    | `docs/.vitepress/config.mts`   | `REPO`, `SITE` and `base` (`/my-kit/docs/`) |
 
 3. Push to `main`. The workflow builds and deploys.
 
 On a custom domain the site moves to the root, so only `SITE_BASE`, the base hrefs and the
-docs `base` change. The "Live demo" and "Docs" links on the landing page are relative, so
+docs `base` change. The "Live demo", "Suite demo" and "Docs" links on the landing page are relative, so
 they follow the move without an edit.
 
 ## Any static host

@@ -52,6 +52,16 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true
+        },
+        "pages": {
+          "baseHref": "/angular-saas-kit/suite/",
+          "fileReplacements": [
+            {
+              "replace": "apps/suite/src/app/routing-mode.ts",
+              "with": "apps/suite/src/app/routing-mode.pages.ts"
+            }
+          ],
+          "outputHashing": "all"
         }
       }
     },

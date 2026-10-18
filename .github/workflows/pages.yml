@@ -1,7 +1,8 @@
 name: Pages
 
-# Builds the site: the landing page at the root, the dashboard demo under /demo/
-# and the documentation under /docs/. Every pull request gets the build and the
+# Builds the site: the landing page at the root, the dashboard demo under /demo/,
+# the suite demo under /suite/, the documentation under /docs/ and Storybook
+# under /storybook/. Every pull request gets the build and the
 # site checks, so a broken base href or a dead documentation link is caught
 # before it ships; only `main` deploys.
 on:
@@ -38,7 +39,8 @@ jobs:
 
       - run: npm ci
 
-      # Builds both apps with the `pages` configuration and the docs, assembles
+      # Builds the three apps with the `pages` configuration, Storybook and the
+      # docs, assembles
       # _site and verifies that every local file the pages reference exists.
       - name: Build and check the site
         run: npm run pages

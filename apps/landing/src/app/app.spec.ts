@@ -45,6 +45,7 @@ describe('Landing', () => {
     const fixture = await render();
     const links = linkTexts(fixture.nativeElement);
     expect(links).not.toContain('Live demo');
+    expect(links).not.toContain('Suite demo');
     expect(links).not.toContain('Docs');
     expect(links).not.toContain('Components');
   });

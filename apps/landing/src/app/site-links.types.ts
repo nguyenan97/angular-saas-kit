@@ -8,6 +8,8 @@
 export interface SiteLinks {
   /** The dashboard demo. */
   readonly demo: string | null;
+  /** The suite demo: order-to-cash, with the Booking context. */
+  readonly suite: string | null;
   /** The documentation site. */
   readonly docs: string | null;
   /** The components' Storybook. */

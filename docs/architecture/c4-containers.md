@@ -16,6 +16,7 @@ C4Container
   System_Boundary(kit, "Angular SaaS Kit (one Nx workspace)") {
     Container(landing, "landing", "Angular 22, prerendered", "Marketing page. Static output on Pages; a Node server build is also configured")
     Container(dashboard, "dashboard", "Angular 22, zoneless SPA", "Admin shell with overview, analytics, orders, customers, products and settings pages on the API, and sign-in pages")
+    Container(suitee2e, "suite-e2e", "Playwright, playwright-bdd", "The suite's user flows as Gherkin scenarios, and axe on every suite page. Run in CI on Chromium")
     Container(suite, "suite", "Angular 22, zoneless SPA", "Order-to-cash demo: a shell with the business modules, the Overview page, and the Booking pages on a mock backend with an event bus")
     Container(e2e, "dashboard-e2e", "Playwright", "Browser tests for theming, the shell, the pages' data, and the keyboard behaviour of the switcher, menus, dialogs and sign-in forms. Run in CI on Chromium")
     Container(tokens, "tokens", "Angular library and CSS", "Design tokens, Tailwind v4 theme mapping, ThemeService, anti-flash script")
@@ -38,6 +39,7 @@ C4Container
   Rel(ui, tokens, "Imports")
   Rel(e2e, dashboard, "Drives")
   Rel(visitor, suite, "Explores")
+  Rel(suitee2e, suite, "Drives")
   Rel(suite, tokens, "Imports")
   Rel(suite, ui, "Imports")
   Rel(suite, mockapi, "Imports, outside production builds")
@@ -77,6 +79,7 @@ C4Container
 | `booking-data-access`    | library     | `type:lib`, `scope:booking`, `layer:data-access` | Not published. May import `layer:domain`, `layer:contracts` and `mock-api` (`role:mock-backend`). Its second entry point, `booking-data-access/mock`, holds the mock routes and seed, so only a mock backend imports them.                                                                                                                              |
 | `suite`                  | application | `type:app`, `scope:suite`                        | Client-side SPA, the second demo ([spec](../superpowers/specs/2026-10-17-suite-booking-design.md)). Its pages and their `HttpClient` load lazily; the mock backend (the Booking mock routes, an event bus and its activity log) answers `/api` except in the production build. Its stylesheet declares `@source` for `ui` and `booking-feature-orders`. |
 | `booking-feature-orders` | library     | `type:lib`, `scope:booking`, `layer:feature`     | Not published. May import `layer:data-access`, `layer:domain`, `layer:contracts` and shared libraries (`ui`). Exports `ORDERS_ROUTES`.                                                                                                                                                                                                                  |
+| `suite-e2e`              | e2e         | `type:e2e`, `scope:suite`                        | Playwright with `playwright-bdd`, against `nx run suite:serve` on port 4300: `bddgen` turns `features/*.feature` into tests, then Playwright runs them and the axe checks. Chromium.                                                                                                                                                                    |
 | `dashboard-e2e`          | e2e         | `type:e2e`, `scope:dashboard`                    | Playwright, against `nx run dashboard:serve` on port 4200. Configured for Chromium, Firefox and WebKit; CI runs Chromium.                                                                                                                                                                                                                               |
 
 ## Dependency direction
@@ -99,14 +102,14 @@ suite ───► every Booking library, shared-kernel, ui, tokens, mock-api (t
 Two kinds of edge are drawn on purpose, because `npx nx graph` shows only the first:
 
 - **Imports**: TypeScript imports through the `@angular-saas-kit/*` path aliases.
-- **Stylesheet references**: CSS `@import` and `@source` across project folders. Both
+- **Stylesheet references**: CSS `@import` and `@source` across project folders. The
   apps get their design system through `@import '../../../libs/tokens/src/styles.css'`,
   and each also declares `@source '../../../libs/ui/src'` so that Tailwind emits
   the utilities the `ui` templates use. Each consumer declares its own sources: the
   tokens entry stylesheet declares none, which is what lets it work from anywhere,
   installed under `node_modules` included ([ADR 0016](../adr/0016-packages-declare-and-ship-what-they-need.md)).
 
-`dashboard-e2e` reaches `dashboard` through `implicitDependencies` in its
+`dashboard-e2e` and `suite-e2e` reach their apps through `implicitDependencies` in their
 `project.json`.
 
 ## What the map guarantees, and what it does not

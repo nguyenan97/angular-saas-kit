@@ -4,10 +4,11 @@
  *
  *   _site/            <- apps/landing    static, prerendered
  *   _site/demo/       <- apps/dashboard  single-page app, hash routing
+ *   _site/suite/      <- apps/suite      single-page app, hash routing
  *   _site/docs/       <- docs            VitePress site
  *   _site/storybook/  <- libs/ui         the components' Storybook
  *
- * Run through `npm run pages`, which builds all four first.
+ * Run through `npm run pages`, which builds all five first.
  *
  * The check exists because a wrong <base href> is the classic way for a Pages
  * deploy to go green and serve a blank page: every local file an index.html
@@ -42,6 +43,12 @@ const parts = [
     from: 'dist/apps/dashboard/browser',
     to: 'demo',
     base: `${SITE_BASE}demo/`,
+  },
+  {
+    name: 'suite',
+    from: 'dist/apps/suite/browser',
+    to: 'suite',
+    base: `${SITE_BASE}suite/`,
   },
   {
     name: 'docs',
