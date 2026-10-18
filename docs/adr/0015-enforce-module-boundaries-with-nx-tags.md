@@ -27,6 +27,10 @@ Turn the tags into rules with **`@nx/enforce-module-boundaries`**, configured on
 - Circular dependencies between projects are errors (the rule's default).
 - The plugin, `@nx/eslint-plugin`, is pinned to the same version as `nx`.
 
+_Amended 2026-10-18:_ browser-test projects carry `type:e2e` and may import only `type:lib`
+projects. `dashboard-e2e` had no tags, so no rule applied to it; `npm run check:architecture` now
+fails on any project without a `type:` and a `scope:` tag.
+
 ## Alternatives considered
 
 - **Keep relying on review and the architecture map** - the map check ([`check-architecture.mjs`](../../scripts/check-architecture.mjs))
