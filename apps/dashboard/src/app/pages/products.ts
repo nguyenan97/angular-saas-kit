@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  type ElementRef,
+  Injector,
+  afterNextRender,
+  computed,
+  inject,
+  viewChild,
+} from '@angular/core';
 import {
   Badge,
   type BadgeVariant,
@@ -88,7 +97,7 @@ const LOW_STOCK = 5;
           {{ summary() }}
         </p>
 
-        @if (list.resource.error()) {
+        @if (list.resource.error() && !list.resource.isLoading()) {
           <!-- Said even when an earlier list is still on screen: a failed
                page, search or sort is not hidden behind the last one. -->
           <div class="flex flex-wrap items-center gap-3" role="alert">
@@ -98,14 +107,17 @@ const LOW_STOCK = 5;
               askButton
               variant="outline"
               size="sm"
-              (click)="list.resource.reload()"
+              (click)="retry()"
             >
               Try again
             </button>
           </div>
         }
-        @if (list.current() || !list.resource.error()) {
+        @if (
+          list.current() || !list.resource.error() || list.resource.isLoading()
+        ) {
           <div
+            #results
             class="overflow-x-auto"
             tabindex="0"
             role="region"
@@ -211,6 +223,9 @@ const LOW_STOCK = 5;
   `,
 })
 export class Products {
+  private readonly injector = inject(Injector);
+  private readonly results = viewChild<ElementRef<HTMLElement>>('results');
+
   protected readonly list = listQuery<Product>({
     url: '/api/products',
     sort: { column: 'name', direction: 'asc' },
@@ -239,5 +254,16 @@ export class Products {
 
   protected value(event: Event): string {
     return (event.target as HTMLInputElement | HTMLSelectElement).value;
+  }
+
+  /**
+   * Asks again. The alert, and the Try again button in it, give way while the
+   * list reloads, so the focus moves to the results.
+   */
+  protected retry(): void {
+    this.list.resource.reload();
+    afterNextRender(() => this.results()?.nativeElement.focus(), {
+      injector: this.injector,
+    });
   }
 }

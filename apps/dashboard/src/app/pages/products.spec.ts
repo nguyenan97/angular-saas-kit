@@ -117,6 +117,8 @@ describe('Products', () => {
     expect(el.querySelector('[role="alert"]')?.textContent).toContain(
       'The products could not be loaded.',
     );
+    // The last list stays for context.
+    expect(el.querySelector('tbody')?.textContent).toContain('SKU-1');
 
     el.querySelector<HTMLButtonElement>('[role="alert"] button')?.click();
     TestBed.tick();

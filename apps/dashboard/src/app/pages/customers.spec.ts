@@ -94,6 +94,8 @@ describe('Customers', () => {
     expect(el.querySelector('[role="alert"]')?.textContent).toContain(
       'The customers could not be loaded.',
     );
+    // The last list stays for context.
+    expect(el.querySelector('tbody')?.textContent).toContain('Amara Okafor');
 
     button('Try again').click();
     TestBed.tick();

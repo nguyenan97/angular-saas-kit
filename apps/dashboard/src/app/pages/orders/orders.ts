@@ -2,9 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
   Component,
+  type ElementRef,
+  Injector,
+  afterNextRender,
   computed,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import {
   Badge,
@@ -107,7 +111,7 @@ const afterMenuCloses = () =>
           <p class="text-sm" role="status">{{ notice() }}</p>
         </div>
 
-        @if (list.resource.error()) {
+        @if (list.resource.error() && !list.resource.isLoading()) {
           <!-- Said even when an earlier list is still on screen: a failed
                page, search or sort is not hidden behind the last one. -->
           <div class="flex flex-wrap items-center gap-3" role="alert">
@@ -117,14 +121,17 @@ const afterMenuCloses = () =>
               askButton
               variant="outline"
               size="sm"
-              (click)="list.resource.reload()"
+              (click)="retry()"
             >
               Try again
             </button>
           </div>
         }
-        @if (list.current() || !list.resource.error()) {
+        @if (
+          list.current() || !list.resource.error() || list.resource.isLoading()
+        ) {
           <div
+            #results
             class="overflow-x-auto"
             tabindex="0"
             role="region"
@@ -255,6 +262,9 @@ const afterMenuCloses = () =>
   `,
 })
 export class Orders {
+  private readonly injector = inject(Injector);
+  private readonly results = viewChild<ElementRef<HTMLElement>>('results');
+
   private readonly http = inject(HttpClient);
   private readonly dialogs = inject(DialogService);
 
@@ -322,5 +332,16 @@ export class Orders {
         `${order.id} could not be refunded. Nothing changed; try again.`,
       );
     }
+  }
+
+  /**
+   * Asks again. The alert, and the Try again button in it, give way while the
+   * list reloads, so the focus moves to the results.
+   */
+  protected retry(): void {
+    this.list.resource.reload();
+    afterNextRender(() => this.results()?.nativeElement.focus(), {
+      injector: this.injector,
+    });
   }
 }

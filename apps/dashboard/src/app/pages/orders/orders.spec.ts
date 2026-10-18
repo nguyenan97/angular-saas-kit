@@ -128,9 +128,20 @@ describe('Orders', () => {
     expect(el.querySelector('[role="alert"]')?.textContent).toContain(
       'The orders could not be loaded.',
     );
+    expect(el.querySelector('tbody')?.textContent).toContain('ORD-1001');
 
+    // jsdom only moves focus to elements in the document.
+    document.body.append(el);
+    button('Try again', el).focus();
     button('Try again', el).click();
     const retry = list();
+    // Not whenStable: the request is still open, so the app is never stable.
+    TestBed.tick();
+
+    // The alert gives way while the list reloads; the results take the focus.
+    expect(el.querySelector('[role="alert"]')).toBeNull();
+    expect(document.activeElement).toBe(el.querySelector('[role="region"]'));
+    el.remove();
     expect(retry.request.params.get('status')).toBe('pending');
     retry.flush(page([PENDING]));
     await fixture.whenStable();
