@@ -11,17 +11,17 @@ and the rules they all assume are in [`AGENTS.md`](../../AGENTS.md) and
 
 ## By phase
 
-| Phase           | Skill                                                                                                               |
-| --------------- | ------------------------------------------------------------------------------------------------------------------- |
-| Inception       | [`write-spec`](write-spec/SKILL.md)                                                                                 |
-| Domain modeling | [`domain-modeling`](domain-modeling/SKILL.md)                                                                       |
-| Solution design | [`write-adr`](write-adr/SKILL.md), [`update-architecture`](update-architecture/SKILL.md)                            |
-| Plan            | [`plan-tasks`](plan-tasks/SKILL.md)                                                                                 |
-| Build           | [`add-ui-component`](add-ui-component/SKILL.md), [`add-dashboard-page`](add-dashboard-page/SKILL.md)                |
-| Any phase       | [`verify`](verify/SKILL.md), [`write-docs`](write-docs/SKILL.md), [`dependabot-triage`](dependabot-triage/SKILL.md) |
-| Review          | [`review-change`](review-change/SKILL.md)                                                                           |
-| Ship            | [`open-pr`](open-pr/SKILL.md)                                                                                       |
-| Learn           | [`retro`](retro/SKILL.md)                                                                                           |
+| Phase           | Skill                                                                                                                                                                      |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Inception       | [`write-spec`](write-spec/SKILL.md)                                                                                                                                        |
+| Domain modeling | [`domain-modeling`](domain-modeling/SKILL.md)                                                                                                                              |
+| Solution design | [`solution-design`](solution-design/SKILL.md), [`write-adr`](write-adr/SKILL.md), [`update-architecture`](update-architecture/SKILL.md)                                    |
+| Plan            | [`plan-tasks`](plan-tasks/SKILL.md)                                                                                                                                        |
+| Build           | [`test-first`](test-first/SKILL.md), [`refactor`](refactor/SKILL.md), [`add-ui-component`](add-ui-component/SKILL.md), [`add-dashboard-page`](add-dashboard-page/SKILL.md) |
+| Any phase       | [`verify`](verify/SKILL.md), [`write-docs`](write-docs/SKILL.md), [`dependabot-triage`](dependabot-triage/SKILL.md)                                                        |
+| Review          | [`review-change`](review-change/SKILL.md)                                                                                                                                  |
+| Ship            | [`open-pr`](open-pr/SKILL.md)                                                                                                                                              |
+| Learn           | [`retro`](retro/SKILL.md)                                                                                                                                                  |
 
 ## By who starts them
 
