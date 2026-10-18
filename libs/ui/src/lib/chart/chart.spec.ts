@@ -57,6 +57,12 @@ describe('niceTicks', () => {
   it('reaches below zero when a value is negative', () => {
     expect(niceTicks(30, 4, -10)).toEqual([-10, 0, 10, 20, 30]);
     expect(niceTicks(-10, 4, -30)).toEqual([-30, -20, -10, 0]);
+    // A minimum between two steps rounds down, so the axis still covers it.
+    expect(niceTicks(20, 4, -7)).toEqual([-10, 0, 10, 20]);
+  });
+
+  it('never writes the zero tick as -0', () => {
+    expect(Object.is(niceTicks(5, 4, -0)[0], 0)).toBe(true);
   });
 
   it('still draws an axis for nothing', () => {
@@ -169,6 +175,33 @@ describe('Chart', () => {
     expect((up?.height ?? 0) / (down?.height ?? 1)).toBeCloseTo(2, 5);
     // Still above the category labels at the bottom of the plot.
     expect((down?.y ?? 0) + (down?.height ?? 0)).toBeLessThanOrEqual(240 - 24);
+  });
+
+  it('fills the area under a line down to the zero line', async () => {
+    const { fixture, el } = await render();
+    fixture.componentInstance.data.set([
+      { label: 'Mon', value: 20 },
+      { label: 'Tue', value: -10 },
+    ]);
+    await fixture.whenStable();
+
+    const zero = Number(
+      [...el.querySelectorAll('svg text[text-anchor="end"]')]
+        .find((text) => text.textContent?.trim() === '0 orders')
+        ?.getAttribute('y'),
+    );
+    const area = el
+      .querySelector('path[class~="fill-chart-2/15"]')
+      ?.getAttribute('d');
+    // The path ends by going down to the base line and back: "L x,base L x,base Z".
+    const base = [...(area ?? '').matchAll(/L[\d.]+,([\d.]+)/g)]
+      .slice(-2)
+      .map((match) => Number(match[1]));
+
+    expect(base).toHaveLength(2);
+    for (const y of base) {
+      expect(y).toBeCloseTo(zero, 5);
+    }
   });
 
   it('draws a negative point below the zero line, inside the plot', async () => {

@@ -63,8 +63,11 @@ describe('Avatar', () => {
     const { fixture, el } = await render();
     fixture.componentInstance.src.set('/broken.png');
     await fixture.whenStable();
-    el('a').querySelector('img')?.dispatchEvent(new Event('error'));
+    const broken = el('a').querySelector('img');
+    expect(broken).not.toBeNull();
+    broken?.dispatchEvent(new Event('error'));
     await fixture.whenStable();
+    expect(el('a').querySelector('img')).toBeNull();
 
     fixture.componentInstance.src.set('/me.png');
     await fixture.whenStable();
