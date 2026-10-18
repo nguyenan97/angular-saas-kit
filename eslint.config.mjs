@@ -105,6 +105,9 @@ export default tseslint.config(
             // Apps use libraries. Nothing imports an app.
             { sourceTag: 'type:app', onlyDependOnLibsWithTags: ['type:lib'] },
             { sourceTag: 'type:lib', onlyDependOnLibsWithTags: ['type:lib'] },
+            // Browser tests drive an app through the browser; in code they may
+            // use libraries (a token name, a test helper), never an app.
+            { sourceTag: 'type:e2e', onlyDependOnLibsWithTags: ['type:lib'] },
             // Shared code knows nothing about the apps that use it.
             {
               sourceTag: 'scope:shared',

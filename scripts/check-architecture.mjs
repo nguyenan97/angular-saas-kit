@@ -13,6 +13,10 @@
  *   - a CSS `@import` or `@source` whose relative path lands in another project;
  *   - an entry in a project's `implicitDependencies`.
  *
+ * Every project must also carry a `type:` and a `scope:` tag: the module
+ * boundary rules in eslint.config.mjs match on tags, so an untagged project
+ * escapes all of them without an error (ADR 0015).
+ *
  * It compares the map with the code. It does not forbid a dependency: lint
  * does that for TypeScript imports (`@nx/enforce-module-boundaries`), and
  * cannot see the stylesheet references this script covers.
@@ -45,10 +49,12 @@ function findProjects(dir, found = []) {
     const path = join(dir, entry.name);
     const config = join(path, 'project.json');
     if (existsSync(config)) {
-      const { name, implicitDependencies = [] } = JSON.parse(
-        readFileSync(config, 'utf8'),
-      );
-      found.push({ name, dir: path, implicit: implicitDependencies });
+      const {
+        name,
+        implicitDependencies = [],
+        tags = [],
+      } = JSON.parse(readFileSync(config, 'utf8'));
+      found.push({ name, dir: path, implicit: implicitDependencies, tags });
     }
     findProjects(path, found);
   }
@@ -166,6 +172,14 @@ if (
     `found ${names.size} projects, ${labels.size} containers, ${found.size} dependencies in the code and ${drawn.size} on the map - the check itself is probably out of date`,
   );
 }
+for (const { name, tags } of projects) {
+  for (const kind of ['type', 'scope']) {
+    if (!tags.some((tag) => tag.startsWith(`${kind}:`)))
+      problems.push(
+        `project "${name}" has no ${kind}: tag, so no module boundary rule applies to it`,
+      );
+  }
+}
 for (const label of labels) {
   if (!names.has(label)) {
     problems.push(`the map draws "${label}", which is not a workspace project`);
@@ -187,7 +201,7 @@ for (const edge of drawn) {
 
 if (problems.length > 0) {
   console.error(
-    `\n${MAP} and the source disagree:\n${problems.map((p) => `  - ${p}`).join('\n')}\n\nUpdate the Container and Rel lines in ${MAP} in the same change.`,
+    `\n${MAP} and the source disagree:\n${problems.map((p) => `  - ${p}`).join('\n')}\n\nUpdate the Container and Rel lines in ${MAP}, or the project's tags, in the same change.`,
   );
   process.exit(1);
 }
