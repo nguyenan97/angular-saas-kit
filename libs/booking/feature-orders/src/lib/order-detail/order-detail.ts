@@ -1,11 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  type ElementRef,
+  Injector,
+  afterNextRender,
   computed,
   effect,
   inject,
   signal,
   untracked,
+  viewChild,
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -119,7 +123,13 @@ export function statusSteps(order: OrderDto): TimelineItem[] {
 
       @if (store.order(); as order) {
         <div class="flex flex-wrap items-center gap-3">
-          <h2 class="text-lg font-semibold">{{ order.id }}</h2>
+          <h2
+            #heading
+            tabindex="-1"
+            class="text-lg font-semibold focus-visible:outline-none"
+          >
+            {{ order.id }}
+          </h2>
           <ask-badge [variant]="badge[order.status]">{{
             label[order.status]
           }}</ask-badge>
@@ -242,6 +252,8 @@ export function statusSteps(order: OrderDto): TimelineItem[] {
 })
 export class OrderDetail {
   protected readonly store = inject(OrdersStore);
+  private readonly injector = inject(Injector);
+  private readonly heading = viewChild<ElementRef<HTMLElement>>('heading');
   private readonly dialogs = inject(DialogService);
   private readonly id = toSignal(
     inject(ActivatedRoute).paramMap.pipe(
@@ -281,14 +293,24 @@ export class OrderDetail {
     });
   }
 
+  /**
+   * Says what happened, and moves focus to the order's heading: the button
+   * that was pressed is gone once the order changes status.
+   */
+  private done(message: string): void {
+    this.notice.set(message);
+    afterNextRender(() => this.heading()?.nativeElement.focus(), {
+      injector: this.injector,
+    });
+  }
+
   protected reload(): void {
     void this.store.load(this.id());
   }
 
   protected async confirm(): Promise<void> {
     this.notice.set('');
-    if (await this.store.confirm())
-      this.notice.set(`${this.id()} was confirmed.`);
+    if (await this.store.confirm()) this.done(`${this.id()} was confirmed.`);
   }
 
   protected async cancel(): Promise<void> {
@@ -300,6 +322,6 @@ export class OrderDetail {
     );
     if (!reason) return;
     if (await this.store.cancel(reason))
-      this.notice.set(`${this.id()} was cancelled.`);
+      this.done(`${this.id()} was cancelled.`);
   }
 }

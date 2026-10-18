@@ -1,5 +1,6 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import type { Routes } from '@angular/router';
+import { OrdersRepository } from '@angular-saas-kit/booking-data-access';
 
 import { backendInterceptors } from '../mock-backend';
 
@@ -11,7 +12,11 @@ import { backendInterceptors } from '../mock-backend';
 export const pageRoutes: Routes = [
   {
     path: '',
-    providers: [provideHttpClient(withInterceptors([...backendInterceptors]))],
+    providers: [
+      provideHttpClient(withInterceptors([...backendInterceptors])),
+      // Next to HttpClient, so it takes this one, with the mock backend.
+      OrdersRepository,
+    ],
     children: [
       {
         path: '',

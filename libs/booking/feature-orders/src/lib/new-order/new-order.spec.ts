@@ -18,6 +18,7 @@ import type {
   SlotDto,
 } from '@angular-saas-kit/booking-contracts';
 import { money } from '@angular-saas-kit/shared-kernel';
+import { OrdersRepository } from '@angular-saas-kit/booking-data-access';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { NewOrder } from './new-order';
@@ -63,6 +64,7 @@ async function render() {
       provideZonelessChangeDetection(),
       provideHttpClient(),
       provideHttpClientTesting(),
+      OrdersRepository,
       provideRouter([
         { path: 'orders/new', component: NewOrder },
         { path: 'orders/:id', component: Blank },

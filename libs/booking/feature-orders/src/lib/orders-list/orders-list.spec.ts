@@ -17,6 +17,7 @@ import type {
   Page,
 } from '@angular-saas-kit/booking-contracts';
 import { money } from '@angular-saas-kit/shared-kernel';
+import { OrdersRepository } from '@angular-saas-kit/booking-data-access';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { OrdersList, SEARCH_DEBOUNCE_MS } from './orders-list';
@@ -47,6 +48,7 @@ async function render(url = '/orders') {
       provideZonelessChangeDetection(),
       provideHttpClient(),
       provideHttpClientTesting(),
+      OrdersRepository,
       provideRouter([
         { path: 'orders', component: OrdersList },
         { path: 'orders/new', component: Blank },

@@ -3,7 +3,9 @@
 How the Booking context talks to its API, in Angular.
 
 - `OrdersRepository`: the Booking API over `HttpClient`, one method per path in
-  `booking-contracts`.
+  `booking-contracts`. Provide it in the same injector as `provideHttpClient(...)` (the suite does,
+  on its pages route): provided in root it would take the root `HttpClient`, without the route's
+  interceptors and so without the mock backend.
 - `OrdersStore`: the order a page works on and the commands on it (`load`, `placeNew`, `confirm`,
   `cancel`) as signals: `order()`, `loading()`, `saving()`, `failure()`. Provide it with the page.
   Commands never throw; a failure is a `BookingFailure`, a business refusal with its domain code

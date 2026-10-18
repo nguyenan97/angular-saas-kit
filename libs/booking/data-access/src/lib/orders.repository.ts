@@ -26,8 +26,12 @@ export interface OrdersQuery {
  * The Booking API over HTTP. In the suite's development and demo builds the
  * mock backend answers; a real backend has to serve the same paths. Errors
  * reach the caller as `HttpErrorResponse`; `toFailure` sorts them.
+ *
+ * Provide it next to `provideHttpClient(...)`, in the same injector: a
+ * root-provided repository would take the root `HttpClient`, which has none
+ * of the interceptors (the mock backend among them) a route adds.
  */
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class OrdersRepository {
   private readonly http = inject(HttpClient);
 

@@ -8,6 +8,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import type { BookingOverviewDto } from '@angular-saas-kit/booking-contracts';
 import { money } from '@angular-saas-kit/shared-kernel';
+import { OrdersRepository } from '@angular-saas-kit/booking-data-access';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import type { ActivityEntry } from '../data/activity';
@@ -46,6 +47,7 @@ async function render() {
       provideZonelessChangeDetection(),
       provideHttpClient(),
       provideHttpClientTesting(),
+      OrdersRepository,
       provideRouter([]),
     ],
   }).compileComponents();

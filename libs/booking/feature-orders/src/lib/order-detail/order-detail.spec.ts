@@ -9,6 +9,7 @@ import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import type { OrderDto } from '@angular-saas-kit/booking-contracts';
 import { money } from '@angular-saas-kit/shared-kernel';
+import { OrdersRepository } from '@angular-saas-kit/booking-data-access';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { OrderDetail } from './order-detail';
@@ -52,6 +53,7 @@ async function render(loaded: OrderDto | null = order()) {
       provideZonelessChangeDetection(),
       provideHttpClient(),
       provideHttpClientTesting(),
+      OrdersRepository,
       provideRouter([{ path: 'orders/:id', component: OrderDetail }]),
     ],
   });
@@ -134,6 +136,8 @@ describe('OrderDetail', () => {
     expect(text(el().querySelector('[role="status"]'))).toBe(
       'SO-0061 was confirmed.',
     );
+    // The Confirm button is gone, so focus moves to the order's heading.
+    expect(document.activeElement).toBe(el().querySelector('h2'));
     expect(button('Confirm')).toBeUndefined();
   });
 
@@ -161,6 +165,7 @@ describe('OrderDetail', () => {
     expect(text(el().querySelector('[role="status"]'))).toBe(
       'SO-0061 was cancelled.',
     );
+    expect(document.activeElement).toBe(el().querySelector('h2'));
     expect(text(el())).toContain('Wrong address');
   });
 
