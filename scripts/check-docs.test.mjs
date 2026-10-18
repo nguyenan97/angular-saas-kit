@@ -122,9 +122,14 @@ describe('check-docs', () => {
 
   test('rejects a link whose letter case differs from the file', () => {
     write('docs/a.md', '# A\n\n[x](../agents.md)\n');
-    assert.deepEqual(problems(), [
-      'docs/a.md:3: "../agents.md" exists only in another letter case, which Linux does not find',
-    ]);
+    // A file system that ignores case (Windows, macOS) finds the file and the
+    // spelling check catches it; Linux does not find it at all.
+    const found = problems();
+    assert.equal(found.length, 1);
+    assert.match(
+      found[0],
+      /^docs\/a\.md:3: "\.\.\/agents\.md" (?:exists only in another letter case|does not exist)/,
+    );
   });
 
   test('reports a malformed escape instead of crashing', () => {
