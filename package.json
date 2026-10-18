@@ -73,6 +73,7 @@
     "mermaid": "^12.2.0",
     "ng-packagr": "~22.2.4",
     "nx": "23.3.0",
+    "playwright-bdd": "^9.2.1",
     "postcss": "^8.5.30",
     "prettier": "~3.9.10",
     "storybook": "~10.6.1",
