@@ -55,7 +55,7 @@ rule, a scan setting, a `CONSTRAINTS.md` row. A fix that only review can hold sa
 
 ## Done when
 
-- Every trigger in the table was checked against the diff, or the report says none applies.
+- The report has one line per trigger in the table: what the diff does there, or "not touched".
 - Every finding has a severity, a file and line, and a fix.
 - Every blocking finding is fixed, and each fix has a check, or the report says why review alone
   holds it.

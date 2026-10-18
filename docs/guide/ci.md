@@ -117,6 +117,9 @@ Because the branch must be up to date, merging several pull requests in a row ne
   the lockfile, a CycloneDX SBOM of the production dependencies, and a passive ZAP baseline of the
   built site served locally. It reports and never blocks.
 
+- To report a vulnerability, see the
+  [security policy](https://github.com/nguyenan97/angular-saas-kit/blob/main/SECURITY.md).
+
 | Scan                | Runs                       | Blocks merge?           | Results                     | Who acts                                    |
 | ------------------- | -------------------------- | ----------------------- | --------------------------- | ------------------------------------------- |
 | CodeQL (SAST)       | PRs, weekly                | No (not required, 0009) | code scanning               | the PR author; the maintainer weekly        |
@@ -132,9 +135,6 @@ Because the branch must be up to date, merging several pull requests in a row ne
 
 "Fails the job" means the check goes red on the pull request; it holds the merge once the
 maintainer makes it required (ADR 0009).
-
-- To report a vulnerability, see the
-  [security policy](https://github.com/nguyenan97/angular-saas-kit/blob/main/SECURITY.md).
 
 ### Dependabot pull requests
 

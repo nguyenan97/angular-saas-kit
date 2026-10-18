@@ -14,7 +14,9 @@ permissions: {}
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # A scan that has started runs to the end: a push to main must not cancel
+  # the weekly run halfway through its upload.
+  cancel-in-progress: false
 
 env:
   NX_DAEMON: false

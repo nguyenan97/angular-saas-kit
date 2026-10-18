@@ -68,9 +68,18 @@ jobs:
           fetch-depth: 0
       - name: Scan the new commits
         env:
-          # A pull request: its own commits. A push to main: what the push added.
-          RANGE: ${{ github.event_name == 'pull_request' && format('{0}..{1}', github.event.pull_request.base.sha, github.event.pull_request.head.sha) || format('{0}..{1}', github.event.before, github.sha) }}
-        run: >-
-          docker run --rm -v "$PWD:/repo"
-          ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
-          git /repo --log-opts="$RANGE" --redact --verbose --exit-code 1
+          # A pull request: its own commits. A push to main: what the push
+          # added; when there is no usable "before" (a first push is all
+          # zeros, a force push names a commit the clone lacks), the pushed
+          # commit alone.
+          FROM: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          TO: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if git cat-file -e "$FROM^{commit}" 2>/dev/null; then
+            range="$FROM..$TO"
+          else
+            range="-1 $TO"
+          fi
+          docker run --rm -v "$PWD:/repo" \
+            ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f \
+            git /repo --log-opts="$range" --redact --verbose --exit-code 1
