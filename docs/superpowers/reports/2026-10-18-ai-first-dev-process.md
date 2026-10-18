@@ -7,8 +7,12 @@ Date: 2026-10-18. Mode: autonomous, granted by the maintainer for this task. Aud
 
 ## What merged
 
-Every pull request below was squash-merged with all seven required checks green and the branch up
-to date with `main`, after a review by a separate agent with no blocking finding left.
+Every pull request below was squash-merged with all seven required checks green on its final
+commit and the branch up to date with `main` (#86 went red once on the way, retro 2). Before each
+merge a separate agent, started for the purpose with the `review-change` skill, reviewed the diff;
+its findings were fixed in follow-up commits on the same pull request, and none left was blocking.
+Those reviews ran in this session and are not posted on GitHub: the follow-up commits ("answer the
+review ...") are the trace.
 
 | Task | Pull request                                                  | What it did                                                                                                                                     |
 | ---- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -59,8 +63,9 @@ job green:
 ## Assumptions
 
 A1 to A6 in the spec. One proved weaker than written: A6 put the size limit at about 400 lines; two
-pull requests went over (#83 at 460 lines of working documents, #86 at 479 of a script and its
-tests) and said why in their bodies.
+pull requests went over (#83 with 460 added lines of working documents, #86 with 479 added lines,
+mostly a script and its tests; counting deletions too, GitHub shows 459 and 688 changed lines) and
+said why in their bodies.
 
 ## Dropped or left open
 
@@ -90,7 +95,7 @@ Most severe first. Each line: what happened, the evidence, the fix and where it 
 
 1. **A rule broken under pressure.** One throwaway commit was made with `--no-verify` to get past
    commitlint, against the floor. It was caught before the push, undone, and redone through the hooks
-   (`f233df5` on the closed #91). A hook cannot stop `--no-verify`; the fix is in prose, in `open-pr`:
+   (commit `f233df5` of the closed #91, whose branch is deleted). A hook cannot stop `--no-verify`; the fix is in prose, in `open-pr`:
    a proof commit goes through the same hooks as any other. _Fix: skill edit (this PR)._
 2. **A test that held only on Windows.** `check-docs.test.mjs` asserted the Windows-only message for a
    wrong-case link; Linux CI reported "does not exist" instead, and #86's `lint` went red once.
@@ -121,7 +126,7 @@ repository).
 | Every decision traces to a verified source or an audit number, in an ADR or the log    | Done: ADRs 0025, 0026, four amendments, the spec's decision log D1 to D12                                                                                 |
 | Every new check runs locally and in CI, and goes red on a violation                    | Done for `check:docs`, `test:scripts`, the tag rule, `PR title`, gitleaks (shown above). The scheduled scans report and never block, by design (ADR 0026) |
 | C4, ADRs and docs match the code; nothing unbuilt is claimed                           | Done: `check:architecture` and `check:docs` pass; the overview marks the evolution path as planned; a second agent checked the claims                     |
-| No PR over the size limit without a reason; every merged PR green                      | Done: #83 and #86 went over and said why; all merged with the seven required checks green                                                                 |
+| No PR over the size limit without a reason; every merged PR green                      | Done: #83 and #86 went over and said why; all merged with the seven required checks green on the final commit (#86 red once before)                       |
 
 ## Needs a person
 
@@ -131,8 +136,6 @@ These need repository settings or accounts the agent does not have or may not ch
   `gitleaks`, and the `zizmor` and `dependency review` jobs from ADR 0024. A branch-protection change.
 - **Turn on GitHub's generic secret patterns** for secret scanning and push protection, if the plan
   allows it, so push protection blocks what gitleaks finds.
-- **Read the first `Security scans` run** (OSV in code scanning, the SBOM and ZAP artifacts) and
-  decide what each finding needs.
 - **The OpenSSF Best Practices badge** is a form the maintainer fills in at bestpractices.dev; it
   would lift Scorecard's `CII-Best-Practices` from 0.
 - Still owed from before (project memory): GitHub Sponsors, an npm scope and trusted publishing
