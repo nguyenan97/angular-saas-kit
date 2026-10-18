@@ -3,7 +3,7 @@ import {
   HttpTestingController,
   provideHttpClientTesting,
 } from '@angular/common/http/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
+import { ApplicationRef, provideZonelessChangeDetection } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -73,5 +73,35 @@ describe('Customers', () => {
     expect(el.querySelector('[role="status"]')?.textContent?.trim()).toBe(
       'No customers match.',
     );
+  });
+
+  it('says when the next list could not be loaded, and offers to try again', async () => {
+    const el = await render([CUSTOMER]);
+    const http = TestBed.inject(HttpTestingController);
+    const stable = () => TestBed.inject(ApplicationRef).whenStable();
+    const button = (name: string) =>
+      [...el.querySelectorAll('button')].find(
+        (candidate) => candidate.textContent?.trim() === name,
+      ) as HTMLButtonElement;
+
+    button('Country').click();
+    TestBed.tick();
+    http
+      .expectOne((r) => r.url === '/api/customers')
+      .flush('down', { status: 500, statusText: 'Server Error' });
+    await stable();
+
+    expect(el.querySelector('[role="alert"]')?.textContent).toContain(
+      'The customers could not be loaded.',
+    );
+
+    button('Try again').click();
+    TestBed.tick();
+    const retry = http.expectOne((r) => r.url === '/api/customers');
+    expect(retry.request.params.get('sort')).toBe('country');
+    retry.flush({ items: [CUSTOMER], total: 1, page: 1, pageSize: 10 });
+    await stable();
+
+    expect(el.querySelector('[role="alert"]')).toBeNull();
   });
 });

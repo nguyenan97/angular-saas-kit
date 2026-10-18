@@ -88,7 +88,9 @@ const LOW_STOCK = 5;
           {{ summary() }}
         </p>
 
-        @if (list.resource.error() && !list.current()) {
+        @if (list.resource.error()) {
+          <!-- Said even when an earlier list is still on screen: a failed
+               page, search or sort is not hidden behind the last one. -->
           <div class="flex flex-wrap items-center gap-3" role="alert">
             <p class="text-sm">The products could not be loaded.</p>
             <button
@@ -101,7 +103,8 @@ const LOW_STOCK = 5;
               Try again
             </button>
           </div>
-        } @else {
+        }
+        @if (list.current() || !list.resource.error()) {
           <div
             class="overflow-x-auto"
             tabindex="0"

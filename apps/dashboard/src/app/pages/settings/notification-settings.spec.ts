@@ -65,3 +65,57 @@ describe('NotificationSettingsForm', () => {
     );
   });
 });
+
+describe('NotificationSettingsForm before the choices arrive', () => {
+  function setup() {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
+    const fixture = TestBed.createComponent(NotificationSettingsForm);
+    const http = TestBed.inject(HttpTestingController);
+    TestBed.tick();
+    const el: HTMLElement = fixture.nativeElement;
+    return { fixture, http, el };
+  }
+
+  it('has nothing to save while the choices load', () => {
+    const { http, el } = setup();
+    // Not whenStable: the request is still open, so the app is never stable.
+
+    expect(el.querySelector('form')).toBeNull();
+    expect(el.querySelector('[aria-busy="true"]')).not.toBeNull();
+    http
+      .expectOne('/api/notifications')
+      .flush({ orders: false, weeklySummary: false, productNews: false });
+  });
+
+  it('says when the choices could not be loaded, offers to try again, and saves nothing', async () => {
+    const { fixture, http, el } = setup();
+    http
+      .expectOne('/api/notifications')
+      .flush('down', { status: 500, statusText: 'Server Error' });
+    await fixture.whenStable();
+
+    expect(el.querySelector('[role="alert"]')?.textContent).toContain(
+      'Your notification choices could not be loaded.',
+    );
+    // No form whose unticked boxes could be saved over the real choices.
+    expect(el.querySelector('form')).toBeNull();
+
+    el.querySelector<HTMLButtonElement>('[role="alert"] button')?.click();
+    TestBed.tick();
+    http
+      .expectOne('/api/notifications')
+      .flush({ orders: true, weeklySummary: false, productNews: false });
+    await fixture.whenStable();
+
+    expect(el.querySelector('[role="alert"]')).toBeNull();
+    expect(el.querySelector<HTMLInputElement>('#notify-orders')?.checked).toBe(
+      true,
+    );
+  });
+});

@@ -107,7 +107,9 @@ const afterMenuCloses = () =>
           <p class="text-sm" role="status">{{ notice() }}</p>
         </div>
 
-        @if (list.resource.error() && !list.current()) {
+        @if (list.resource.error()) {
+          <!-- Said even when an earlier list is still on screen: a failed
+               page, search or sort is not hidden behind the last one. -->
           <div class="flex flex-wrap items-center gap-3" role="alert">
             <p class="text-sm">The orders could not be loaded.</p>
             <button
@@ -120,7 +122,8 @@ const afterMenuCloses = () =>
               Try again
             </button>
           </div>
-        } @else {
+        }
+        @if (list.current() || !list.resource.error()) {
           <div
             class="overflow-x-auto"
             tabindex="0"

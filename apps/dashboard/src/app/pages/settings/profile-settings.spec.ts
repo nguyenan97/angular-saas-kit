@@ -112,3 +112,53 @@ describe('ProfileSettings', () => {
     );
   });
 });
+
+describe('ProfileSettings before the profile arrives', () => {
+  function setup() {
+    TestBed.configureTestingModule({
+      providers: [
+        provideZonelessChangeDetection(),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
+    });
+    const fixture = TestBed.createComponent(ProfileSettings);
+    const http = TestBed.inject(HttpTestingController);
+    TestBed.tick();
+    const el: HTMLElement = fixture.nativeElement;
+    return { fixture, http, el };
+  }
+
+  it('has nothing to save while the profile loads', () => {
+    const { http, el } = setup();
+    // Not whenStable: the request is still open, so the app is never stable.
+
+    expect(el.querySelector('form')).toBeNull();
+    expect(el.querySelector('[aria-busy="true"]')).not.toBeNull();
+    http.expectOne('/api/profile').flush(PROFILE);
+  });
+
+  it('says when the profile could not be loaded, offers to try again, and saves nothing', async () => {
+    const { fixture, http, el } = setup();
+    http
+      .expectOne('/api/profile')
+      .flush('down', { status: 500, statusText: 'Server Error' });
+    await fixture.whenStable();
+
+    expect(el.querySelector('[role="alert"]')?.textContent).toContain(
+      'Your profile could not be loaded.',
+    );
+    // No empty form that could be saved over the real profile.
+    expect(el.querySelector('form')).toBeNull();
+
+    el.querySelector<HTMLButtonElement>('[role="alert"] button')?.click();
+    TestBed.tick();
+    http.expectOne('/api/profile').flush(PROFILE);
+    await fixture.whenStable();
+
+    expect(el.querySelector('[role="alert"]')).toBeNull();
+    expect(el.querySelector<HTMLInputElement>('#profile-company')?.value).toBe(
+      'Northwind Studio',
+    );
+  });
+});
