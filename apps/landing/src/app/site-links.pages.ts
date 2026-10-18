@@ -7,6 +7,7 @@ import type { SiteLinks } from './site-links.types';
  */
 export const SITE_LINKS: SiteLinks = {
   demo: 'demo/',
+  suite: 'suite/',
   docs: 'docs/',
   storybook: 'storybook/',
 };

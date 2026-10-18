@@ -70,4 +70,5 @@ createServer((req, res) => {
 }).listen(port, () => {
   console.log(`Pages preview: http://localhost:${port}${base}`);
   console.log(`Dashboard demo: http://localhost:${port}${base}demo/`);
+  console.log(`Suite demo: http://localhost:${port}${base}suite/`);
 });

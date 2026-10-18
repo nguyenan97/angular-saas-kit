@@ -35,6 +35,7 @@ apart from the format check. Run both before you say a change is done.
 apps/dashboard      admin SPA (client-side)          apps/landing   marketing page (prerendered)
 apps/dashboard-e2e  Playwright (CI: Chromium)         libs/tokens    design tokens, ThemeService
 apps/suite          order-to-cash demo SPA (Booking)  libs/mock-api  in-memory HTTP interceptor
+apps/suite-e2e      BDD: Gherkin + playwright-bdd
 libs/ui             components (a README each), cn()
 libs/shared/kernel        domain value types, Result, event bus (plain TS)
 libs/booking/domain       Booking domain: SalesOrder, lines, slots (plain TS)

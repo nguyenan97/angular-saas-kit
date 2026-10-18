@@ -44,6 +44,11 @@ import { SITE_LINKS } from './site-links';
             >Live demo</a
           >
         }
+        @if (links.suite) {
+          <a askButton variant="outline" size="lg" [href]="links.suite"
+            >Suite demo</a
+          >
+        }
         @if (links.docs) {
           <a askButton variant="outline" size="lg" [href]="links.docs">Docs</a>
         }

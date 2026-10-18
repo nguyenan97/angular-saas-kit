@@ -8,6 +8,7 @@ the [container diagram](../architecture/c4-containers.md).
 apps/
   dashboard/        Admin application: a client-side single-page app
   dashboard-e2e/    Playwright browser tests for the dashboard
+  suite-e2e/        BDD browser tests for the suite: Gherkin features run by playwright-bdd
   landing/          Marketing page: prerendered, with an optional Node server build
   suite/            Order-to-cash demo: module shell, Overview, the Booking pages
 libs/
@@ -51,6 +52,7 @@ Every project carries a `type:`, a `scope:` and, for bounded-context libraries, 
 | `suite`                  | `type:app`, `scope:suite`                        | `tokens`, `ui`, `mock-api`, `shared-kernel`, `booking-domain`, `booking-contracts`, `booking-data-access`, `booking-feature-orders` |
 | `booking-feature-orders` | `type:lib`, `scope:booking`, `layer:feature`     | `booking-data-access`, `booking-domain`, `booking-contracts`, `shared-kernel`, `ui`                                                 |
 | `dashboard-e2e`          | `type:e2e`, `scope:dashboard`                    | `dashboard` (implicit)                                                                                                              |
+| `suite-e2e`              | `type:e2e`, `scope:suite`                        | `suite` (implicit)                                                                                                                  |
 
 Lint turns the tags into rules with `@nx/enforce-module-boundaries`, so a wrong import fails
 `npm run lint`:
@@ -104,6 +106,7 @@ stylesheet with `@import '../../../libs/tokens/src/styles.css'`.
 - **Strict TypeScript** (`strict`, `noUncheckedIndexedAccess`, `noPropertyAccessFromIndexSignature`
   and friends) and strict Angular templates.
 - **Standalone, `OnPush`, signal-based components**, and no `zone.js`.
-- **Tests** sit next to the code as `*.spec.ts`; browser tests live in `apps/dashboard-e2e`.
+- **Tests** sit next to the code as `*.spec.ts`; browser tests live in `apps/dashboard-e2e` and
+  `apps/suite-e2e`.
 - **Formatting** is Prettier, applied by a hook on commit and checked in CI: single quotes,
   trailing commas, 80 columns (100 for HTML).

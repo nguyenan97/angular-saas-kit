@@ -8,7 +8,7 @@
     "build": "nx run-many -t build",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "pages": "nx run-many -t build -p landing dashboard -c pages && nx run ui:build-storybook && npm run docs:build && node scripts/assemble-pages.mjs",
+    "pages": "nx run-many -t build -p landing dashboard suite -c pages && nx run ui:build-storybook && npm run docs:build && node scripts/assemble-pages.mjs",
     "pages:preview": "node scripts/preview-pages.mjs",
     "test": "nx run-many -t test",
     "lint": "nx run-many -t lint",

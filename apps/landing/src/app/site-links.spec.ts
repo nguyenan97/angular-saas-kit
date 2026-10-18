@@ -7,6 +7,7 @@ describe('site links', () => {
   it('has no links when the landing runs on its own', () => {
     // `nx serve landing` has no demo or docs next to it, so a link would be dead.
     expect(standalone.demo).toBeNull();
+    expect(standalone.suite).toBeNull();
     expect(standalone.docs).toBeNull();
     expect(standalone.storybook).toBeNull();
   });
@@ -15,6 +16,7 @@ describe('site links', () => {
     // Relative, so they resolve against <base href> and keep working on a
     // custom domain; an absolute /angular-saas-kit/demo/ would not.
     expect(pages.demo).toBe('demo/');
+    expect(pages.suite).toBe('suite/');
     expect(pages.docs).toBe('docs/');
     expect(pages.storybook).toBe('storybook/');
   });

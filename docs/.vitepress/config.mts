@@ -140,6 +140,7 @@ export default defineConfig({
           { text: 'Theming', link: '/guide/theming' },
           { text: 'Components', link: '/guide/components' },
           { text: 'Mock API', link: '/guide/mock-api' },
+          { text: 'The suite', link: '/guide/suite' },
           { text: 'The landing page', link: '/guide/landing-page' },
           { text: 'Development process', link: '/guide/development-process' },
           { text: 'Testing', link: '/guide/testing' },

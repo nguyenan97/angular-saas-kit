@@ -71,7 +71,8 @@ the component exists proves nothing.
 
 ## Browser tests
 
-`apps/dashboard-e2e` uses [Playwright](https://playwright.dev) against the running dashboard.
+`apps/dashboard-e2e` uses [Playwright](https://playwright.dev) against the running dashboard
+(the suite's own browser tests are [below](#the-suite-user-flows-in-gherkin)).
 The theme system is the kit's central claim, so it got the first coverage (`theme.spec.ts`): the
 default accent and radius, the dark-mode toggle, an accent that survives a reload with no flash,
 and, on the Settings page, the keyboard behaviour of the theme switcher: the arrow keys move the
@@ -126,6 +127,22 @@ npx playwright test --project=chromium
 
 Playwright starts `nx run dashboard:serve` on port 4200 and reuses a server that is already
 running. Set `BASE_URL` to test a deployed build instead.
+
+### The suite: user flows in Gherkin
+
+`apps/suite-e2e` tests the suite the BDD way: each scenario of the spec is a `.feature` file in
+plain words (`features/place-order.feature`, `cancel-order.feature`, `orders-list.feature`), and
+[`playwright-bdd`](https://vitalets.github.io/playwright-bdd/) runs it on Playwright with the
+steps in `steps/`. The scenario's name is the test's name. Its `accessibility` project runs axe
+on every suite page, in light and dark, like the dashboard's.
+
+```bash
+npx nx e2e suite-e2e        # bddgen, then playwright test; Chromium, against port 4300
+```
+
+`bddgen` turns the feature files into test files under `dist/.playwright`, so nothing
+generated sits in the source tree. A step a feature uses that `steps/` does not define fails
+`bddgen` with the snippet to write.
 
 > [!NOTE]
 > The `e2e` job in CI runs them on Chromium for every pull request and push, in about a

@@ -6,8 +6,8 @@ rest is how a change gets there and how to run the kit yourself.
 ## The demo on GitHub Pages
 
 Built and deployed by [`pages.yml`](../../.github/workflows/pages.yml), only from `main`
-([ADR 0011](../adr/0011-github-pages-demo-site.md)). The site has four parts: the landing
-page at the root, the dashboard demo under `/demo/`, the documentation under `/docs/`
+([ADR 0011](../adr/0011-github-pages-demo-site.md)). The site has five parts: the landing
+page at the root, the dashboard demo under `/demo/`, the suite demo under `/suite/`, the documentation under `/docs/`
 ([ADR 0013](../adr/0013-documentation-site-with-vitepress.md)), and the components' Storybook
 under `/storybook/` ([ADR 0020](../adr/0020-storybook-on-the-angular-webpack-builder.md)).
 
@@ -17,7 +17,7 @@ C4Deployment
   title Deployment: the site on GitHub Pages
 
   Deployment_Node(device, "Visitor's device", "Any current browser") {
-    Container(browser, "Web browser", "HTML, CSS, JavaScript", "Runs the landing page, the dashboard, the docs and Storybook")
+    Container(browser, "Web browser", "HTML, CSS, JavaScript", "Runs the landing page, the dashboard, the suite, the docs and Storybook")
   }
 
   Deployment_Node(gh, "GitHub", "github.com") {
@@ -25,6 +25,7 @@ C4Deployment
       Deployment_Node(site, "nguyenan97.github.io/angular-saas-kit", "Project site") {
         Container(landing, "landing", "Static HTML, JS and CSS", "Served at the site root, with 404.html")
         Container(dashboard, "dashboard", "Static single-page app", "Served under /demo/ with hash routing")
+        Container(suite, "suite", "Static single-page app", "Served under /suite/ with hash routing, on its in-memory mock backend")
         Container(docs, "docs", "Static VitePress site", "Served under /docs/; diagrams are drawn in the browser")
         Container(storybook, "storybook", "Static Storybook", "Served under /storybook/: every component of ui, with a theme toolbar")
       }
@@ -36,10 +37,12 @@ C4Deployment
 
   Rel(browser, landing, "Loads", "HTTPS")
   Rel(browser, dashboard, "Loads", "HTTPS")
+  Rel(browser, suite, "Loads", "HTTPS")
   Rel(browser, docs, "Loads", "HTTPS")
   Rel(browser, storybook, "Loads", "HTTPS")
   Rel(build, landing, "Publishes", "deploy-pages")
   Rel(build, dashboard, "Publishes", "deploy-pages")
+  Rel(build, suite, "Publishes", "deploy-pages")
   Rel(build, docs, "Publishes", "deploy-pages")
   Rel(build, storybook, "Publishes", "deploy-pages")
 ```

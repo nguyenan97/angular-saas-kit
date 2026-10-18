@@ -8,6 +8,7 @@ import type { SiteLinks } from './site-links.types';
  */
 export const SITE_LINKS: SiteLinks = {
   demo: null,
+  suite: null,
   docs: null,
   storybook: null,
 };

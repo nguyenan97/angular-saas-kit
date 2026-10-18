@@ -5,6 +5,14 @@
   "sourceRoot": "apps/suite-e2e/src",
   "implicitDependencies": ["suite"],
   "tags": ["type:e2e", "scope:suite"],
-  "// targets": "to see all targets run: nx show project suite-e2e --web",
-  "targets": {}
+  "targets": {
+    "e2e": {
+      "executor": "nx:run-commands",
+      "options": {
+        "cwd": "apps/suite-e2e",
+        "commands": ["npx bddgen", "npx playwright test"],
+        "parallel": false
+      }
+    }
+  }
 }

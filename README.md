@@ -141,6 +141,8 @@ else changes.
 - [x] Landing sections — features, pricing, FAQ and a blog (testimonials wait until there are real ones)
 - [x] Published docs — guides, C4 architecture and decision records, on GitHub Pages
 - [x] Storybook — every component, with a theme toolbar and an accessibility panel, published under `/storybook/`
+- [x] Suite demo — order-to-cash, built the DDD way: the Booking context end to end (orders, delivery slots, an event bus), BDD browser tests, under `/suite/`
+- [ ] Suite contexts — SCM, Logistics and ERP, each with its own spec
 - [ ] Figma file with matching variables
 
 ## Contributing
