@@ -1,5 +1,5 @@
 import type { HttpInterceptorFn } from '@angular/common/http';
-import { HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
@@ -37,17 +37,32 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
   // `urlWithParams`, not `url`: HttpClient keeps `params` out of `url`, and a
   // handler must see the whole query however the caller passed it.
   const url = new URL(req.urlWithParams, 'http://localhost');
-  const route = MOCK_ROUTES.find(
-    (candidate) =>
-      candidate.method === req.method &&
-      matchPath(candidate.path, url.pathname) !== null,
-  );
 
-  if (!route) {
-    return next(req);
+  let match: { route: MockRoute; params: Record<string, string> } | null;
+  try {
+    match = findRoute(req.method, url.pathname);
+  } catch (error) {
+    // A `%` sequence that is not valid UTF-8 cannot become a param. A real
+    // backend answers that with 400, so the mock does too, rather than throw
+    // out of the interceptor.
+    if (!(error instanceof URIError)) {
+      throw error;
+    }
+    return throwError(
+      () =>
+        new HttpErrorResponse({
+          status: 400,
+          statusText: 'Bad Request',
+          url: req.url,
+          error: { message: 'The path is not valid URL encoding.' },
+        }),
+    ).pipe(delay(randomLatency()));
   }
 
-  const params = matchPath(route.path, url.pathname) ?? {};
+  if (!match) {
+    return next(req);
+  }
+  const { route, params } = match;
 
   try {
     const body = route.handler({
@@ -63,8 +78,27 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
   }
 };
 
+/** The first route for the method whose pattern matches, with its params. */
+function findRoute(
+  method: string,
+  pathname: string,
+): { route: MockRoute; params: Record<string, string> } | null {
+  for (const route of MOCK_ROUTES) {
+    if (route.method !== method) {
+      continue;
+    }
+    const params = matchPath(route.path, pathname);
+    if (params) {
+      return { route, params };
+    }
+  }
+  return null;
+}
+
 /**
  * Returns the extracted params when `pattern` matches `pathname`, or null.
+ * Throws `URIError` when the path matches but a param segment is not valid
+ * URL encoding.
  * An empty object is a valid match, which is why the miss case is null and
  * not a falsy object.
  */
@@ -79,7 +113,9 @@ function matchPath(
     return null;
   }
 
-  const params: Record<string, string> = {};
+  // Every static segment is compared before any param is decoded, so a path
+  // that does not match is never an error, however its params are encoded.
+  const raw: [name: string, value: string][] = [];
 
   for (let i = 0; i < patternParts.length; i++) {
     // Both are in range - the length check above guarantees it - but
@@ -88,7 +124,7 @@ function matchPath(
     const pathPart = pathParts[i] ?? '';
 
     if (patternPart.startsWith(':')) {
-      params[patternPart.slice(1)] = decodeURIComponent(pathPart);
+      raw.push([patternPart.slice(1), pathPart]);
       continue;
     }
 
@@ -97,5 +133,9 @@ function matchPath(
     }
   }
 
+  const params: Record<string, string> = {};
+  for (const [name, value] of raw) {
+    params[name] = decodeURIComponent(value);
+  }
   return params;
 }
