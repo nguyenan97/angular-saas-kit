@@ -62,8 +62,10 @@ before changing a shape.
 
 - **Adding a project, or a dependency between projects?** Update the `Container`
   and `Rel` lines in [`c4-containers.md`](./docs/architecture/c4-containers.md) in
-  the same PR. `npm run check:architecture` compares that map with the imports and
-  stylesheet references in the source, and CI runs it.
+  the same PR, and the projects table in
+  [`docs/reference/workspace.md`](./docs/reference/workspace.md).
+  `npm run check:architecture` compares both with the imports and stylesheet references in
+  the source, and CI runs it.
 - **Making a decision that is expensive to reverse?** Write an ADR: copy
   [`docs/adr/template.md`](./docs/adr/template.md), open the PR with it as
   `Proposed`, and it becomes `Accepted` when the PR merges.

@@ -39,7 +39,7 @@ not counting the lockfile and generated files? Say why it is not split. -->
 - [ ] Keyboard reachable and operable; focus is visible; ARIA matches the WAI-ARIA pattern
 - [ ] Works in both light and dark, and with all four accents
 - [ ] Tests cover the behaviour, not just that it renders
-- [ ] New project or dependency between projects: `docs/architecture/c4-containers.md` updated
+- [ ] New project or dependency between projects: `docs/architecture/c4-containers.md` and `docs/reference/workspace.md` updated
 - [ ] Hard-to-reverse decision: an ADR in `docs/adr/`
 - [ ] Behaviour a guide describes has changed: the page in `docs/` is updated
 
