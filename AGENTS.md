@@ -37,6 +37,8 @@ apps/dashboard-e2e  Playwright (CI: Chromium)         libs/tokens    design toke
 libs/ui             components (a README each), cn() libs/mock-api  in-memory HTTP interceptor
 libs/shared/kernel    domain value types, Result, event bus (plain TS, no app uses it yet)
 libs/booking/domain  Booking domain: SalesOrder, lines, slots (plain TS, no app uses it yet)
+libs/booking/contracts    Booking API paths, DTOs, OrderPlacedV1 (plain TS, no app uses it yet)
+libs/booking/data-access  OrdersRepository, OrdersStore, Booking mock routes (no app uses it yet)
 docs/               guides, C4 diagrams (architecture/), ADRs (adr/), the VitePress site
 scripts/            assemble/preview the Pages site; the check:* scripts that verify runs
 ```

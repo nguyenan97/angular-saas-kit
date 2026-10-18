@@ -61,6 +61,12 @@ product's quantity. Other contexts (stock, logistics) will react to it.
 The event raised when an order is cancelled: the order, the reason, and the slot to release if it
 had one.
 
+**Published event**
+The versioned, flat form of a domain event that other contexts may depend on: `OrderPlacedV1`,
+`OrderCancelledV1`, in `booking-contracts`. A breaking change is a new version, published next to
+the old one.
+_Avoid_: integration event, message (in this context's code and docs).
+
 **Domain error**
 Why an operation was refused, as a code (`slot-full`, `empty-order`, `invalid-transition`, …).
 The interface maps each code to its own message.
