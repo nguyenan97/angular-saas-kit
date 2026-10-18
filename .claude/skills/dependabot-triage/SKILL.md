@@ -58,7 +58,8 @@ Run `npm audit` before and after and say what changed.
 
 ## 5. Merge in order
 
-Oldest first, and only with the required checks green (see `open-pr` for the merge command). Because
+Oldest first, and only with the required checks green and a short independent review of the
+diff (`review-change`) with no blocking finding (see `open-pr` for the merge command). Because
 `main` requires an up-to-date branch, each merge makes the rest stale: `gh pr update-branch <number>`,
 or comment `@dependabot rebase` (a lockfile conflict needs the latter), then wait for a fresh run.
 Do not enable auto-merge.

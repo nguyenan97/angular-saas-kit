@@ -48,8 +48,8 @@ CONSTRAINTS.md` when that is true.
 7. **Assumptions**: each question you answered yourself, numbered, with the answer.
 8. **Decision log**: a table of the smaller decisions: what, why, and the source (a finding, a
    document, a command's output).
-9. **Open questions**: what still needs the person. None may be left when the status says
-   `approved`.
+9. **Open questions**: none may be left when the status says `approved`; the agent answers
+   each one itself and moves it to **Assumptions**.
 
 State what exists and what is planned; the spec must not describe the mock API as a backend.
 

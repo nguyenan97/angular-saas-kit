@@ -7,8 +7,9 @@ description: Review a branch or pull request on four separate axes - spec, stand
 
 ## When to use
 
-Before any change of the middle size or larger merges, and on request. It is a mandatory gate,
-and with autonomous mode the default it is the only review before merge
+Before every pull request the agent merges, whatever its size (a small change or a Dependabot
+bump gets a short pass: the diff, the floor, the claims in its body), and on request. It is a
+mandatory gate, and with autonomous mode the default it is the only review before merge
 (`docs/guide/development-process.md`).
 
 ## When not to use

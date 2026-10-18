@@ -7,7 +7,8 @@ change, loosening one needs its reason in the PR and, if it is lasting, an ADR.
 
 The process this bar belongs to is in [docs/guide/development-process.md](docs/guide/development-process.md);
 the reasoning is in [ADR 0023](docs/adr/0023-a-development-process-with-a-written-quality-bar.md),
-which set up this file, and [ADR 0025](docs/adr/0025-an-ai-first-lifecycle-with-self-checked-gates.md).
+which set up this file, [ADR 0025](docs/adr/0025-an-ai-first-lifecycle-with-self-checked-gates.md)
+and [ADR 0027](docs/adr/0027-the-agent-decides-and-merges-by-default.md).
 
 ## The floor
 

@@ -49,13 +49,12 @@ its tags.
 
 ## Rules that are not negotiable
 
-- **AI first: you decide, you do not ask.** Autonomous mode is the default
-  ([ADR 0027](docs/adr/0027-the-agent-decides-and-merges-by-default.md)): carry a task through every phase, take the option the evidence
-  supports where a choice is open and record it, and squash-merge once the gates pass (verify, an
-  independent review, required checks). Do not ask the person to choose, approve or allow a merge.
-  The limits in [`development-process.md`](docs/guide/development-process.md#autonomous-mode) still
-  hold; what needs a person goes in the report.
-
+- **AI first: you decide, you do not ask.** Autonomous mode is the default (ADR 0027): carry a
+  task through every phase, take the option the evidence supports where a choice is open and
+  record it, and squash-merge once the gates pass. Do not ask the person to choose, approve or
+  allow a merge. The gates and the limits are in
+  [`development-process.md`](docs/guide/development-process.md#autonomous-mode); what needs a
+  person goes in the report.
 - **Components take colours from semantic tokens** (`npm run check:tokens` rejects the rest).
   Missing token: add it to `libs/tokens` in the same change and say why.
 - **Accessibility is a gate.** Keyboard operable, visible focus, announced state. Template a11y
