@@ -78,6 +78,9 @@ its tags.
 - `main` is protected: the required checks (ADR 0009) must pass and the branch must be up to date.
   Work on a branch and open a PR; never push to `main`, never `--no-verify`.
 - Update `docs/` in the same PR as the change it describes.
+- **A merged branch is deleted**, on GitHub and locally, right after the merge, and so is any other
+  merged branch: its pull request merged and it has nothing beyond that pull request's head
+  (`open-pr`, which has the checks). Only work in progress keeps a branch.
 
 ## Traps
 
