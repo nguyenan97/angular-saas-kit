@@ -9,7 +9,7 @@ for the numbers.
 
 A free, MIT-licensed Angular 22 admin dashboard and landing page that a team can start a product
 from and keep for years: zoneless and signals-first, on a design system of semantic tokens that
-reskins from three attributes, accessible by default, with every quality rule checked by machine.
+reskins along three axes set on the html element, accessible by default, with every quality rule checked by machine.
 
 | Quality goal    | What it means here                                                              | Held by                                          |
 | --------------- | ------------------------------------------------------------------------------- | ------------------------------------------------ |
