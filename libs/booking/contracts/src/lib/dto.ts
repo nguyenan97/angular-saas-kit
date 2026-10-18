@@ -1,6 +1,7 @@
 import type { Currency, Money } from '@angular-saas-kit/shared-kernel';
 import type {
   DeliverySlot,
+  DeliveryWindow,
   DomainErrorCode,
   OrderStatus,
   OrderTotals,
@@ -42,6 +43,11 @@ export interface OrderDto {
   readonly history: readonly StatusChange[];
   /** Set once placed, and kept when a placed order is cancelled. */
   readonly slotId?: string;
+  /** The day and window of that slot, to show without another request. */
+  readonly deliverySlot?: {
+    readonly date: string;
+    readonly window: DeliveryWindow;
+  };
   readonly placedAt?: string;
   readonly cancelReason?: string;
 }

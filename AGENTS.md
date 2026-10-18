@@ -34,11 +34,13 @@ apart from the format check. Run both before you say a change is done.
 ```text
 apps/dashboard      admin SPA (client-side)          apps/landing   marketing page (prerendered)
 apps/dashboard-e2e  Playwright (CI: Chromium)         libs/tokens    design tokens, ThemeService
-libs/ui             components (a README each), cn() libs/mock-api  in-memory HTTP interceptor
-libs/shared/kernel    domain value types, Result, event bus (plain TS, no app uses it yet)
-libs/booking/domain  Booking domain: SalesOrder, lines, slots (plain TS, no app uses it yet)
-libs/booking/contracts    Booking API paths, DTOs, OrderPlacedV1 (plain TS, no app uses it yet)
-libs/booking/data-access  OrdersRepository, OrdersStore, Booking mock routes (no app uses it yet)
+apps/suite          order-to-cash demo SPA (Booking)  libs/mock-api  in-memory HTTP interceptor
+libs/ui             components (a README each), cn()
+libs/shared/kernel        domain value types, Result, event bus (plain TS)
+libs/booking/domain       Booking domain: SalesOrder, lines, slots (plain TS)
+libs/booking/contracts    Booking API paths, DTOs, OrderPlacedV1 (plain TS)
+libs/booking/data-access  OrdersRepository, OrdersStore, Booking mock routes
+libs/booking/feature-orders  Orders list, New order, Order detail pages
 docs/               guides, C4 diagrams (architecture/), ADRs (adr/), the VitePress site
 scripts/            assemble/preview the Pages site; the check:* scripts that verify runs
 ```

@@ -9,14 +9,16 @@ apps/
   dashboard/        Admin application: a client-side single-page app
   dashboard-e2e/    Playwright browser tests for the dashboard
   landing/          Marketing page: prerendered, with an optional Node server build
+  suite/            Order-to-cash demo: module shell, Overview, the Booking pages
 libs/
   tokens/           Design tokens, Tailwind theme mapping, ThemeService
   ui/               Shared components (Button, Badge, Card, Icon, Input, Table, ...) and cn()
   mock-api/         In-memory HTTP interceptor with realistic latency
-  shared/kernel/    Plain-TypeScript domain value types, Result and an event bus (no app uses it yet)
-  booking/domain/   Plain-TypeScript Booking domain: SalesOrder, lines, delivery slots (no app uses it yet)
-  booking/contracts/    What Booking publishes: API paths, DTOs, versioned events (no app uses it yet)
-  booking/data-access/  OrdersRepository, OrdersStore, and the Booking mock routes and seed (no app uses it yet)
+  shared/kernel/    Plain-TypeScript domain value types, Result and an event bus
+  booking/domain/   Plain-TypeScript Booking domain: SalesOrder, lines, delivery slots
+  booking/contracts/    What Booking publishes: API paths, DTOs, versioned events
+  booking/data-access/  OrdersRepository, OrdersStore, and the Booking mock routes and seed
+  booking/feature-orders/  The order pages: Orders, New order, Order detail
 docs/
   guide/            The guides on this site
   reference/        These reference pages
@@ -35,18 +37,20 @@ scripts/            Build and check scripts: the demo site, the architecture map
 Every project carries a `type:`, a `scope:` and, for bounded-context libraries, a `layer:` tag.
 `mock-api` also carries `role:mock-backend`, so a data-access library may import it and not `ui`.
 
-| Project               | Tags                                             | Depends on                                                         |
-| --------------------- | ------------------------------------------------ | ------------------------------------------------------------------ |
-| `landing`             | `type:app`, `scope:landing`                      | `tokens`, `ui`                                                     |
-| `dashboard`           | `type:app`, `scope:dashboard`                    | `tokens`, `ui`, `mock-api`                                         |
-| `tokens`              | `type:lib`, `scope:shared`                       | none                                                               |
-| `ui`                  | `type:lib`, `scope:shared`                       | `tokens`                                                           |
-| `mock-api`            | `type:lib`, `scope:shared`, `role:mock-backend`  | none                                                               |
-| `shared-kernel`       | `type:lib`, `scope:shared`, `layer:domain`       | none                                                               |
-| `booking-domain`      | `type:lib`, `scope:booking`, `layer:domain`      | `shared-kernel`                                                    |
-| `booking-contracts`   | `type:lib`, `scope:booking`, `layer:contracts`   | `booking-domain`, `shared-kernel`                                  |
-| `booking-data-access` | `type:lib`, `scope:booking`, `layer:data-access` | `booking-contracts`, `booking-domain`, `shared-kernel`, `mock-api` |
-| `dashboard-e2e`       | `type:e2e`, `scope:dashboard`                    | `dashboard` (implicit)                                             |
+| Project                  | Tags                                             | Depends on                                                                                                                          |
+| ------------------------ | ------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `landing`                | `type:app`, `scope:landing`                      | `tokens`, `ui`                                                                                                                      |
+| `dashboard`              | `type:app`, `scope:dashboard`                    | `tokens`, `ui`, `mock-api`                                                                                                          |
+| `tokens`                 | `type:lib`, `scope:shared`                       | none                                                                                                                                |
+| `ui`                     | `type:lib`, `scope:shared`                       | `tokens`                                                                                                                            |
+| `mock-api`               | `type:lib`, `scope:shared`, `role:mock-backend`  | none                                                                                                                                |
+| `shared-kernel`          | `type:lib`, `scope:shared`, `layer:domain`       | none                                                                                                                                |
+| `booking-domain`         | `type:lib`, `scope:booking`, `layer:domain`      | `shared-kernel`                                                                                                                     |
+| `booking-contracts`      | `type:lib`, `scope:booking`, `layer:contracts`   | `booking-domain`, `shared-kernel`                                                                                                   |
+| `booking-data-access`    | `type:lib`, `scope:booking`, `layer:data-access` | `booking-contracts`, `booking-domain`, `shared-kernel`, `mock-api`                                                                  |
+| `suite`                  | `type:app`, `scope:suite`                        | `tokens`, `ui`, `mock-api`, `shared-kernel`, `booking-domain`, `booking-contracts`, `booking-data-access`, `booking-feature-orders` |
+| `booking-feature-orders` | `type:lib`, `scope:booking`, `layer:feature`     | `booking-data-access`, `booking-domain`, `booking-contracts`, `shared-kernel`, `ui`                                                 |
+| `dashboard-e2e`          | `type:e2e`, `scope:dashboard`                    | `dashboard` (implicit)                                                                                                              |
 
 Lint turns the tags into rules with `@nx/enforce-module-boundaries`, so a wrong import fails
 `npm run lint`:
@@ -62,6 +66,9 @@ Lint turns the tags into rules with `@nx/enforce-module-boundaries`, so a wrong 
 - a `layer:data-access` library may depend on `layer:domain`, `layer:contracts` and
   `role:mock-backend` (`mock-api`) libraries, never on UI or a feature;
 - `scope:booking` may depend on itself and on shared code;
+- `scope:suite` (the suite app) may depend on itself, shared code and every business scope;
+- a `layer:feature` library may depend on `layer:data-access`, `layer:domain`, `layer:contracts`
+  and shared libraries;
 - a buildable library (`tokens`, `ui`) may depend only on other buildable libraries;
 - projects may not depend on each other in a circle.
 
@@ -74,16 +81,17 @@ references that lint cannot see. See
 Libraries are consumed inside the workspace through TypeScript path aliases in
 `tsconfig.base.json`, so there is no build step between an edit and the apps:
 
-| Alias                                        | Points at                               |
-| -------------------------------------------- | --------------------------------------- |
-| `@angular-saas-kit/tokens`                   | `libs/tokens/src/index.ts`              |
-| `@angular-saas-kit/ui`                       | `libs/ui/src/index.ts`                  |
-| `@angular-saas-kit/mock-api`                 | `libs/mock-api/src/index.ts`            |
-| `@angular-saas-kit/shared-kernel`            | `libs/shared/kernel/src/index.ts`       |
-| `@angular-saas-kit/booking-domain`           | `libs/booking/domain/src/index.ts`      |
-| `@angular-saas-kit/booking-contracts`        | `libs/booking/contracts/src/index.ts`   |
-| `@angular-saas-kit/booking-data-access`      | `libs/booking/data-access/src/index.ts` |
-| `@angular-saas-kit/booking-data-access/mock` | `libs/booking/data-access/src/mock.ts`  |
+| Alias                                        | Points at                                  |
+| -------------------------------------------- | ------------------------------------------ |
+| `@angular-saas-kit/tokens`                   | `libs/tokens/src/index.ts`                 |
+| `@angular-saas-kit/ui`                       | `libs/ui/src/index.ts`                     |
+| `@angular-saas-kit/mock-api`                 | `libs/mock-api/src/index.ts`               |
+| `@angular-saas-kit/shared-kernel`            | `libs/shared/kernel/src/index.ts`          |
+| `@angular-saas-kit/booking-domain`           | `libs/booking/domain/src/index.ts`         |
+| `@angular-saas-kit/booking-contracts`        | `libs/booking/contracts/src/index.ts`      |
+| `@angular-saas-kit/booking-data-access`      | `libs/booking/data-access/src/index.ts`    |
+| `@angular-saas-kit/booking-data-access/mock` | `libs/booking/data-access/src/mock.ts`     |
+| `@angular-saas-kit/booking-feature-orders`   | `libs/booking/feature-orders/src/index.ts` |
 
 Code imports a library through its alias. The one place a relative path crosses projects is a
 stylesheet: a CSS `@import` cannot use a TypeScript alias, so each app reaches the shared
