@@ -1,6 +1,6 @@
 # 0023. A development process with a written quality bar
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-17
 - **Deciders:** @nguyenan97
 

@@ -1,6 +1,6 @@
 # 0021. Bounded contexts as Nx libraries
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-10-17
 - **Deciders:** @nguyenan97
 

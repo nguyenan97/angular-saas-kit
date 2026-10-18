@@ -1,7 +1,6 @@
 ---
 name: dependabot-triage
 description: Read, reproduce, close or merge the open Dependabot pull requests, oldest first, under the policy in ADR 0010.
-disable-model-invocation: true
 ---
 
 # Triage Dependabot pull requests
