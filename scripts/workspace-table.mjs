@@ -13,19 +13,27 @@ export const TABLE = 'docs/reference/workspace.md';
 /** The backticked names in a cell; "none" and prose are ignored. */
 const names = (cell) => [...cell.matchAll(/`([^`]+)`/g)].map((m) => m[1]);
 
-/** Rows of the first table whose header starts with "Project": name -> {tags, deps}. */
+/**
+ * Rows of the first table whose header starts with "Project": name ->
+ * {tags, deps}, and the names that have more than one row. Every backticked
+ * name in the dependency cell counts as a dependency, so prose there goes
+ * outside backticks ("`dashboard` (implicit)").
+ */
 export function readTable(markdown) {
   const rows = new Map();
-  const lines = markdown.split('\n');
+  const duplicates = [];
+  const lines = markdown.split(/\r?\n/);
   const start = lines.findIndex((line) => /^\|\s*Project\s*\|/.test(line));
-  if (start === -1) return rows;
+  if (start === -1) return { rows, duplicates };
   for (const line of lines.slice(start + 2)) {
     if (!line.startsWith('|')) break;
     const [, project = '', tags = '', deps = ''] = line.split('|');
     const [name] = names(project);
-    if (name) rows.set(name, { tags: names(tags), deps: names(deps) });
+    if (!name) continue;
+    if (rows.has(name)) duplicates.push(name);
+    rows.set(name, { tags: names(tags), deps: names(deps) });
   }
-  return rows;
+  return { rows, duplicates };
 }
 
 const same = (a, b) =>
@@ -38,11 +46,13 @@ const same = (a, b) =>
  * @returns {string[]} one message per difference
  */
 export function checkWorkspaceTable(markdown, projects, edges) {
-  const rows = readTable(markdown);
+  const { rows, duplicates } = readTable(markdown);
   if (rows.size === 0)
     return [`${TABLE} has no projects table (a header starting "| Project |")`];
 
-  const problems = [];
+  const problems = duplicates.map(
+    (name) => `${TABLE}: "${name}" has more than one row`,
+  );
   const deps = new Map(projects.map((p) => [p.name, []]));
   for (const edge of edges) {
     const [from, to] = edge.split(' -> ');

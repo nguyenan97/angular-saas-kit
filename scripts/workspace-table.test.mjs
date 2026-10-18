@@ -35,7 +35,7 @@ const good = [
 
 describe('workspace table', () => {
   test('reads names, tags and dependencies from the cells', () => {
-    assert.deepEqual(readTable(page(good)).get('e2e'), {
+    assert.deepEqual(readTable(page(good)).rows.get('e2e'), {
       tags: ['type:e2e', 'scope:dashboard'],
       deps: ['ui'],
     });
@@ -43,6 +43,26 @@ describe('workspace table', () => {
 
   test('passes a table that matches the workspace', () => {
     assert.deepEqual(checkWorkspaceTable(page(good), projects, edges), []);
+  });
+
+  test('reads a page with Windows line endings', () => {
+    const crlf = page(good).replace(/\n/g, '\r\n');
+    assert.deepEqual(checkWorkspaceTable(crlf, projects, edges), []);
+  });
+
+  test('names a dependency the table has and the code does not', () => {
+    const rows = [...good];
+    rows[1] = '| `tokens` | `type:lib`, `scope:shared` | `ui` |';
+    assert.deepEqual(checkWorkspaceTable(page(rows), projects, edges), [
+      'docs/reference/workspace.md: "tokens" lists dependencies ui, the code has none',
+    ]);
+  });
+
+  test('names a project with two rows', () => {
+    const rows = [...good, good[1]];
+    assert.deepEqual(checkWorkspaceTable(page(rows), projects, edges), [
+      'docs/reference/workspace.md: "tokens" has more than one row',
+    ]);
   });
 
   test('names a dependency the table leaves out', () => {
