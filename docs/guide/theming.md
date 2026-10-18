@@ -20,7 +20,11 @@ The reasoning is in [ADR 0004](../adr/0004-semantic-design-tokens-and-three-axis
 ## Changing the theme from code
 
 `ThemeService` owns the state as signals, sets the attributes for you, and remembers the
-choice in `localStorage`.
+choice in `localStorage`. On load it keeps each stored axis whose value is in the lists
+above and uses the default for the rest, so a stale or hand-edited entry cannot leave the
+app in a mode or accent it does not have. (The inline script below applies the stored values
+before the first paint without checking them, falling back only for a missing one; the
+service corrects them when the app starts.)
 
 ```ts
 import { Component, inject } from '@angular/core';
