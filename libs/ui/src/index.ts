@@ -17,3 +17,5 @@ export * from './lib/switch/switch';
 export * from './lib/alert/alert';
 export * from './lib/skeleton/skeleton';
 export * from './lib/avatar/avatar';
+export * from './lib/combobox/combobox';
+export * from './lib/timeline/timeline';
