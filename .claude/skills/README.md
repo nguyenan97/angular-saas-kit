@@ -19,7 +19,7 @@ and the rules they all assume are in [`AGENTS.md`](../../AGENTS.md) and
 | Plan            | [`plan-tasks`](plan-tasks/SKILL.md)                                                                                                                                        |
 | Build           | [`test-first`](test-first/SKILL.md), [`refactor`](refactor/SKILL.md), [`add-ui-component`](add-ui-component/SKILL.md), [`add-dashboard-page`](add-dashboard-page/SKILL.md) |
 | Any phase       | [`verify`](verify/SKILL.md), [`write-docs`](write-docs/SKILL.md), [`dependabot-triage`](dependabot-triage/SKILL.md)                                                        |
-| Review          | [`review-change`](review-change/SKILL.md)                                                                                                                                  |
+| Review          | [`review-change`](review-change/SKILL.md), [`security-review`](security-review/SKILL.md)                                                                                   |
 | Ship            | [`open-pr`](open-pr/SKILL.md)                                                                                                                                              |
 | Learn           | [`retro`](retro/SKILL.md)                                                                                                                                                  |
 
