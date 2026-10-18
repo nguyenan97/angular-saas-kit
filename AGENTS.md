@@ -86,6 +86,8 @@ its tags.
 - **The theme init script lives in three places** (`THEME_INIT_SCRIPT` and each app's
   `index.html`); `theme-init.spec.ts` fails when they drift. Change all three.
 - **Coverage instrumentation breaks `__dirname`** in specs; use `workspaceRoot` from `@nx/devkit`.
+- **CI runs on Linux.** A script test must hold on a case-sensitive file system with `/`
+  separators; an assertion that only Windows or macOS produces fails CI (`check-docs.test.mjs` did once).
 - **The landing Node server answers 400 to everything** until `NG_ALLOWED_HOSTS` is set.
 - **`libs/ui` and `libs/tokens` build as npm packages** (not published yet). A runtime dependency of a
   component goes in `libs/ui/package.json` and in `allowedNonPeerDependencies` in its
