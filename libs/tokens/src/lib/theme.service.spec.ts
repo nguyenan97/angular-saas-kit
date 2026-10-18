@@ -91,6 +91,21 @@ describe('ThemeService', () => {
     expect(root().style.colorScheme).toBe('light');
   });
 
+  it('checks every axis on its own, whatever kind of value it holds', () => {
+    preferDark(false);
+    store(JSON.stringify({ mode: 'dark', accent: 'teal', radius: 'xl' }));
+
+    const theme = create();
+
+    expect([theme.mode(), theme.accent(), theme.radius()]).toEqual([
+      'dark',
+      'blue',
+      'md',
+    ]);
+    expect(root().dataset['accent']).toBe('blue');
+    expect(root().dataset['radius']).toBe('md');
+  });
+
   it('boots on the default from storage that is not a theme', () => {
     preferDark(false);
     for (const raw of ['not json', 'null', '"dark"', '[1, 2]', '7']) {
@@ -139,8 +154,10 @@ describe('ThemeService', () => {
     const theme = create();
 
     theme.toggleMode();
-
     expect(theme.mode()).toBe('light');
+
+    theme.toggleMode();
+    expect(theme.mode()).toBe('dark');
   });
 
   it('goes back to the default on reset', () => {

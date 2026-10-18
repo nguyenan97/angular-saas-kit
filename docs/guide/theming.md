@@ -23,7 +23,8 @@ The reasoning is in [ADR 0004](../adr/0004-semantic-design-tokens-and-three-axis
 choice in `localStorage`. On load it keeps each stored axis whose value is in the lists
 above and uses the default for the rest, so a stale or hand-edited entry cannot leave the
 app in a mode or accent it does not have. (The inline script below applies the stored values
-as they are before the first paint; the service corrects them when the app starts.)
+before the first paint without checking them, falling back only for a missing one; the
+service corrects them when the app starts.)
 
 ```ts
 import { Component, inject } from '@angular/core';
