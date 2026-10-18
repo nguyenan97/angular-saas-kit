@@ -122,6 +122,19 @@ describe('mockApiInterceptor', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
+  it('passes a path through when a static segment after a bad param does not match', async () => {
+    const handler = vi.fn(() => ({}));
+    registerMockRoutes({ method: 'GET', path: '/api/:id/items', handler });
+    const next = passthrough();
+
+    await firstValueFrom(
+      mockApiInterceptor(new HttpRequest('GET', '/api/%E0/other'), next),
+    );
+
+    expect(next).toHaveBeenCalledOnce();
+    expect(handler).not.toHaveBeenCalled();
+  });
+
   it('exposes query params to the handler', async () => {
     const pages: (string | null)[] = [];
     registerMockRoutes({

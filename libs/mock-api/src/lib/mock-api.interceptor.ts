@@ -97,7 +97,8 @@ function findRoute(
 
 /**
  * Returns the extracted params when `pattern` matches `pathname`, or null.
- * Throws `URIError` when a param segment is not valid URL encoding.
+ * Throws `URIError` when the path matches but a param segment is not valid
+ * URL encoding.
  * An empty object is a valid match, which is why the miss case is null and
  * not a falsy object.
  */
@@ -112,7 +113,9 @@ function matchPath(
     return null;
   }
 
-  const params: Record<string, string> = {};
+  // Every static segment is compared before any param is decoded, so a path
+  // that does not match is never an error, however its params are encoded.
+  const raw: [name: string, value: string][] = [];
 
   for (let i = 0; i < patternParts.length; i++) {
     // Both are in range - the length check above guarantees it - but
@@ -121,7 +124,7 @@ function matchPath(
     const pathPart = pathParts[i] ?? '';
 
     if (patternPart.startsWith(':')) {
-      params[patternPart.slice(1)] = decodeURIComponent(pathPart);
+      raw.push([patternPart.slice(1), pathPart]);
       continue;
     }
 
@@ -130,5 +133,9 @@ function matchPath(
     }
   }
 
+  const params: Record<string, string> = {};
+  for (const [name, value] of raw) {
+    params[name] = decodeURIComponent(value);
+  }
   return params;
 }
