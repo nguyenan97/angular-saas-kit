@@ -41,8 +41,8 @@ and the status (`draft`, `approved`). Sections, in this order, each deleted if e
 CONSTRAINTS.md` when that is true.
 5. **Design**: the projects and files touched, with their Nx tags; data flow; what the user sees,
    with every state (loading, empty, error); the alternatives you rejected, and why. A change that
-   is hard to reverse goes through the Solution design phase: an ADR with two alternatives
-   (the `write-adr` skill).
+   is hard to reverse goes through the `solution-design` skill: an ADR with two
+   alternatives.
 6. **Testing**: which scenarios become unit tests, which become browser tests, and what is
    checked by hand.
 7. **Assumptions**: each question you answered yourself, numbered, with the answer.

@@ -26,7 +26,7 @@ change easy, and plan it first, in its own task: make the change easy, then make
 Each task is a thin path through every layer it needs (domain, data, UI, tests), that works and
 can be checked on its own: not "all the models", then "all the pages". The exception is a wide
 mechanical change (a rename across the workspace): plan it as expand, migrate in batches, contract,
-so that every task leaves `main` green.
+so that every task leaves `main` green (the `refactor` skill).
 
 ## 3. Size each task
 
