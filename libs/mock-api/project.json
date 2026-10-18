@@ -4,7 +4,7 @@
   "sourceRoot": "libs/mock-api/src",
   "prefix": "ask",
   "projectType": "library",
-  "tags": ["type:lib", "scope:shared"],
+  "tags": ["type:lib", "scope:shared", "role:mock-backend"],
   "targets": {
     "test": {
       "executor": "@nx/vitest:test",

@@ -30,7 +30,18 @@
       "@angular-saas-kit/tokens": ["./libs/tokens/src/index.ts"],
       "@angular-saas-kit/mock-api": ["./libs/mock-api/src/index.ts"],
       "@angular-saas-kit/shared-kernel": ["./libs/shared/kernel/src/index.ts"],
-      "@angular-saas-kit/booking-domain": ["./libs/booking/domain/src/index.ts"]
+      "@angular-saas-kit/booking-domain": [
+        "./libs/booking/domain/src/index.ts"
+      ],
+      "@angular-saas-kit/booking-contracts": [
+        "./libs/booking/contracts/src/index.ts"
+      ],
+      "@angular-saas-kit/booking-data-access": [
+        "./libs/booking/data-access/src/index.ts"
+      ],
+      "@angular-saas-kit/booking-data-access/mock": [
+        "./libs/booking/data-access/src/mock.ts"
+      ]
     }
   },
   "angularCompilerOptions": {

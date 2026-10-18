@@ -1,0 +1,16 @@
+{
+  "name": "booking-contracts",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/booking/contracts/src",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:booking", "layer:contracts"],
+  "targets": {
+    "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{options.reportsDirectory}"],
+      "options": {
+        "reportsDirectory": "coverage/libs/booking/contracts"
+      }
+    }
+  }
+}

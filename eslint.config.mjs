@@ -127,6 +127,22 @@ export default tseslint.config(
               sourceTag: 'layer:domain',
               onlyDependOnLibsWithTags: ['layer:domain'],
             },
+            // Contracts publish what other contexts may use, built on the
+            // domain's value types only.
+            {
+              sourceTag: 'layer:contracts',
+              onlyDependOnLibsWithTags: ['layer:domain'],
+            },
+            // Data access talks HTTP: it sees the domain, the contracts and
+            // the mock API (for its mock entry point), never UI or a feature.
+            {
+              sourceTag: 'layer:data-access',
+              onlyDependOnLibsWithTags: [
+                'layer:domain',
+                'layer:contracts',
+                'role:mock-backend',
+              ],
+            },
             // A business context sees itself and shared code. Other contexts
             // reach it only through its contracts (added with SCM).
             {

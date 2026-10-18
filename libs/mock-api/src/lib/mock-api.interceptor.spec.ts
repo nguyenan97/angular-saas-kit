@@ -9,6 +9,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
   MOCK_ROUTES,
   mockApiInterceptor,
+  mockResponse,
   registerMockRoutes,
 } from './mock-api.interceptor';
 
@@ -169,5 +170,73 @@ describe('mockApiInterceptor', () => {
     );
 
     expect(next).toHaveBeenCalledOnce();
+  });
+
+  it('answers with the 2xx status a handler gives, and its body', async () => {
+    registerMockRoutes({
+      method: 'POST',
+      path: '/api/orders',
+      handler: () => mockResponse(201, { id: 'SO-0001' }),
+    });
+
+    const response = await firstValueFrom(
+      mockApiInterceptor(
+        new HttpRequest('POST', '/api/orders', {}),
+        passthrough(),
+      ),
+    );
+
+    expect(response).toMatchObject({ status: 201, body: { id: 'SO-0001' } });
+  });
+
+  it('answers a 4xx or 5xx status a handler gives as an error carrying its body', async () => {
+    registerMockRoutes({
+      method: 'POST',
+      path: '/api/orders/:id/place',
+      handler: () => mockResponse(409, { code: 'slot-full' }),
+    });
+
+    const error = await firstValueFrom(
+      mockApiInterceptor(
+        new HttpRequest('POST', '/api/orders/SO-0001/place', {}),
+        passthrough(),
+      ),
+    ).catch((reason: unknown) => reason);
+
+    expect(error).toBeInstanceOf(HttpErrorResponse);
+    expect((error as HttpErrorResponse).status).toBe(409);
+    expect((error as HttpErrorResponse).statusText).toBe('Conflict');
+    expect((error as HttpErrorResponse).error).toEqual({ code: 'slot-full' });
+  });
+
+  it('refuses a status outside 200 to 599', () => {
+    expect(() => mockResponse(99, null)).toThrow(RangeError);
+    expect(() => mockResponse(600, null)).toThrow(RangeError);
+    expect(() => mockResponse(201.5, null)).toThrow(RangeError);
+  });
+
+  it('delays an error answer like a success, so a refusal is not instant', () => {
+    vi.useFakeTimers();
+    vi.spyOn(Math, 'random').mockReturnValue(0);
+    registerMockRoutes({
+      method: 'POST',
+      path: '/api/orders',
+      handler: () => mockResponse(409, { code: 'slot-full' }),
+    });
+    const errors: unknown[] = [];
+
+    try {
+      mockApiInterceptor(
+        new HttpRequest('POST', '/api/orders', {}),
+        passthrough(),
+      ).subscribe({ error: (error: unknown) => errors.push(error) });
+      vi.advanceTimersByTime(199);
+      expect(errors).toEqual([]);
+      vi.advanceTimersByTime(1);
+      expect(errors).toHaveLength(1);
+    } finally {
+      vi.useRealTimers();
+      vi.restoreAllMocks();
+    }
   });
 });

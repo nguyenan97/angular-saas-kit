@@ -1,11 +1,18 @@
 import type { HttpInterceptorFn } from '@angular/common/http';
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http';
-import { of, throwError } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import {
+  HttpErrorResponse,
+  HttpResponse,
+  HttpStatusCode,
+} from '@angular/common/http';
+import { type Observable, of, throwError, timer } from 'rxjs';
+import { delay, mergeMap } from 'rxjs/operators';
 
 import { randomLatency } from './latency';
 
-/** A handler owns one route and returns the body for a matched request. */
+/**
+ * A handler owns one route and returns the body for a matched request, sent
+ * with status 200, or a `mockResponse` for any other status.
+ */
 export interface MockRoute {
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   /** Matched against the request path, e.g. /api/orders or /api/orders/:id */
@@ -18,6 +25,32 @@ export interface MockContext {
   params: Record<string, string>;
   query: URLSearchParams;
   body: unknown;
+}
+
+/**
+ * An answer with a status other than 200. Return one from a handler through
+ * `mockResponse`: a 2xx status reaches the caller as a response, a 4xx or 5xx
+ * as an `HttpErrorResponse` whose `error` is the body, as from a real server.
+ */
+export class MockResponse {
+  constructor(
+    readonly status: number,
+    readonly body: unknown,
+  ) {}
+}
+
+/** Answers with `status` and `body`: `mockResponse(201, order)`, `mockResponse(409, { code })`. */
+export function mockResponse(status: number, body: unknown): MockResponse {
+  if (!Number.isInteger(status) || status < 200 || status > 599) {
+    throw new RangeError(`A mock status is 200 to 599, got ${status}`);
+  }
+  return new MockResponse(status, body);
+}
+
+/** "Conflict" for 409, from Angular's own list of status names. */
+function statusText(status: number): string {
+  const name = HttpStatusCode[status] ?? 'Unknown';
+  return name.replace(/(?<=[a-z])(?=[A-Z])/g, ' ');
 }
 
 /** Registry the apps push their route tables into. */
@@ -48,15 +81,14 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
     if (!(error instanceof URIError)) {
       throw error;
     }
-    return throwError(
-      () =>
-        new HttpErrorResponse({
-          status: 400,
-          statusText: 'Bad Request',
-          url: req.url,
-          error: { message: 'The path is not valid URL encoding.' },
-        }),
-    ).pipe(delay(randomLatency()));
+    return failAfterLatency(
+      new HttpErrorResponse({
+        status: 400,
+        statusText: 'Bad Request',
+        url: req.url,
+        error: { message: 'The path is not valid URL encoding.' },
+      }),
+    );
   }
 
   if (!match) {
@@ -65,18 +97,42 @@ export const mockApiInterceptor: HttpInterceptorFn = (req, next) => {
   const { route, params } = match;
 
   try {
-    const body = route.handler({
+    const answer = route.handler({
       params,
       query: url.searchParams,
       body: req.body,
     });
-    return of(new HttpResponse({ status: 200, body })).pipe(
-      delay(randomLatency()),
-    );
+    if (!(answer instanceof MockResponse)) {
+      return of(new HttpResponse({ status: 200, body: answer })).pipe(
+        delay(randomLatency()),
+      );
+    }
+    const { status, body } = answer;
+    if (status >= 400) {
+      return failAfterLatency(
+        new HttpErrorResponse({
+          status,
+          statusText: statusText(status),
+          url: req.url,
+          error: body,
+        }),
+      );
+    }
+    return of(
+      new HttpResponse({ status, statusText: statusText(status), body }),
+    ).pipe(delay(randomLatency()));
   } catch (error) {
-    return throwError(() => error).pipe(delay(randomLatency()));
+    return failAfterLatency(error);
   }
 };
+
+/**
+ * Fails with `error` after the same delay a success gets. `delay` holds back
+ * values only, so an error piped through it would arrive at once.
+ */
+function failAfterLatency(error: unknown): Observable<never> {
+  return timer(randomLatency()).pipe(mergeMap(() => throwError(() => error)));
+}
 
 /** The first route for the method whose pattern matches, with its params. */
 function findRoute(
