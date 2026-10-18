@@ -39,7 +39,9 @@ When(
       .selectOption((await option.getAttribute('value')) ?? '');
     await page.getByLabel('Quantity', { exact: true }).fill(String(quantity));
     await page.getByRole('button', { name: 'Add line' }).click();
-    await expect(page.getByRole('cell', { name: product })).toBeVisible();
+    await expect(
+      page.getByRole('cell', { name: product, exact: true }),
+    ).toBeVisible();
   },
 );
 

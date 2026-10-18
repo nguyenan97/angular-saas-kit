@@ -6,11 +6,12 @@ import { expect, test } from '@playwright/test';
  * reads it in a real browser. A critical or serious violation fails
  * (CONSTRAINTS.md), as for the dashboard.
  */
-const PAGES = [
-  '/',
-  '/booking/orders',
-  '/booking/orders/new',
-  '/booking/orders/SO-0001',
+/** Each page, and what is on screen once its data has arrived. */
+const PAGES: readonly (readonly [path: string, ready: string])[] = [
+  ['/', 'ol a'],
+  ['/booking/orders', 'tbody a'],
+  ['/booking/orders/new', 'input[type="radio"]'],
+  ['/booking/orders/SO-0001', 'ask-timeline li'],
 ];
 
 for (const mode of ['light', 'dark'] as const) {
@@ -21,15 +22,13 @@ for (const mode of ['light', 'dark'] as const) {
       }, JSON.stringify({ mode }));
     });
 
-    for (const path of PAGES) {
+    for (const [path, ready] of PAGES) {
       test(path, async ({ page }) => {
         await page.goto(path);
         await expect(page.locator('h1')).not.toBeEmpty();
         // Wait for the mock API, so the check sees the data.
         await expect(page.locator('[aria-busy="true"]')).toHaveCount(0);
-        await expect(
-          page.getByRole('main').locator('h2').first(),
-        ).toBeVisible();
+        await expect(page.locator(ready).first()).toBeAttached();
 
         const { violations } = await new AxeBuilder({ page })
           .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'])
