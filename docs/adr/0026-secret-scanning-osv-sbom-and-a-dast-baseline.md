@@ -36,6 +36,14 @@ dependency review and Scorecard; CodeQL already ran on every pull request
 - None of the new jobs is required. gitleaks becomes required after a run of clean results, as `e2e`
   did; that is a branch-protection change for the maintainer.
 
+_Amended 2026-10-18:_ a second ZAP baseline scans the landing page's Node server, built and run
+with `NG_ALLOWED_HOSTS=localhost`. The first run against the Pages preview reported every
+security header missing (10 warnings, no failure), which is true of GitHub Pages, where a site
+cannot set headers, and says nothing about the server that does set them. Sending the landing
+server's headers from the preview server instead was rejected: the preview would then claim
+headers Pages never sends, and `frame-ancestors 'none'` would break Storybook, which frames its
+own preview.
+
 ## Alternatives considered
 
 - **gitleaks-action instead of the image.** It needs a token and can comment on pull requests; the
