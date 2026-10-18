@@ -99,4 +99,34 @@ describe('Products', () => {
     req.flush({ items: [], total: 0, page: 1, pageSize: 10 });
     await fixture.whenStable();
   });
+
+  it('says when the next list could not be loaded, and offers to try again', async () => {
+    const { fixture, http, el } = await render([product('1', 10)]);
+    const select = el.querySelector<HTMLSelectElement>('#products-status');
+
+    if (select) {
+      select.value = 'draft';
+      select.dispatchEvent(new Event('change'));
+    }
+    TestBed.tick();
+    http
+      .expectOne((r) => r.url === '/api/products')
+      .flush('down', { status: 500, statusText: 'Server Error' });
+    await fixture.whenStable();
+
+    expect(el.querySelector('[role="alert"]')?.textContent).toContain(
+      'The products could not be loaded.',
+    );
+    // The last list stays for context.
+    expect(el.querySelector('tbody')?.textContent).toContain('SKU-1');
+
+    el.querySelector<HTMLButtonElement>('[role="alert"] button')?.click();
+    TestBed.tick();
+    const retry = http.expectOne((r) => r.url === '/api/products');
+    expect(retry.request.params.get('status')).toBe('draft');
+    retry.flush({ items: [], total: 0, page: 1, pageSize: 10 });
+    await fixture.whenStable();
+
+    expect(el.querySelector('[role="alert"]')).toBeNull();
+  });
 });

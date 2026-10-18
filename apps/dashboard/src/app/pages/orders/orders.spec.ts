@@ -113,6 +113,42 @@ describe('Orders', () => {
     await fixture.whenStable();
   });
 
+  it('says when the next list could not be loaded, and offers to try again', async () => {
+    const { fixture, el, list, button } = await render();
+    const select = el.querySelector<HTMLSelectElement>('#orders-status');
+
+    if (select) {
+      select.value = 'pending';
+      select.dispatchEvent(new Event('change'));
+    }
+    list().flush('down', { status: 500, statusText: 'Server Error' });
+    await fixture.whenStable();
+
+    // The last list stays for context, but the failure is said, not hidden.
+    expect(el.querySelector('[role="alert"]')?.textContent).toContain(
+      'The orders could not be loaded.',
+    );
+    expect(el.querySelector('tbody')?.textContent).toContain('ORD-1001');
+
+    // jsdom only moves focus to elements in the document.
+    document.body.append(el);
+    button('Try again', el).focus();
+    button('Try again', el).click();
+    const retry = list();
+    // Not whenStable: the request is still open, so the app is never stable.
+    TestBed.tick();
+
+    // The alert gives way while the list reloads; the results take the focus.
+    expect(el.querySelector('[role="alert"]')).toBeNull();
+    expect(el.contains(document.activeElement)).toBe(true);
+    el.remove();
+    expect(retry.request.params.get('status')).toBe('pending');
+    retry.flush(page([PENDING]));
+    await fixture.whenStable();
+
+    expect(el.querySelector('[role="alert"]')).toBeNull();
+  });
+
   it('sorts by a column from its header', async () => {
     const { fixture, el, list, button } = await render();
 
