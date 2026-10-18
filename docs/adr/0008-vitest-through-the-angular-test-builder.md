@@ -30,8 +30,9 @@ _Amended 2026-09-28:_ it is a required check now ([ADR 0009](0009-strict-ci-gate
 
 - **Karma and Jasmine** - the previous default, needs a real browser, and is on its
   way out.
-- **Jest** - it is still in `devDependencies` from the workspace generator, but no
-  project's test target uses it.
+- **Jest** - it came with the workspace generator, but no project's test target used it.
+  _Amended 2026-10-18:_ removed from `devDependencies`, with the `@nx/jest` target default;
+  `ts-jest` was the only path to a `sprintf-js` advisory.
 - **Component tests in Playwright** - valuable later; too slow as the everyday loop.
 
 ## Consequences

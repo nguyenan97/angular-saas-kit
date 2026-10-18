@@ -17,7 +17,8 @@
  * - **Skills**: every `.claude/skills/<name>/SKILL.md` has Agent Skills
  *   frontmatter (https://agentskills.io/specification): a `name` that matches
  *   its folder, a `description`, no other field; and a `## Done when` list.
- *   `CLAUDE.md` and `docs/guide/development-process.md` name every skill.
+ *   `CLAUDE.md`, `docs/guide/development-process.md` and the skills README name
+ *   every skill.
  *
  * `docs/superpowers` is working material and is not checked.
  *
@@ -287,7 +288,11 @@ export function checkSkills(root) {
     if (!/^## Done when$/m.test(text))
       problems.push(`${where}: no "## Done when" section`);
   }
-  for (const list of ['CLAUDE.md', 'docs/guide/development-process.md']) {
+  for (const list of [
+    'CLAUDE.md',
+    'docs/guide/development-process.md',
+    '.claude/skills/README.md',
+  ]) {
     const path = join(root, list);
     if (!existsSync(path)) continue;
     const text = readFileSync(path, 'utf8');

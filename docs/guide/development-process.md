@@ -2,40 +2,70 @@
 
 How a change goes from an idea to `main` in this repository, whether a person or an AI agent writes
 it. The process is sized to the change: a typo does not get a spec, and a new bounded context does
-not skip one. The reasoning is in [ADR 0023](../adr/0023-a-development-process-with-a-written-quality-bar.md).
+not skip one. Every phase ends at a gate that a machine or an independent reviewer can check, so an
+agent can carry a change end to end and a person can review it afterwards, from the pull request,
+the ADRs and the report. The reasoning is in
+[ADR 0025](../adr/0025-an-ai-first-lifecycle-with-self-checked-gates.md).
 
 > [!NOTE]
-> The kit has no backend, no authentication and no production observability. This process makes
-> the code ready to grow them; it does not mean they exist.
+> The kit has no backend, no authentication, no release pipeline and no production
+> observability. The Release and Operate phases below say what will apply when they exist; they do
+> not mean these exist.
 
 ## Size the change first
 
-| The change                                                               | Phases                            |
-| ------------------------------------------------------------------------ | --------------------------------- |
-| A typo, a dependency bump, a one-file fix                                | Build, Verify, Ship               |
-| A component, a page, a script, a CI step                                 | Plan, Build, Verify, Review, Ship |
-| A feature, a public API, a new bounded context, anything hard to reverse | Every phase                       |
+| The change                                                               | Phases                                         |
+| ------------------------------------------------------------------------ | ---------------------------------------------- |
+| A typo, a dependency bump, a one-file fix                                | Build, Review, Security gate (CI only)         |
+| A component, a page, a script, a CI step                                 | Plan, Build, Acceptance, Review, Security gate |
+| A feature, a public API, a new bounded context, anything hard to reverse | Every phase                                    |
 
 When unsure, take the larger size. A spec that turns out to be two lines costs little; a feature
 built on a misunderstanding costs the feature.
 
-## The phases
+## The lifecycle
 
-| Phase      | Produces                                                                            | How                                                                | Ends when                                        |
-| ---------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------------ |
-| **Define** | A spec: goal, non-goals, requirements, scenarios, open questions                    | the `write-spec` skill                                             | The person who asked approves it                 |
-| **Model**  | Terms in the context's `GLOSSARY.md`; an ADR for a decision that is hard to reverse | the `domain-modeling` and `write-adr` skills                       | Both are in the same pull request as the code    |
-| **Plan**   | Tasks of a few files each, each naming its check and the scenario it covers         | a plan in `docs/superpowers/plans/`                                | The person approves it                           |
-| **Build**  | Code and its tests, one slice at a time                                             | the `add-ui-component` and `add-dashboard-page` skills, test first | Each slice passes and is committed               |
-| **Verify** | Every check in [`CONSTRAINTS.md`](../../CONSTRAINTS.md) passing                     | the `verify` skill                                                 | `npm run verify` and `npm run format:check` pass |
-| **Review** | Findings on four axes: spec, standards, security, accessibility                     | the `review-change` skill                                          | No blocking finding is left                      |
-| **Ship**   | A pull request with evidence and a merge-danger call                                | the `open-pr` skill                                                | The required checks pass and a person merges it  |
-| **Learn**  | A mistake turned into a check, a skill edit or a rule                               | the `retro` skill                                                  | The fix lands in its own pull request            |
+| Phase               | Input                    | Artifact in the repository                                                           | Skill                                                | Gate                                                                                |
+| ------------------- | ------------------------ | ------------------------------------------------------------------------------------ | ---------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **Inception**       | A request or an issue    | A spec: `docs/superpowers/specs/<date>-<topic>.md`                                   | `write-spec`                                         | The spec's self-review checklist holds; no open question left                       |
+| **Domain modeling** | The spec                 | Terms in the context's `GLOSSARY.md`; an ADR for a decision that is hard to reverse  | `domain-modeling`, `write-adr`                       | Every new term has an entry; `npm run check:docs` passes                            |
+| **Solution design** | The spec, the model      | An ADR with two alternatives or more; the C4 pages it changes                        | `write-adr`, `update-architecture`                   | `npm run check:architecture` and `npm run docs:build` pass                          |
+| **Plan**            | The spec                 | A plan: `docs/superpowers/plans/<date>-<topic>.md`, tasks with a dependency graph    | `plan-tasks`                                         | Every task names its files, scenario, proving command and blockers                  |
+| **Build**           | One task                 | Code and its tests, committed slice by slice                                         | `add-ui-component`, `add-dashboard-page`, test first | The task's proving command passes; `npm run verify` and `npm run format:check` pass |
+| **Acceptance**      | The spec's scenarios     | A browser test in `apps/dashboard-e2e` for each user-facing scenario the spec names  | `verify` (its browser-test step)                     | `npx nx e2e dashboard-e2e` locally and CI `e2e`, axe checks included, pass          |
+| **Review**          | The branch               | Findings on four axes, in the PR or the report                                       | `review-change`, run by another agent or session     | No blocking finding left                                                            |
+| **Security gate**   | The branch               | CI results                                                                           | `verify`                                             | CodeQL, zizmor and dependency review pass on the PR                                 |
+| **Release**         | `main`                   | Not applicable yet: nothing is published                                             | `open-pr` (merge only)                               | The required checks pass and the branch is up to date with `main`                   |
+| **Operate**         | A deployment             | Not applicable yet: the Pages demo is static; no runbook, no alerting                | none                                                 | none                                                                                |
+| **Learn**           | A finished batch of work | A report in `docs/superpowers/reports/`; each fix as a check, a skill edit or a rule | `retro`                                              | Each accepted fix lands in its own pull request                                     |
 
-Three more serve any phase: `update-architecture` and `write-docs` keep the C4 diagrams and the
-guides true in the same pull request as the change, and `dependabot-triage` takes the dependency
-updates. The skills are in [`.claude/skills`](../../.claude/skills). They are plain Markdown runbooks, so any
-agent, or a person, can follow them.
+Three skills serve any phase: `update-architecture` and `write-docs` keep the C4 diagrams and the
+guides true in the same pull request as the change, `verify` runs every check before a change is
+called done, and `dependabot-triage` takes the dependency updates. `open-pr` carries a change from
+branch to merge. The skills are listed by phase in [`.claude/skills`](../../.claude/skills/README.md);
+they are plain Markdown runbooks, so any agent, or a person, can follow them.
+
+**When Release and Operate apply.** A release workflow arrives with the first published package
+(`libs/ui`, `libs/tokens`): trusted publishing with provenance, an SBOM attached, a changelog from
+the Conventional Commits. Operate arrives with the first server that runs for users: a runbook in
+`docs/guide/`, health checks, and the alerts that wake someone. Each gets its gate in this table, and
+an ADR, when it exists.
+
+## Principles
+
+- **Spec-driven.** A change of the middle size or larger has a spec before code. The agent writes
+  it and reviews it against the `write-spec` checklist; it does not wait for a person to approve it.
+- **Gates instead of waiting.** Each phase ends at a gate in the table above. A person reads the
+  result afterwards, and any change can be undone by reverting its pull request.
+- **Independent review.** The session or agent that wrote a change does not give it its only
+  review. `review-change` runs in another one, and every blocking finding is fixed before merge.
+- **Context in the repository.** What an agent needs is in `AGENTS.md`, `CONSTRAINTS.md`, the
+  glossaries, the ADRs and each library's README, short and next to what it describes. Nothing
+  depends on a chat history.
+- **Verified before done.** A check that was not run is reported as not run. "Done" comes with the
+  command and its output.
+- **Learning loop.** A mistake that could happen again becomes a check, a skill edit or a line in
+  `CONSTRAINTS.md` (the `retro` skill), so the next agent does not need the correction.
 
 ## Specs and scenarios
 
@@ -66,9 +96,9 @@ They are three layers of one design, not three processes:
   the concepts that the code, the specs and the tests share.
 - **Test-driven development** drives the domain and the components: a failing test at the public
   function or the component's inputs and keyboard behaviour, then the code that passes it.
-- **Behaviour-driven development** drives the user flows: a spec's scenarios become
-  `Given/When/Then` steps in a `.feature` file. The suite app's browser tests will run them with
-  `playwright-bdd`; that is planned, not built.
+- **Behaviour-driven development** drives the user flows: a spec's scenarios become browser tests
+  named after them. Gherkin `.feature` files run by `playwright-bdd` are planned for the suite app,
+  not built.
 
 So a requirement traces to a scenario, and a scenario to a test.
 
@@ -79,11 +109,39 @@ runs it, and the exceptions with an owner and a date. Its floor names what revie
 when CI is green: a silenced lint rule, a skipped test, an assertion removed, a threshold lowered.
 Tightening the bar is an ordinary change. Loosening it needs a reason in the pull request.
 
+## Autonomous mode
+
+By default an agent stops at the end of Inception and Plan for the person to read the spec and the
+plan, and does not merge. In **autonomous mode** it carries the work through every phase, merges
+green pull requests, and reports at the end.
+
+- **When.** Only when the person grants it in words, for a task they name. The grant lasts for
+  that task; it does not carry over to the next one.
+- **Mandatory gates.** Every gate in the lifecycle table, with nothing skipped: the spec's
+  self-review, `npm run verify` and `npm run format:check`, an independent review with no blocking
+  finding left, every required check green and the branch up to date with `main` before a squash
+  merge.
+- **Limits no instruction lifts.** Never lower `CONSTRAINTS.md`, a lint rule or a module boundary;
+  never `--no-verify`, skip a test or disable a check to get green; never push to `main`, force-push
+  it, or merge as an administrator around branch protection; never change repository settings,
+  secrets or branch protection, publish a package, or delete another person's branch, issue or pull
+  request; never send data to a service outside GitHub; never claim what is not built.
+- **When blocked.** A red check is fixed at its cause, three attempts at most. Still red: leave the
+  pull request unmerged or as a draft, say why in the report, and go on with a task that does not
+  depend on it. A step that needs a permission the agent does not have goes in the report's
+  "Needs a person" list.
+- **Decisions.** Where a choice is open, the agent takes the option the research supports; if two
+  are equal, the simpler, the easier to reverse and the one with fewer new dependencies. It records
+  each choice: an ADR for one that is hard to reverse, a row in the spec's decision log for the rest,
+  and an assumption in the spec for each question it answered itself.
+- **The report.** `docs/superpowers/reports/<date>-<topic>.md`: the merged pull requests, the
+  decisions and ADRs, the assumptions, what was dropped or left red and why, what needs a person,
+  and what to do next.
+
 ## Working with AI agents
 
 - The agent reads `AGENTS.md`, then `CONSTRAINTS.md`, then the skill for the task.
-- The person approves the spec and the plan, and merges. The agent does not merge without being
-  asked.
+- Outside autonomous mode the person reads the spec and the plan before Build, and merges.
 - A check the agent cannot run is reported as not run, never as passed.
 - A correction that would be needed again becomes a check or a skill edit (the `retro` skill), so
   the next agent does not need it.

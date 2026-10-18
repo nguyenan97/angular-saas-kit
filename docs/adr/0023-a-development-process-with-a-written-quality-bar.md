@@ -1,6 +1,6 @@
 # 0023. A development process with a written quality bar
 
-- **Status:** Accepted
+- **Status:** Superseded by [0025](0025-an-ai-first-lifecycle-with-self-checked-gates.md)
 - **Date:** 2026-10-17
 - **Deciders:** @nguyenan97
 

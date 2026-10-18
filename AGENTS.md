@@ -104,4 +104,5 @@ its tags.
 Architecture decision records: [`docs/adr`](docs/adr/README.md). C4 diagrams:
 [`docs/architecture`](docs/architecture/README.md). Guides: [`docs/guide`](docs/guide/getting-started.md).
 A bounded context's words: its `GLOSSARY.md` (`libs/booking/GLOSSARY.md`, `libs/shared/GLOSSARY.md`).
-Repeatable tasks have skills in [`.claude/skills`](.claude/skills), written to be read by any agent.
+Repeatable tasks have skills in [`.claude/skills`](.claude/skills/README.md), listed there by phase and
+written to be read by any agent.
