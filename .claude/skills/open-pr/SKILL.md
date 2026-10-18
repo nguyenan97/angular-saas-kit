@@ -38,7 +38,8 @@ request); open it against that branch, and retarget it to `main` once the first 
 Small commits, each green, one idea each, in Conventional Commits: `type(scope): subject`, the
 scope from `AGENTS.md`, `docs` a type and never a scope. A refactor and a feature are separate
 commits and separate pull requests. The body says why, and what was checked. Hooks run Prettier
-and commitlint; never `--no-verify`. A body line that starts with a word and a colon
+and commitlint; never `--no-verify`, not even for a throwaway commit that only proves a check
+fails: give it a conventional message instead. A body line that starts with a word and a colon
 (`mode: ...`) reads to commitlint as a footer; reword it.
 
 ## 3. Size and sync
