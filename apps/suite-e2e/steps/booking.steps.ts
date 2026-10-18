@@ -1,4 +1,4 @@
-import { expect } from '@playwright/test';
+import { type Page, expect } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
 
 /**
@@ -21,11 +21,15 @@ Given('I am on the New order page', async ({ page }) => {
 
 When('I choose the customer {string}', async ({ page }, name: string) => {
   const box = page.getByRole('combobox', { name: 'Customer' });
+  const option = page.getByRole('option', { name: new RegExp(`^${name}`) });
+  // The customers load next to the slots; a person reads the list first.
   await box.fill(name.slice(0, 4));
+  await expect(option).toBeVisible();
   await box.press('ArrowDown');
-  await expect(
-    page.getByRole('option', { name: new RegExp(`^${name}`) }),
-  ).toBeVisible();
+  await expect(box).toHaveAttribute(
+    'aria-activedescendant',
+    (await option.getAttribute('id')) ?? '',
+  );
   await box.press('Enter');
   await expect(box).toHaveValue(name);
 });
@@ -89,10 +93,7 @@ Then(
 // -- Order detail ------------------------------------------------------------
 
 /** Opens the first order of a status from the list. */
-async function openFirst(
-  page: import('@playwright/test').Page,
-  status: string,
-): Promise<void> {
+async function openFirst(page: Page, status: string): Promise<void> {
   await page.goto(`/booking/orders?status=${status}`);
   const link = page
     .getByRole('region', { name: 'Orders' })
