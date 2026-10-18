@@ -38,7 +38,7 @@ dependency review and Scorecard; CodeQL already ran on every pull request
 
 _Amended 2026-10-18:_ a second ZAP baseline scans the landing page's Node server, built and run
 with `NG_ALLOWED_HOSTS=localhost`. The first run against the Pages preview reported every
-security header missing (10 warnings, no failure), which is true of GitHub Pages, where a site
+security header missing ([run 39094569430](https://github.com/nguyenan97/angular-saas-kit/actions/runs/39094569430)), which is true of GitHub Pages, where a site
 cannot set headers, and says nothing about the server that does set them. Sending the landing
 server's headers from the preview server instead was rejected: the preview would then claim
 headers Pages never sends, and `frame-ancestors 'none'` would break Storybook, which frames its
