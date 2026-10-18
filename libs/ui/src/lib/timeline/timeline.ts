@@ -29,9 +29,11 @@ const STATE_TEXT: Record<TimelineState, string> = {
   upcoming: 'Upcoming: ',
 };
 
+// Each marker has a border as well as a fill: forced colours drop
+// backgrounds, and the border keeps the marker on screen.
 const MARKER: Record<TimelineState, string> = {
-  complete: 'bg-primary',
-  current: 'bg-primary ring-4 ring-primary/20',
+  complete: 'border-2 border-primary bg-primary',
+  current: 'border-2 border-primary bg-primary ring-4 ring-primary/20',
   upcoming: 'border-2 border-border bg-background',
 };
 
@@ -58,8 +60,9 @@ const MARKER: Record<TimelineState, string> = {
         >
           @if (!last) {
             <span
+              data-line
               aria-hidden="true"
-              class="absolute top-4 bottom-0 left-[0.4375rem] w-px bg-border"
+              class="absolute top-4 bottom-0 left-[0.4375rem] border-l border-border"
             ></span>
           }
           <span
@@ -111,7 +114,7 @@ export class Timeline {
       MARKER[item.state],
       item.tone === 'destructive' &&
         item.state !== 'upcoming' &&
-        'bg-destructive ring-destructive/20',
+        'border-destructive bg-destructive ring-destructive/20',
     );
   }
 }

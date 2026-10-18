@@ -2,6 +2,7 @@ import { ActiveDescendantKeyManager } from '@angular/cdk/a11y';
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   Injector,
   booleanAttribute,
   computed,
@@ -76,19 +77,20 @@ interface ActiveOption {
       [attr.aria-label]="label() || null"
       [attr.aria-describedby]="describedBy() || null"
       [attr.aria-invalid]="invalid() || null"
-      [attr.aria-expanded]="open()"
-      [attr.aria-controls]="open() ? listId : null"
+      [attr.aria-expanded]="expanded()"
+      [attr.aria-controls]="expanded() ? listId() : null"
       [attr.aria-activedescendant]="activeId()"
       (input)="onInput($event)"
       (keydown)="onKeydown($event)"
       (click)="show()"
       (blur)="onBlur()"
     />
-    @if (open()) {
+    @if (expanded()) {
       <ul
         role="listbox"
+        data-combobox-popup
         class="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
-        [id]="listId"
+        [id]="listId()"
         [attr.aria-label]="label() || null"
         [attr.aria-labelledby]="label() ? null : inputId()"
       >
@@ -111,14 +113,19 @@ interface ActiveOption {
           </li>
         }
       </ul>
-      @if (filtered().length === 0) {
-        <p
-          role="status"
-          class="absolute z-50 mt-1 w-full rounded-md border border-border bg-popover px-3 py-2 text-sm text-muted-foreground shadow-md"
-        >
-          {{ emptyText() }}
-        </p>
-      }
+    }
+    <!-- Always in the page, so a screen reader hears the message change. -->
+    <span role="status" class="sr-only">{{
+      noMatches() ? emptyText() : ''
+    }}</span>
+    @if (noMatches()) {
+      <p
+        aria-hidden="true"
+        data-combobox-popup
+        class="absolute z-50 mt-1 w-full rounded-md border border-border bg-popover px-3 py-2 text-sm text-muted-foreground shadow-md"
+      >
+        {{ emptyText() }}
+      </p>
     }
   `,
 })
@@ -148,7 +155,7 @@ export class Combobox {
   /** Merged last onto the host, so a consumer's classes win. */
   readonly class = input('');
 
-  protected readonly listId = `${this.inputId()}-listbox`;
+  protected readonly listId = computed(() => `${this.inputId()}-listbox`);
   protected readonly open = signal(false);
   protected readonly activeIndex = signal(-1);
 
@@ -172,8 +179,17 @@ export class Combobox {
       : this.options();
   });
 
+  /** Open with options to show: an open list with no matches shows only a message. */
+  protected readonly expanded = computed(
+    () => this.open() && this.filtered().length > 0,
+  );
+
+  protected readonly noMatches = computed(
+    () => this.open() && this.filtered().length === 0,
+  );
+
   protected readonly activeId = computed(() =>
-    this.open() && this.activeIndex() >= 0
+    this.expanded() && this.activeIndex() >= 0
       ? this.optionId(this.activeIndex())
       : null,
   );
@@ -199,6 +215,7 @@ export class Combobox {
     .withWrap();
 
   constructor() {
+    inject(DestroyRef).onDestroy(() => this.keyManager.destroy());
     this.keyManager.change
       .pipe(takeUntilDestroyed())
       .subscribe((index) => this.activeIndex.set(index));
@@ -211,12 +228,14 @@ export class Combobox {
   }
 
   protected optionId(index: number): string {
-    return `${this.listId}-option-${index}`;
+    return `${this.listId()}-option-${index}`;
   }
 
-  protected show(): void {
+  /** Opens the list, with the chosen option active unless `withActive` is false. */
+  protected show(withActive = true): void {
     if (this.disabled() || this.open()) return;
     this.open.set(true);
+    if (!withActive) return;
     const selected = this.filtered().findIndex(
       (option) => option.value === this.value(),
     );
@@ -233,14 +252,21 @@ export class Combobox {
       case 'ArrowDown':
       case 'ArrowUp': {
         event.preventDefault();
+        const down = event.key === 'ArrowDown';
+        // Alt+Down opens without choosing a place; Alt+Up closes.
+        if (event.altKey) {
+          if (down) this.show(false);
+          else this.close();
+          return;
+        }
         if (!this.open()) {
+          // Opening lands on the chosen option, when there is one.
           this.show();
           if (this.activeIndex() >= 0) return;
-          if (event.key === 'ArrowDown') {
-            this.keyManager.setFirstItemActive();
-          } else {
-            this.keyManager.setLastItemActive();
-          }
+        }
+        if (this.activeIndex() < 0) {
+          if (down) this.keyManager.setFirstItemActive();
+          else this.keyManager.setLastItemActive();
           return;
         }
         this.keyManager.onKeydown(event);
@@ -266,18 +292,26 @@ export class Combobox {
         return;
       }
       case 'Tab':
-        this.close();
+        this.commit();
         return;
     }
   }
 
   protected onBlur(): void {
+    this.commit();
+  }
+
+  /** Leaving the box: an emptied box clears the value; anything else shows the choice again. */
+  private commit(): void {
     if (this.query()?.trim() === '') this.value.set(null);
     this.close();
   }
 
   protected onPointerDown(event: MouseEvent): void {
-    if (this.optionAt(event)) event.preventDefault();
+    const popup = (event.target as Element | null)?.closest(
+      '[data-combobox-popup]',
+    );
+    if (popup) event.preventDefault();
   }
 
   protected onClick(event: MouseEvent): void {

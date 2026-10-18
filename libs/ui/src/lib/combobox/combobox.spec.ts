@@ -26,6 +26,7 @@ const CUSTOMERS: ComboboxOption[] = [
       [options]="options"
       [(value)]="value"
       [invalid]="invalid()"
+      [disabled]="disabled()"
     />
     <button type="button">Next</button>
   `,
@@ -34,6 +35,7 @@ class Host {
   readonly options = CUSTOMERS;
   readonly value = signal<string | null>(null);
   readonly invalid = signal(false);
+  readonly disabled = signal(false);
 }
 
 /** The CDK reads `keyCode`, which a synthetic event cannot set by itself. */
@@ -43,6 +45,8 @@ const KEY_CODES: Record<string, number> = {
   Enter: 13,
   Escape: 27,
   Tab: 9,
+  Home: 36,
+  End: 35,
 };
 
 async function render() {
@@ -142,19 +146,114 @@ describe('Combobox', () => {
     expect(active()).toBe(options()[2]);
   });
 
-  it('filters the options as the user types, ignoring case, and says when nothing matches', async () => {
-    const { el, options, type } = await render();
+  it('filters the options as the user types, ignoring case', async () => {
+    const { options, type } = await render();
 
     await type('mart');
+
     expect(options().map((o) => o.textContent?.trim())).toEqual([
       'Minh Chau Mart, Ha Noi',
     ]);
+  });
+
+  it('says when nothing matches through a status region that is always there, and collapses the empty list', async () => {
+    const { el, input, listbox, type } = await render();
+    const status = () => el.querySelector('[role="status"]');
+
+    expect(status()).not.toBeNull();
+    expect(status()?.textContent?.trim()).toBe('');
 
     await type('zzz');
-    expect(options()).toEqual([]);
-    expect(el.querySelector('[role="status"]')?.textContent).toContain(
-      'No matches',
-    );
+
+    expect(status()?.textContent?.trim()).toBe('No matches');
+    expect(listbox()).toBeNull();
+    expect(input.getAttribute('aria-expanded')).toBe('false');
+    expect(input.hasAttribute('aria-controls')).toBe(false);
+  });
+
+  it('goes to the last option with Up when the list is open and nothing is active', async () => {
+    const { input, options, press, type, active } = await render();
+    input.focus();
+
+    await type('o');
+    await press('ArrowUp');
+
+    expect(active()).toBe(options().at(-1));
+  });
+
+  it('opens with Alt+Down without making an option active, and closes with Alt+Up', async () => {
+    const { input, listbox, press } = await render();
+    input.focus();
+
+    await press('ArrowDown', { altKey: true });
+    expect(listbox()).not.toBeNull();
+    expect(input.hasAttribute('aria-activedescendant')).toBe(false);
+
+    await press('ArrowUp', { altKey: true });
+    expect(listbox()).toBeNull();
+  });
+
+  it('leaves Home and End to the text, and drops the active option when the list closes', async () => {
+    const { input, press } = await render();
+    input.focus();
+    await press('ArrowDown');
+
+    expect((await press('Home')).defaultPrevented).toBe(false);
+    expect((await press('End')).defaultPrevented).toBe(false);
+    expect(input.hasAttribute('aria-activedescendant')).toBe(true);
+
+    await press('Escape');
+    expect(input.hasAttribute('aria-activedescendant')).toBe(false);
+  });
+
+  it('does not open when disabled', async () => {
+    const { fixture, input, listbox, press } = await render();
+    fixture.componentInstance.disabled.set(true);
+    await fixture.whenStable();
+
+    await press('ArrowDown');
+    input.click();
+    await fixture.whenStable();
+
+    expect(input.disabled).toBe(true);
+    expect(listbox()).toBeNull();
+  });
+
+  it('clears the value when the user empties the box and leaves with Tab', async () => {
+    const { fixture, input, press, type } = await render();
+    fixture.componentInstance.value.set('C-01');
+    await fixture.whenStable();
+    input.focus();
+
+    await type('');
+    await press('Tab');
+    input.dispatchEvent(new Event('blur'));
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.value()).toBeNull();
+    expect(input.value).toBe('');
+  });
+
+  it('keeps focus in the box when the pointer goes down on the list outside an option', async () => {
+    const { input, listbox, press } = await render();
+    input.focus();
+    await press('ArrowDown');
+
+    const down = new MouseEvent('mousedown', {
+      bubbles: true,
+      cancelable: true,
+    });
+    listbox()?.dispatchEvent(down);
+
+    expect(down.defaultPrevented).toBe(true);
+  });
+
+  it('names its list after the box it belongs to', async () => {
+    const { input, listbox, press } = await render();
+    input.focus();
+    await press('ArrowDown');
+
+    expect(listbox()?.id).toBe('customer-listbox');
   });
 
   it('chooses an option with a click, keeping focus in the box', async () => {

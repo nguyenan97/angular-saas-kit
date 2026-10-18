@@ -94,6 +94,18 @@ describe('Timeline', () => {
     expect(marker?.getAttribute('aria-hidden')).toBe('true');
   });
 
+  it('keeps its markers and line visible in forced colours, where backgrounds are dropped', async () => {
+    const { items } = await render();
+
+    for (const item of items()) {
+      const marker = item.querySelector('[data-marker]');
+      expect(marker?.className).toMatch(/border/);
+    }
+    expect(items()[0]?.querySelector('[data-line]')?.className).toContain(
+      'border-l',
+    );
+  });
+
   it("lets a consumer's class win", async () => {
     const { el } = await render();
 

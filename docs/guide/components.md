@@ -27,9 +27,9 @@
 | [Switch](../../libs/ui/src/lib/switch/README.md)              | `input[askSwitch]`                   | A checkbox drawn as a switch, `role="switch"`            |
 | [Skeleton](../../libs/ui/src/lib/skeleton/README.md)          | `ask-skeleton`                       | A loading placeholder                                    |
 | [Table and SortHeader](../../libs/ui/src/lib/table/README.md) | `table[askTable]`, `ask-sort-header` | Styles a native table; a sortable column header          |
-| [Timeline](../../libs/ui/src/lib/timeline/README.md)          | `ask-timeline`                       | The steps of a process, as an ordered list               |
 | [Tabs](../../libs/ui/src/lib/tabs/README.md)                  | `ask-tabs`, `ask-tab`                | Tabs, with the CDK's roving focus                        |
 | ThemeSwitcher                                                 | `ask-theme-switcher`                 | The three theme axes, as groups of native radios         |
+| [Timeline](../../libs/ui/src/lib/timeline/README.md)          | `ask-timeline`                       | The steps of a process, as an ordered list               |
 
 Each has a README next to its source with usage, an API table and accessibility notes. The
 `cn()` helper is exported too.
