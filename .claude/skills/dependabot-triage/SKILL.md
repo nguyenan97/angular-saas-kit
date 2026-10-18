@@ -22,8 +22,9 @@ gh pr list --repo nguyenan97/angular-saas-kit --author "app/dependabot" \
   `angular-eslint`) travel together, and so do `nx` and `@nx/*`. `@angular/compiler` and `@angular/compiler-cli` peer-depend on
   each other's exact version. A PR that splits the Angular set is a configuration bug: report it, do not
   merge half of it.
-- **Ignored majors.** Major bumps of `vitest`, `@vitest/*` and `@types/node` are ignored on purpose
-  (the toolchain does not support Vitest 5 yet; types track the minimum Node, 22). Close such a PR
+- **Ignored majors.** Major bumps of `vitest`, `@vitest/*`, `@types/node` and `typescript` are
+  ignored on purpose (the toolchain does not support Vitest 5 yet; types track the minimum Node,
+  22; the compiler follows Angular's peer range, ADR 0010). Close such a PR
   with the reason. The ignore entries come out when all three tools widen their peer ranges.
 - **The diff.** `package.json` and the lockfile. Anything you would not expect (a new package, a
   removed one, an install script) gets a look.

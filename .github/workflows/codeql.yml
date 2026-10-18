@@ -9,14 +9,18 @@ on:
   schedule:
     - cron: '17 3 * * 1' # Monday 03:17 UTC
 
+# Read-only by default; only the job that uploads results may write them.
 permissions:
   contents: read
-  security-events: write
 
 jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Upload the analysis to code scanning.
+      security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
