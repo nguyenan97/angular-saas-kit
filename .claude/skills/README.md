@@ -26,8 +26,9 @@ and the rules they all assume are in [`AGENTS.md`](../../AGENTS.md) and
 ## By who starts them
 
 - **User-invoked**: `open-pr`, `dependabot-triage`, `review-change`, `retro`. They push, merge,
-  close pull requests or report on work the person names, so an agent runs them only when the person
-  asks, by name or by a standing instruction such as autonomous mode. In Claude Code,
+  close pull requests or report on work the person names, so they do not start from a description
+  match. Autonomous mode is the default (ADR 0027), so an agent runs each one at its step of every
+  task, without asking first. In Claude Code,
   `skillOverrides` in [`.claude/settings.json`](../settings.json) hides them from the model.
 - **Model-invoked**: every other skill. An agent reaches for one when its task matches the skill's
   description; a skill that needs another names it ("the `verify` skill").

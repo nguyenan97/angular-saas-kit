@@ -82,13 +82,13 @@ the quality goals in section 1 point into it.
 
 ## 11. Risks and technical debt
 
-| Item                                                              | Effect                                                  | Plan                                                |
-| ----------------------------------------------------------------- | ------------------------------------------------------- | --------------------------------------------------- |
-| No backend, auth or observability                                 | The dashboard runs on mock data; nothing to operate     | Evolution path below; each arrives with an ADR      |
-| `braces` advisory through Storybook's webpack builder             | `npm audit` reports 9 high, dev-only                    | Exception in `CONSTRAINTS.md`, review by 2027-01-17 |
-| Initial bundles within a few kB of the 350 kB warning             | The next large dependency trips the budget              | Lazy routes and `@defer`; the `refactor` skill      |
-| `overrides` for `nx`'s pinned `undici` and other transitive fixes | Must be dropped when upstream catches up                | Checked at each Dependabot triage                   |
-| One maintainer                                                    | No second human reviewer; Scorecard marks Code-Review 0 | Independent agent review in the process (ADR 0025)  |
+| Item                                                              | Effect                                                  | Plan                                                     |
+| ----------------------------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| No backend, auth or observability                                 | The dashboard runs on mock data; nothing to operate     | Evolution path below; each arrives with an ADR           |
+| `braces` advisory through Storybook's webpack builder             | `npm audit` reports 9 high, dev-only                    | Exception in `CONSTRAINTS.md`, review by 2027-01-17      |
+| Initial bundles within a few kB of the 350 kB warning             | The next large dependency trips the budget              | Lazy routes and `@defer`; the `refactor` skill           |
+| `overrides` for `nx`'s pinned `undici` and other transitive fixes | Must be dropped when upstream catches up                | Checked at each Dependabot triage                        |
+| One maintainer                                                    | No second human reviewer; Scorecard marks Code-Review 0 | Independent agent review in the process (ADR 0025, 0027) |
 
 ## 12. Glossary
 

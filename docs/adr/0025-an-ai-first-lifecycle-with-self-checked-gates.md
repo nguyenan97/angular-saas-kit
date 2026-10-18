@@ -1,6 +1,6 @@
 # 0025. An AI-first lifecycle with self-checked gates
 
-- **Status:** Accepted
+- **Status:** Superseded by [0027](0027-the-agent-decides-and-merges-by-default.md)
 - **Date:** 2026-10-18
 - **Deciders:** @nguyenan97
 - **Supersedes:** [0023](0023-a-development-process-with-a-written-quality-bar.md)

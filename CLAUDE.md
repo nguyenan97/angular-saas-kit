@@ -12,11 +12,11 @@ Claude Code.
   `## Done when` list: a step is finished when every line of it holds, not before.
 - `open-pr`, `dependabot-triage`, `review-change` and `retro` are hidden from the model
   (`skillOverrides` in `.claude/settings.json` makes them `user-invocable-only`): the first two
-  push, merge and close pull requests, the last two report on work the user names. Do not start
-  one on your own. When the user has asked for what one does (to open or merge a pull request,
-  review a branch, run a retro), or has granted autonomous mode for the task
-  (`docs/guide/development-process.md`), read its `SKILL.md` and follow it; that is what "then
-  `open-pr`" means in the other skills. For `review-change`, give the file to a separate agent:
+  push, merge and close pull requests, the last two report on work the user names, so they do not
+  start from a description match. Autonomous mode is the default (ADR 0027): when a task reaches
+  their step (opening and merging its pull request, its independent review, its retro), read the
+  skill's `SKILL.md` and follow it, without asking first; that is what "then `open-pr`" means in
+  the other skills. For `review-change`, give the file to a separate agent:
   the writer does not review its own change.
 - `docs/superpowers/` holds design and plan documents from earlier work. Read them for
   background, but the ADRs and the code win where they disagree.

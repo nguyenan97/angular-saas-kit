@@ -10,7 +10,7 @@ and `.github/dependabot.yml` is the source of truth. Weekly npm PRs, monthly Git
 
 ## When to use
 
-When the person asks to triage the Dependabot pull requests, or in autonomous mode for a task that includes them. User-invoked: it merges and closes pull requests.
+When the person asks to triage the Dependabot pull requests, or for any task that includes them (autonomous mode is the default). User-invoked: it merges and closes pull requests, without asking first.
 
 ## When not to use
 
@@ -58,7 +58,8 @@ Run `npm audit` before and after and say what changed.
 
 ## 5. Merge in order
 
-Oldest first, and only with the required checks green (see `open-pr` for the merge command). Because
+Oldest first, and only with the required checks green and a short independent review of the
+diff (`review-change`) with no blocking finding (see `open-pr` for the merge command). Because
 `main` requires an up-to-date branch, each merge makes the rest stale: `gh pr update-branch <number>`,
 or comment `@dependabot rebase` (a lockfile conflict needs the latter), then wait for a fresh run.
 Do not enable auto-merge.
