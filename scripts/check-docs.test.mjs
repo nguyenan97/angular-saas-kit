@@ -90,6 +90,70 @@ describe('check-docs', () => {
     ]);
   });
 
+  test('reads Nx commands in code only, and not the subcommands', () => {
+    write(
+      'docs/a.md',
+      '# A\n\nThe nx to the rescue.\n\n`npx nx run-many -t lint` and `nx affected -t test`.\n',
+    );
+    assert.deepEqual(problems(), []);
+  });
+
+  test('checks titled, bracketed, parenthesised and reference links', () => {
+    write('docs/x (1).md', '# X\n');
+    write('docs/b_(c).md', '# B\n');
+    write(
+      'docs/a.md',
+      '# A\n\n[t](gone.md "title") [u](gone.md \'t\') [v](<x (1).md>) [w](b_(c).md)\n\n[r]: away.md\n',
+    );
+    assert.deepEqual(problems(), [
+      'docs/a.md:3: "gone.md" does not exist',
+      'docs/a.md:3: "gone.md" does not exist',
+      'docs/a.md:5: "away.md" does not exist',
+    ]);
+  });
+
+  test('blanks an indented fence and ignores a query string', () => {
+    write(
+      'docs/a.md',
+      '# A\n\n- Item:\n\n  ```md\n  [x](gone.md)\n  ```\n\n[ok](../AGENTS.md?plain=1)\n',
+    );
+    assert.deepEqual(problems(), []);
+  });
+
+  test('rejects a link whose letter case differs from the file', () => {
+    write('docs/a.md', '# A\n\n[x](../agents.md)\n');
+    assert.deepEqual(problems(), [
+      'docs/a.md:3: "../agents.md" exists only in another letter case, which Linux does not find',
+    ]);
+  });
+
+  test('reports a malformed escape instead of crashing', () => {
+    write('docs/a.md', '# A\n\n[x](bad%zz.md)\n');
+    assert.deepEqual(problems(), [
+      'docs/a.md:3: "bad%zz.md" is not a valid URL',
+    ]);
+  });
+
+  test('names an ADR whose heading lacks its number', () => {
+    write('docs/adr/0001-one.md', '# One\n\n- **Status:** Accepted\n');
+    assert.deepEqual(problems(), [
+      'docs/adr/0001-one.md: its first heading is not "# 0001. Title"',
+    ]);
+  });
+
+  test('reads the status from the record’s own row, not one that links to it', () => {
+    write(
+      'docs/adr/README.md',
+      '| # | Decision | Status |\n| - | - | - |\n| [0001](0001-one.md) | One | Superseded by [0002](0002-two.md) |\n| [0002](0002-two.md) | Two | Accepted |\n',
+    );
+    write(
+      'docs/adr/0001-one.md',
+      '# 0001. One\n\n- **Status:** Superseded by [0002](0002-two.md)\n',
+    );
+    write('docs/adr/0002-two.md', '# 0002. Two\n\n- **Status:** Accepted\n');
+    assert.deepEqual(problems(), []);
+  });
+
   test('names an ADR whose status differs from its index row', () => {
     write('docs/adr/0001-one.md', '# 0001. One\n\n- **Status:** Proposed\n');
     assert.deepEqual(problems(), [
@@ -117,6 +181,27 @@ describe('check-docs', () => {
   test('rejects a skill whose name does not match its folder', () => {
     skill('verify', 'name: check\ndescription: x');
     assert.match(problems()[0], /name "check" does not match its folder/);
+  });
+
+  test('reads a folded description and rejects an empty one', () => {
+    skill('verify', 'name: verify\ndescription: >\n  Runs the checks.');
+    assert.deepEqual(problems(), []);
+    skill('verify', 'name: verify\ndescription:');
+    assert.deepEqual(problems(), [
+      '.claude/skills/verify/SKILL.md: description must be 1 to 1024 characters',
+    ]);
+  });
+
+  test('rejects a skill name outside the spec', () => {
+    skill('Verify_It', 'name: Verify_It\ndescription: x');
+    write('CLAUDE.md', 'Skills: `verify`, `Verify_It`.\n');
+    write(
+      'docs/guide/development-process.md',
+      'The `verify` and `Verify_It` skills.\n',
+    );
+    assert.deepEqual(problems(), [
+      '.claude/skills/Verify_It/SKILL.md: "Verify_It" is not a valid skill name',
+    ]);
   });
 
   test('rejects a skill with no Done when list', () => {

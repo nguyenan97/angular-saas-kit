@@ -7,10 +7,11 @@
  * them checked that a command they name still exists. A skill that tells an
  * agent to run a script that was renamed fails silently: the agent improvises.
  *
- * - **Links**: every relative Markdown link resolves to a file or folder, and
- *   none starts with `/` (on GitHub that is the repository root).
+ * - **Links**: every relative Markdown link (inline or a reference definition)
+ *   resolves to a file or folder with exactly that spelling, and none starts
+ *   with `/` (on GitHub that is the repository root).
  * - **Commands**: every `npm run <script>` names a script in `package.json`, and
- *   every `nx <target> <project>` an Nx project that exists.
+ *   every `nx <target> <project>` in code an Nx project that exists.
  * - **ADRs**: every record in `docs/adr` has a row in its index with the same
  *   status, and its heading carries its number.
  * - **Skills**: every `.claude/skills/<name>/SKILL.md` has Agent Skills
@@ -61,33 +62,86 @@ export function markdownFiles(root) {
 
 const blank = (part) => part.replace(/[^\n]/g, ' ');
 
+// A fence may be indented (inside a list item) and longer than three marks;
+// it closes with the same marks.
+const FENCE = /^[ \t]*(`{3,}|~{3,})[^\n]*\n[\s\S]*?^[ \t]*\1[ \t]*$/gm;
+const INLINE_CODE = /`[^`\n]*`/g;
+
 /** Markdown with comments, fenced and inline code blanked out, lines kept. */
 function prose(text) {
   return text
     .replace(/<!--[\s\S]*?-->/g, blank)
-    .replace(/^(```|~~~)[^\n]*\n[\s\S]*?^\1[^\n]*$/gm, blank)
-    .replace(/`[^`\n]*`/g, blank);
+    .replace(FENCE, blank)
+    .replace(INLINE_CODE, blank);
+}
+
+/** The opposite: only the code, fenced and inline, with the rest blanked. */
+function code(text) {
+  const kept = blank(text).split('');
+  for (const pattern of [FENCE, INLINE_CODE])
+    for (const match of text.matchAll(pattern))
+      for (let i = 0; i < match[0].length; i++)
+        kept[match.index + i] = match[0][i];
+  return kept.join('');
 }
 
 const lineOf = (text, index) => text.slice(0, index).split('\n').length;
 
+/**
+ * Whether a relative path exists with exactly this spelling. Windows and macOS
+ * ignore letter case and Linux does not, so a link to `Theming.md` that works
+ * locally is dead in CI and on the site.
+ */
+function existsExactly(from, path) {
+  let dir = from;
+  for (const part of path.split(/[\\/]/)) {
+    if (part === '' || part === '.') continue;
+    if (part === '..') {
+      dir = dirname(dir);
+      continue;
+    }
+    if (!readdirSync(dir).includes(part)) return false;
+    dir = join(dir, part);
+  }
+  return true;
+}
+
+// [text](target), [text](<target with spaces>), [text](target "title") or
+// 'title', with one level of parentheses allowed inside the target.
+const INLINE_LINK =
+  /\]\(\s*(?:<([^>\n]+)>|((?:[^()\s]|\([^()\s]*\))+))(?:\s+(?:"[^"]*"|'[^']*'))?\s*\)/g;
+// [label]: target, a reference definition.
+const REFERENCE = /^ {0,3}\[[^\]\n]+\]:[ \t]*<?([^\s>]+)>?/gm;
+
 export function checkLinks(root, file, text) {
   const problems = [];
   const body = prose(text);
-  const link = /\]\(\s*<?([^)\s>]+)>?(?:\s+"[^"]*")?\s*\)/g;
-  for (const match of body.matchAll(link)) {
-    const href = match[1];
+  const links = [
+    ...[...body.matchAll(INLINE_LINK)].map((m) => [m[1] ?? m[2], m.index]),
+    ...[...body.matchAll(REFERENCE)].map((m) => [m[1], m.index]),
+  ];
+  for (const [href, index] of links) {
     if (/^(?:[a-z][a-z0-9+.-]*:|#)/i.test(href)) continue;
-    const where = `${posix(relative(root, file))}:${lineOf(text, match.index)}`;
+    const where = `${posix(relative(root, file))}:${lineOf(text, index)}`;
     if (href.startsWith('/')) {
       problems.push(
         `${where}: "${href}" starts with "/", which is the repository root on GitHub; make it relative`,
       );
       continue;
     }
-    const path = decodeURIComponent(href.split('#')[0]);
+    let path;
+    try {
+      path = decodeURIComponent(href.split(/[#?]/)[0]);
+    } catch {
+      problems.push(`${where}: "${href}" is not a valid URL`);
+      continue;
+    }
     if (!existsSync(resolve(dirname(file), path)))
       problems.push(`${where}: "${href}" does not exist`);
+    else if (!existsExactly(dirname(file), path))
+      problems.push(
+        `${where}: "${href}" exists only in another letter case, which Linux does not find`,
+      );
   }
   return problems;
 }
@@ -109,6 +163,10 @@ export function nxProjects(root) {
   return names;
 }
 
+// Nx subcommands that do not take a project as their first argument.
+const NX_COMMANDS =
+  'run-many|affected|show|graph|run|reset|g|generate|release|migrate|report|list|daemon|watch|sync|connect|exec|init|add';
+
 export function checkCommands(root, file, text, scripts, projects) {
   const problems = [];
   const where = (index) =>
@@ -118,10 +176,13 @@ export function checkCommands(root, file, text, scripts, projects) {
       problems.push(
         `${where(match.index)}: "npm run ${match[1]}" is not a script in package.json`,
       );
-  // `nx test ui`, `npx nx build dashboard --verbose`; not `nx run-many` or `nx affected`.
-  const nx =
-    /\bnx (?!run-many|affected|show|graph|run |reset|g |generate)([a-z][\w-]*) ([a-z][\w-]*)/g;
-  for (const match of text.matchAll(nx))
+  // `nx test ui`, `npx nx build dashboard --verbose`. Only in code, so prose
+  // ("nx to the rescue") is not read as a command.
+  const nx = new RegExp(
+    `\\bnx (?!(?:${NX_COMMANDS})\\b)([a-z][\\w-]*) ([a-z][\\w-]*)`,
+    'g',
+  );
+  for (const match of code(text).matchAll(nx))
     if (!projects.has(match[2]))
       problems.push(
         `${where(match.index)}: "nx ${match[1]} ${match[2]}" names no Nx project`,
@@ -135,6 +196,8 @@ const status = (text) =>
 export function checkAdrs(root) {
   const dir = join(root, 'docs', 'adr');
   if (!existsSync(dir)) return [];
+  if (!existsSync(join(dir, 'README.md')))
+    return ['docs/adr/README.md: missing; it is the index of the records'];
   const problems = [];
   const index = readFileSync(join(dir, 'README.md'), 'utf8');
   for (const name of readdirSync(dir).filter((n) => /^\d{4}-.+\.md$/.test(n))) {
@@ -144,9 +207,11 @@ export function checkAdrs(root) {
       problems.push(
         `docs/adr/${name}: its first heading is not "# ${number}. Title"`,
       );
+    // The record's own row: its link is in the first cell. A later cell may
+    // link to it too ("Superseded by [0025](...)").
     const row = index
       .split('\n')
-      .find((line) => line.startsWith('|') && line.includes(`](${name})`));
+      .find((line) => line.split('|')[1]?.includes(`](${name})`));
     if (!row) {
       problems.push(`docs/adr/README.md: no index row for ${name}`);
       continue;
@@ -170,6 +235,21 @@ const FRONTMATTER_FIELDS = new Set([
   'allowed-tools',
 ]);
 
+/** Top-level YAML keys and their values; a `>` or `|` value takes the indented lines under it. */
+function frontmatter(front) {
+  const fields = new Map();
+  let last;
+  for (const line of front.split(/\r?\n/)) {
+    const key = /^([a-z][\w-]*):\s*(.*)$/.exec(line);
+    if (key) {
+      last = key[1];
+      fields.set(last, /^[>|][-+]?$/.test(key[2]) ? '' : key[2]);
+    } else if (last && /^\s+\S/.test(line))
+      fields.set(last, `${fields.get(last)} ${line.trim()}`.trim());
+  }
+  return fields;
+}
+
 export function checkSkills(root) {
   const dir = join(root, '.claude', 'skills');
   if (!existsSync(dir)) return [];
@@ -190,15 +270,7 @@ export function checkSkills(root) {
       problems.push(`${where}: no frontmatter`);
       continue;
     }
-    const fields = new Map(
-      front
-        .split(/\r?\n/)
-        .filter((line) => /^[a-z][\w-]*:/.test(line))
-        .map((line) => {
-          const at = line.indexOf(':');
-          return [line.slice(0, at), line.slice(at + 1).trim()];
-        }),
-    );
+    const fields = frontmatter(front);
     for (const field of fields.keys())
       if (!FRONTMATTER_FIELDS.has(field))
         problems.push(
