@@ -1,4 +1,8 @@
-import { HttpRequest, type HttpEvent } from '@angular/common/http';
+import {
+  HttpErrorResponse,
+  HttpRequest,
+  type HttpEvent,
+} from '@angular/common/http';
 import { firstValueFrom, of } from 'rxjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -101,6 +105,21 @@ describe('mockApiInterceptor', () => {
     );
 
     expect(seen).toEqual([{ name: 'a b' }]);
+  });
+
+  it('answers a path param it cannot decode with 400, reaching neither the handler nor the backend', async () => {
+    const handler = vi.fn(() => ({}));
+    registerMockRoutes({ method: 'GET', path: '/api/orders/:id', handler });
+    const next = passthrough();
+
+    const error = await firstValueFrom(
+      mockApiInterceptor(new HttpRequest('GET', '/api/orders/%E0%A4%A'), next),
+    ).catch((reason: unknown) => reason);
+
+    expect(error).toBeInstanceOf(HttpErrorResponse);
+    expect((error as HttpErrorResponse).status).toBe(400);
+    expect(handler).not.toHaveBeenCalled();
+    expect(next).not.toHaveBeenCalled();
   });
 
   it('exposes query params to the handler', async () => {

@@ -122,6 +122,18 @@ describe('GET /api/orders', () => {
 
     expect(totals).toEqual([...totals].sort((a, b) => a - b));
   });
+
+  it('sorts by the default for a name that is not a column, prototype names included', () => {
+    const ids = (query: string) =>
+      call<Page<Order>>('GET', '/api/orders', { query }).items.map(
+        (order) => order.id,
+      );
+    const newestFirst = ids('pageSize=50');
+
+    for (const name of ['nope', '__proto__', 'constructor', 'toString']) {
+      expect(ids(`sort=${name}&dir=asc&pageSize=50`)).toEqual(newestFirst);
+    }
+  });
 });
 
 describe('GET and PATCH /api/orders/:id', () => {

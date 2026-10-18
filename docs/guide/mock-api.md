@@ -51,7 +51,9 @@ A handler receives a context with three fields:
 
 `query` holds the whole query string whether the caller wrote it into the URL
 (`/api/orders?page=2`) or passed it as `HttpClient` `params` (`{ params: { page: 2 } }`). To
-answer with an error status, throw an `HttpErrorResponse` from the handler.
+answer with an error status, throw an `HttpErrorResponse` from the handler. A `:name` segment
+that is not valid URL encoding (`/api/orders/%E0`) never reaches the handler: the interceptor
+answers `400` itself.
 
 ## Install the interceptor
 
@@ -105,7 +107,7 @@ production configuration swaps for an empty one. The dashboard does exactly that
 | [`demo-data.ts`](../../apps/dashboard/src/app/demo-data.ts)                             | `DEMO_DATA`, which puts the "Demo data" label in the topbar; `false` in production.                                                                                                                                                                                                       |
 
 The lists take `q` (search), `sort` and `dir`, and `page` and `pageSize` (at most 50); orders
-also take `status`. A write changes the data for the rest of the session, as a real backend's
+also take `status`. A `sort` that names no column gets the list's default order. A write changes the data for the rest of the session, as a real backend's
 would, and a reload starts over.
 
 Which build has it:
