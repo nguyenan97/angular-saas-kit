@@ -8,7 +8,6 @@ import {
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { OrdersRepository } from '@angular-saas-kit/booking-data-access';
-import type { Money } from '@angular-saas-kit/shared-kernel';
 import {
   Button,
   Card,
@@ -17,12 +16,9 @@ import {
   type ChartPoint,
 } from '@angular-saas-kit/ui';
 
+import { formatMoney } from '../data/money';
 import { ACTIVITY_URL, type ActivityEntry } from '../data/activity';
 
-const VND = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'VND',
-});
 const DAY = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   day: 'numeric',
@@ -34,11 +30,6 @@ const TIME = new Intl.DateTimeFormat('en-US', {
   minute: '2-digit',
   hourCycle: 'h23',
 });
-
-const money = (value: Money) =>
-  value.currency === 'VND'
-    ? VND.format(value.amount)
-    : `${value.amount} ${value.currency}`;
 
 /** "Oct 5" for a local calendar date. */
 function dayLabel(date: string): string {
@@ -106,6 +97,10 @@ function dayLabel(date: string): string {
               />
             } @else if (overview.isLoading()) {
               <p class="text-sm text-muted-foreground">Loading the chart...</p>
+            } @else if (overview.error()) {
+              <p class="text-sm text-muted-foreground">
+                The chart is not available: the figures could not be loaded.
+              </p>
             }
           </div>
         </ask-card>
@@ -190,7 +185,10 @@ export class Overview {
         label: 'Awaiting confirmation',
         value: String(figures.awaitingConfirmation),
       },
-      { label: 'Revenue this week', value: money(figures.revenueThisWeek) },
+      {
+        label: 'Revenue this week',
+        value: formatMoney(figures.revenueThisWeek),
+      },
       {
         label: 'Cancellation rate, 30 days',
         value: `${(figures.cancellationRate * 100).toFixed(1)}%`,

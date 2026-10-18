@@ -73,7 +73,7 @@
     },
     "test": {
       "executor": "@angular/build:unit-test",
-      "outputs": ["{workspaceRoot}/coverage/dashboard"],
+      "outputs": ["{workspaceRoot}/coverage/suite"],
       "options": {
         "watch": false,
         "coverage": true,

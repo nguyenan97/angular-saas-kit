@@ -6,12 +6,10 @@ import {
   Injector,
   booleanAttribute,
   computed,
-  effect,
   inject,
   input,
   model,
   signal,
-  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -219,12 +217,6 @@ export class Combobox {
     this.keyManager.change
       .pipe(takeUntilDestroyed())
       .subscribe((index) => this.activeIndex.set(index));
-
-    // A new list of matches starts with nothing active.
-    effect(() => {
-      this.filtered();
-      untracked(() => this.setActive(-1));
-    });
   }
 
   protected optionId(index: number): string {
@@ -248,6 +240,9 @@ export class Combobox {
   protected onInput(event: Event): void {
     this.query.set((event.target as HTMLInputElement).value);
     this.open.set(true);
+    // A new list of matches starts with nothing active, at once: a key
+    // pressed straight after typing must not be undone by a later reset.
+    this.setActive(-1);
   }
 
   protected onKeydown(event: KeyboardEvent): void {

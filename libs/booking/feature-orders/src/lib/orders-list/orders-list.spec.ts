@@ -210,4 +210,46 @@ describe('OrdersList', () => {
     );
     expect(link?.getAttribute('href')).toBe('/orders/new');
   });
+
+  it('shows in the search box the search of the address it went back to', async () => {
+    const { listRequest, el, settle, tick, router } =
+      await render('/orders?q=abc');
+    listRequest().flush(page([]));
+    await settle();
+
+    await router.navigateByUrl('/orders');
+    await tick();
+    listRequest().flush(page([]));
+    await settle();
+
+    expect(
+      el().querySelector<HTMLInputElement>('input[type="search"]')?.value,
+    ).toBe('');
+  });
+
+  it('asks for every order when the address names an unknown status', async () => {
+    const { listRequest, settle } = await render('/orders?status=foo');
+
+    const req = listRequest();
+    expect(req.request.params.has('status')).toBe(false);
+    req.flush(page([]));
+    await settle();
+  });
+
+  it('keeps focus on the results while Retry asks again', async () => {
+    const { listRequest, el, settle, tick } = await render();
+    listRequest().flush(null, { status: 503, statusText: 'Unavailable' });
+    await settle();
+
+    const retry = el().querySelector<HTMLButtonElement>(
+      '[role="alert"] button',
+    );
+    retry?.focus();
+    retry?.click();
+    await tick();
+
+    expect(document.activeElement).toBe(el().querySelector('[data-results]'));
+    listRequest().flush(page([]));
+    await settle();
+  });
 });

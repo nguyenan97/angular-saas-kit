@@ -4,21 +4,13 @@ import {
 } from '@angular-saas-kit/booking-domain';
 import type { BookingDataset } from '@angular-saas-kit/booking-data-access/mock';
 import type { MockRoute } from '@angular-saas-kit/mock-api';
-import type { InMemoryEventBus, Money } from '@angular-saas-kit/shared-kernel';
+import type { InMemoryEventBus } from '@angular-saas-kit/shared-kernel';
 
+import { formatMoney } from '../data/money';
 import { ACTIVITY_URL, type ActivityEntry } from '../data/activity';
 
 /** How many events the Overview's feed shows. */
 export const ACTIVITY_LIMIT = 20;
-
-const MONEY = new Intl.NumberFormat('en-US', {
-  style: 'currency',
-  currency: 'VND',
-});
-const amount = (value: Money) =>
-  value.currency === 'VND'
-    ? MONEY.format(value.amount)
-    : `${value.amount} ${value.currency}`;
 
 /**
  * The suite's activity log: the one subscriber of the event bus in this
@@ -41,7 +33,7 @@ export function activityLog(
               type: 'OrderPlaced',
               occurredAt: change.at,
               orderId: order.id,
-              text: `${order.id} was placed for ${customer(order.customerId)}, ${amount(orderTotals(order).total)}`,
+              text: `${order.id} was placed for ${customer(order.customerId)}, ${formatMoney(orderTotals(order).total)}`,
             },
           ];
         }
@@ -65,7 +57,7 @@ export function activityLog(
     const { orderId } = event.payload;
     const text =
       event.type === 'OrderPlaced'
-        ? `${orderId} was placed for ${customer(event.payload.customerId)}, ${amount(event.payload.total)}`
+        ? `${orderId} was placed for ${customer(event.payload.customerId)}, ${formatMoney(event.payload.total)}`
         : `${orderId} was cancelled: ${event.payload.reason}`;
     entries.unshift({
       type: event.type,

@@ -182,6 +182,7 @@ describe('OrderDetail', () => {
 
     const reason = dialog?.querySelector('textarea');
     expect(reason?.getAttribute('aria-invalid')).toBe('true');
+    expect(document.activeElement).toBe(reason);
     expect(
       text(
         document.getElementById(reason?.getAttribute('aria-describedby') ?? ''),
@@ -223,6 +224,16 @@ describe('OrderDetail', () => {
     expect(text(el().querySelector('[role="alert"]'))).toContain(
       'The order has changed since you opened it.',
     );
+    expect(document.activeElement).toBe(el().querySelector('[role="alert"]'));
+
+    // The message asks for a reload, so the alert offers one.
+    const reload = [
+      ...el().querySelectorAll<HTMLButtonElement>('[role="alert"] button'),
+    ].find((b) => text(b) === 'Reload');
+    reload?.click();
+    await tick();
+    http.expectOne('/api/booking/orders/SO-0061').flush(order());
+    await settle();
   });
 
   it('says when there is no such order, with a way back to the list', async () => {

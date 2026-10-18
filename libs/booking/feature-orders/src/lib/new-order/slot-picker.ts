@@ -11,7 +11,7 @@ import {
 } from '@angular-saas-kit/booking-domain';
 import { Radio } from '@angular-saas-kit/ui';
 
-import { formatSlotDate } from '../format';
+import { formatSlotDate, formatWindow } from '../format';
 
 /**
  * Delivery slots as days and windows: one native radio per slot in a named
@@ -90,7 +90,7 @@ export class SlotPicker {
         const bookable = isBookable(slot, this.now());
         return {
           id: slot.id,
-          window: `${slot.window.slice(0, 2)}:00 to ${slot.window.slice(3)}:00`,
+          window: formatWindow(slot.window),
           free: slot.capacity - slot.booked,
           refusal: bookable.ok
             ? null

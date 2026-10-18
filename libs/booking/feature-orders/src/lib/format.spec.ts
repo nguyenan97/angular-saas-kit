@@ -36,14 +36,8 @@ describe('formats', () => {
   });
 
   it('names a slot by its day and window', () => {
-    expect(
-      formatSlot({
-        id: 's',
-        date: '2026-10-20',
-        window: '08-12',
-        capacity: 3,
-        booked: 0,
-      }),
-    ).toBe('Tue, Oct 20, 08:00 to 12:00');
+    expect(formatSlot({ date: '2026-10-20', window: '08-12' })).toBe(
+      'Tue, Oct 20, 08:00 to 12:00',
+    );
   });
 });

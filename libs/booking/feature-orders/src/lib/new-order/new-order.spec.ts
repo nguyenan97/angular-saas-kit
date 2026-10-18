@@ -58,7 +58,7 @@ const SLOTS: SlotDto[] = [
   { id: 'slot-full', date: day(2), window: '13-17', capacity: 3, booked: 3 },
 ];
 
-async function render() {
+async function render({ customersFail = false } = {}) {
   TestBed.configureTestingModule({
     providers: [
       provideZonelessChangeDetection(),
@@ -74,7 +74,13 @@ async function render() {
   const harness = await RouterTestingHarness.create();
   await harness.navigateByUrl('/orders/new', NewOrder);
   const http = TestBed.inject(HttpTestingController);
-  http.expectOne('/api/booking/customers').flush(CUSTOMERS);
+  if (customersFail) {
+    http
+      .expectOne('/api/booking/customers')
+      .flush(null, { status: 503, statusText: 'Unavailable' });
+  } else {
+    http.expectOne('/api/booking/customers').flush(CUSTOMERS);
+  }
   http.expectOne('/api/booking/products').flush(PRODUCTS);
   http.expectOne('/api/booking/slots').flush(SLOTS);
   await harness.fixture.whenStable();
@@ -304,6 +310,8 @@ describe('NewOrder', () => {
         { status: 409, statusText: 'Conflict' },
       );
     await tick();
+    http.expectOne('/api/booking/slots').flush(SLOTS);
+    await tick();
     await settle();
 
     expect(text(el().querySelector('[role="alert"]'))).toContain(
@@ -348,5 +356,108 @@ describe('NewOrder', () => {
     await tick();
     http.expectOne('/api/booking/orders/SO-0061/place').flush(placed);
     await tick();
+  });
+
+  it('says when the customers, products or slots cannot be loaded, and loads them again on Retry', async () => {
+    const { http, el, button, tick, settle } = await render({
+      customersFail: true,
+    });
+    await tick();
+    await settle();
+
+    const alert = el().querySelector('[role="alert"]');
+    expect(text(alert)).toContain(
+      'The customers, products or slots could not be loaded.',
+    );
+
+    button('Retry').click();
+    await tick();
+    http.expectOne('/api/booking/customers').flush(CUSTOMERS);
+    await tick();
+    await settle();
+    expect(el().querySelector('[role="alert"]')).toBeNull();
+  });
+
+  it('offers the slots again after a slot was refused, without the refused one chosen', async () => {
+    const {
+      http,
+      el,
+      button,
+      tick,
+      settle,
+      chooseCustomer,
+      addLine,
+      chooseSlot,
+    } = await render();
+    await chooseCustomer('Minh Chau Mart');
+    await addLine('P-001', '1');
+    await chooseSlot('slot-a');
+
+    button('Place order').click();
+    await tick();
+    http
+      .expectOne('/api/booking/orders')
+      .flush(
+        { id: 'SO-0061', status: 'draft' },
+        { status: 201, statusText: 'Created' },
+      );
+    await tick();
+    http
+      .expectOne('/api/booking/orders/SO-0061/place')
+      .flush(
+        { code: 'slot-full', message: 'full' },
+        { status: 409, statusText: 'Conflict' },
+      );
+    await tick();
+
+    http
+      .expectOne('/api/booking/slots')
+      .flush(
+        SLOTS.map((slot) =>
+          slot.id === 'slot-a' ? { ...slot, booked: 3 } : slot,
+        ),
+      );
+    await tick();
+    await settle();
+
+    const a = el().querySelector<HTMLInputElement>('input[value="slot-a"]');
+    expect(a?.checked).toBe(false);
+    expect(a?.disabled).toBe(true);
+  });
+
+  it('moves focus to the refusal, so a keyboard user hears it and starts from there', async () => {
+    const {
+      http,
+      el,
+      button,
+      tick,
+      settle,
+      chooseCustomer,
+      addLine,
+      chooseSlot,
+    } = await render();
+    await chooseCustomer('Minh Chau Mart');
+    await addLine('P-001', '1');
+    await chooseSlot('slot-a');
+
+    button('Place order').click();
+    await tick();
+    http
+      .expectOne('/api/booking/orders')
+      .flush(null, { status: 503, statusText: 'Unavailable' });
+    await tick();
+    await settle();
+
+    expect(document.activeElement).toBe(el().querySelector('[role="alert"]'));
+  });
+
+  it('moves focus to the first field in error when the form is refused on the page', async () => {
+    const { button, settle, find } = await render();
+
+    button('Place order').click();
+    await settle();
+    await new Promise((r) => setTimeout(r));
+
+    expect(document.activeElement).toBe(find('#order-customer'));
   });
 });

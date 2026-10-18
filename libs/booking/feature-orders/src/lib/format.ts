@@ -1,6 +1,7 @@
 import type { Money } from '@angular-saas-kit/shared-kernel';
 import type {
   DeliverySlot,
+  DeliveryWindow,
   OrderStatus,
 } from '@angular-saas-kit/booking-domain';
 import type { BookingFailure } from '@angular-saas-kit/booking-data-access';
@@ -41,10 +42,17 @@ export function formatSlotDate(date: string): string {
   return DAY.format(new Date(year ?? 0, (month ?? 1) - 1, day ?? 1));
 }
 
+/** "08:00 to 12:00" for the window `08-12`. */
+export function formatWindow(window: DeliveryWindow): string {
+  const [from, to] = window.split('-');
+  return `${from}:00 to ${to}:00`;
+}
+
 /** "Tue, Oct 20, 08:00 to 12:00". */
-export function formatSlot(slot: DeliverySlot): string {
-  const [from, to] = slot.window.split('-');
-  return `${formatSlotDate(slot.date)}, ${from}:00 to ${to}:00`;
+export function formatSlot(
+  slot: Pick<DeliverySlot, 'date' | 'window'>,
+): string {
+  return `${formatSlotDate(slot.date)}, ${formatWindow(slot.window)}`;
 }
 
 export const STATUS_LABEL: Record<OrderStatus, string> = {

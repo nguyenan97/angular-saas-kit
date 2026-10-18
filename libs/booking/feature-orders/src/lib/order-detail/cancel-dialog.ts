@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  type ElementRef,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import {
   Button,
@@ -45,6 +47,7 @@ import { ERROR_MESSAGE } from '../format';
         <label askLabel for="cancel-reason">Reason</label>
         <textarea
           askInput
+          #reasonField
           id="cancel-reason"
           [value]="reason()"
           [attr.aria-invalid]="missing() || null"
@@ -72,6 +75,8 @@ export class CancelOrderDialog {
   protected readonly data = inject<{ orderId: string }>(DIALOG_DATA);
   private readonly ref = inject<DialogRef<string>>(DialogRef);
 
+  private readonly field =
+    viewChild.required<ElementRef<HTMLTextAreaElement>>('reasonField');
   protected readonly reason = signal('');
   protected readonly missing = signal(false);
   protected readonly required = ERROR_MESSAGE['reason-required'];
@@ -81,6 +86,8 @@ export class CancelOrderDialog {
     const reason = this.reason().trim();
     if (!reason) {
       this.missing.set(true);
+      // As the dashboard's forms do: focus goes to the field in error.
+      this.field().nativeElement.focus();
       return;
     }
     this.ref.close(reason);

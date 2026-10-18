@@ -171,6 +171,24 @@ describe('Combobox', () => {
     expect(input.hasAttribute('aria-controls')).toBe(false);
   });
 
+  it('moves to the first match with Down pressed straight after typing, before the page has settled', async () => {
+    const { fixture, input, options, active } = await render();
+    input.focus();
+
+    input.value = 'o';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    const down = new KeyboardEvent('keydown', {
+      key: 'ArrowDown',
+      bubbles: true,
+      cancelable: true,
+    });
+    Object.defineProperty(down, 'keyCode', { get: () => 40 });
+    input.dispatchEvent(down);
+    await fixture.whenStable();
+
+    expect(active()).toBe(options()[0]);
+  });
+
   it('goes to the last option with Up when the list is open and nothing is active', async () => {
     const { input, options, press, type, active } = await render();
     input.focus();

@@ -1,6 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
+  Injector,
+  afterNextRender,
   computed,
   inject,
   signal,
@@ -66,11 +69,27 @@ interface DraftLine {
       novalidate
       (submit)="submit($event)"
     >
+      @if (referenceFailed()) {
+        <ask-alert variant="destructive">
+          <div class="flex flex-wrap items-center gap-3">
+            <span>The customers, products or slots could not be loaded.</span>
+            <button
+              type="button"
+              askButton
+              variant="outline"
+              size="sm"
+              (click)="reloadReference()"
+            >
+              Retry
+            </button>
+          </div>
+        </ask-alert>
+      }
       @if (refusal(); as message) {
-        <ask-alert variant="destructive">{{ message }}</ask-alert>
+        <ask-alert variant="destructive" tabindex="-1">{{ message }}</ask-alert>
       }
       @if (networkFailed()) {
-        <ask-alert variant="destructive">
+        <ask-alert variant="destructive" tabindex="-1">
           <div class="flex flex-wrap items-center gap-3">
             <span
               >The order could not be sent. Check the connection and try
@@ -124,7 +143,7 @@ interface DraftLine {
                 (change)="productToAdd.set(value($event))"
               >
                 <option value="">Choose a product</option>
-                @for (product of products.value() ?? []; track product.id) {
+                @for (product of productList(); track product.id) {
                   <option [value]="product.id">
                     {{ product.name }}, {{ money(product.unitPrice) }}
                   </option>
@@ -226,6 +245,7 @@ interface DraftLine {
           }
 
           <dl
+            role="group"
             aria-label="Totals"
             class="ml-auto grid w-64 grid-cols-2 gap-1 text-sm"
           >
@@ -244,7 +264,7 @@ interface DraftLine {
       <ask-card>
         <div askCardContent class="flex flex-col gap-2">
           <ask-slot-picker
-            [slots]="slots.value() ?? []"
+            [slots]="slotList()"
             [now]="now"
             [(value)]="slotId"
             [describedBy]="showErrors() && !slotId() ? 'order-slot-error' : ''"
@@ -269,6 +289,8 @@ export class NewOrder {
   private readonly repository = inject(OrdersRepository);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly injector = inject(Injector);
   protected readonly store = inject(OrdersStore);
 
   protected readonly now = new Date();
@@ -285,6 +307,18 @@ export class NewOrder {
     stream: () => this.repository.slots(),
   });
 
+  /** The reference data, or none while it loads or after a failure (`value()` throws then). */
+  protected readonly productList = computed(() =>
+    this.products.hasValue() ? this.products.value() : [],
+  );
+  protected readonly slotList = computed(() =>
+    this.slots.hasValue() ? this.slots.value() : [],
+  );
+  protected readonly referenceFailed = computed(
+    () =>
+      !!(this.customers.error() || this.products.error() || this.slots.error()),
+  );
+
   protected readonly customerId = signal<string | null>(null);
   protected readonly slotId = signal<string | null>(null);
   protected readonly productToAdd = signal('');
@@ -294,7 +328,7 @@ export class NewOrder {
   protected readonly showErrors = signal(false);
 
   protected readonly customerOptions = computed<ComboboxOption[]>(() =>
-    (this.customers.value() ?? []).map((c) => ({
+    (this.customers.hasValue() ? this.customers.value() : []).map((c) => ({
       value: c.id,
       label: c.name,
       description: c.city,
@@ -303,9 +337,7 @@ export class NewOrder {
 
   /** Each line checked by the domain: its net, or why it is refused. */
   private readonly checked = computed(() => {
-    const catalogue = new Map(
-      (this.products.value() ?? []).map((p) => [p.id, p]),
-    );
+    const catalogue = new Map(this.productList().map((p) => [p.id, p]));
     return this.lines().flatMap((line) => {
       const product = catalogue.get(line.productId);
       if (!product) return [];
@@ -336,7 +368,8 @@ export class NewOrder {
     const valid: OrderLine[] = this.checked().flatMap(({ result }) =>
       result.ok ? [result.value] : [],
     );
-    const totals = orderTotals({ lines: valid, currency: 'VND' });
+    const currency = this.productList()[0]?.unitPrice.currency ?? 'VND';
+    const totals = orderTotals({ lines: valid, currency });
     return {
       subtotal: formatMoney(totals.subtotal),
       vat: formatMoney(totals.vat),
@@ -382,18 +415,56 @@ export class NewOrder {
     );
   }
 
+  protected reloadReference(): void {
+    for (const resource of [this.customers, this.products, this.slots]) {
+      if (resource.error()) resource.reload();
+    }
+  }
+
   protected submit(event: Event): void {
     event.preventDefault();
     this.showErrors.set(true);
+    if (!this.ready()) {
+      this.focusLater(this.firstInvalid());
+      return;
+    }
     void this.place();
+  }
+
+  /** Whether the form holds an order the domain will take, as far as the page can tell. */
+  private ready(): boolean {
+    return (
+      !!this.customerId() &&
+      !!this.slotId() &&
+      this.lines().length > 0 &&
+      this.checked().every(({ result }) => result.ok)
+    );
+  }
+
+  /** The first field in error, as the dashboard's forms do: focus goes there. */
+  private firstInvalid(): string {
+    if (!this.customerId()) return '#order-customer';
+    if (this.lines().length === 0) return '#order-product';
+    if (!this.checked().every(({ result }) => result.ok)) {
+      return 'tbody input[aria-invalid="true"]';
+    }
+    return 'input[name="delivery-slot"]:not(:disabled)';
+  }
+
+  /** Focuses what `selector` finds once the page has drawn the change. */
+  private focusLater(selector: string): void {
+    afterNextRender(
+      () =>
+        this.host.nativeElement.querySelector<HTMLElement>(selector)?.focus(),
+      { injector: this.injector },
+    );
   }
 
   /** Places the order when the form holds one; a refused line stops it on the page. */
   protected async place(): Promise<void> {
     const customerId = this.customerId();
     const slotId = this.slotId();
-    const valid = this.checked().every(({ result }) => result.ok);
-    if (!customerId || !slotId || this.lines().length === 0 || !valid) return;
+    if (!customerId || !slotId || !this.ready()) return;
     const request: CreateOrderRequest = {
       customerId,
       lines: this.lines().map(({ productId, quantity }) => ({
@@ -402,8 +473,21 @@ export class NewOrder {
       })),
     };
     const order = await this.store.placeNew(request, slotId);
-    if (order)
+    if (order) {
       await this.router.navigate(['..', order.id], { relativeTo: this.route });
+      return;
+    }
+    const failure = this.store.failure();
+    // The slot was taken or has started meanwhile: offer the slots as they are now.
+    if (
+      failure?.kind === 'business' &&
+      (failure.code === 'slot-full' || failure.code === 'slot-in-past')
+    ) {
+      this.slotId.set(null);
+      this.slots.reload();
+    }
+    // The button pressed is disabled while saving; the refusal takes focus.
+    this.focusLater('[role="alert"][tabindex="-1"]');
   }
 
   protected value(event: Event): string {

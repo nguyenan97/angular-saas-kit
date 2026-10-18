@@ -5,6 +5,7 @@ import {
   computed,
   effect,
   inject,
+  linkedSignal,
   signal,
   untracked,
 } from '@angular/core';
@@ -104,7 +105,13 @@ export const PAGE_SIZE = 10;
     </ask-card>
 
     <ng-template #results>
-      <div class="flex flex-col gap-4">
+      <!-- One element around the alert and the results, so focus has
+           somewhere to stay while Retry swaps one for the other. -->
+      <div
+        data-results
+        tabindex="-1"
+        class="flex flex-col gap-4 focus-visible:outline-none"
+      >
         <p class="text-sm text-muted-foreground" role="status">
           {{ summary() }}
         </p>
@@ -117,7 +124,7 @@ export const PAGE_SIZE = 10;
               askButton
               variant="outline"
               size="sm"
-              (click)="orders.reload()"
+              (click)="retry($event)"
             >
               Retry
             </button>
@@ -209,7 +216,11 @@ export class OrdersList {
   protected readonly money = formatMoney;
   protected readonly dateTime = formatDateTime;
 
-  protected readonly status = computed(() => this.query().get('status') ?? '');
+  /** A status the tabs know, or '' (every order) for anything else in the URL. */
+  protected readonly status = computed(() => {
+    const status = this.query().get('status') ?? '';
+    return TABS.some((tab) => tab.status === status) ? status : '';
+  });
   protected readonly q = computed(() => this.query().get('q') ?? '');
   protected readonly pageNumber = computed(() =>
     Math.max(1, Math.trunc(Number(this.query().get('page'))) || 1),
@@ -222,7 +233,7 @@ export class OrdersList {
   );
 
   /** What is in the box; it reaches the URL once the typing stops. */
-  protected readonly search = signal(untracked(this.q));
+  protected readonly search = linkedSignal(() => this.q());
 
   protected readonly orders = rxResource({
     params: () => ({
@@ -260,6 +271,17 @@ export class OrdersList {
       );
       onCleanup(() => clearTimeout(timer));
     });
+  }
+
+  /**
+   * Asks again. The alert and its Retry button give way while the list
+   * reloads, so focus moves to what holds the alert and the results.
+   */
+  protected retry(event: Event): void {
+    (event.target as HTMLElement)
+      .closest<HTMLElement>('[data-results]')
+      ?.focus();
+    this.orders.reload();
   }
 
   protected selectTab(index: number): void {

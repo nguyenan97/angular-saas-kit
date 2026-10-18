@@ -1,7 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  type ElementRef,
+  ElementRef,
   Injector,
   afterNextRender,
   computed,
@@ -35,7 +35,7 @@ import {
   failureMessage,
   formatDateTime,
   formatMoney,
-  formatSlotDate,
+  formatSlot,
 } from '../format';
 import { CancelOrderDialog } from './cancel-dialog';
 
@@ -94,7 +94,22 @@ export function statusSteps(order: OrderDto): TimelineItem[] {
 
       @if (refusal(); as message) {
         @if (store.order()) {
-          <ask-alert variant="destructive">{{ message }}</ask-alert>
+          <ask-alert variant="destructive" tabindex="-1">
+            <div class="flex flex-wrap items-center gap-3">
+              <span>{{ message }}</span>
+              @if (store.failure()?.kind === 'business' && staleOrder()) {
+                <button
+                  type="button"
+                  askButton
+                  variant="outline"
+                  size="sm"
+                  (click)="reload()"
+                >
+                  Reload
+                </button>
+              }
+            </div>
+          </ask-alert>
         } @else {
           <ask-alert variant="destructive">
             {{ message }}
@@ -105,7 +120,7 @@ export function statusSteps(order: OrderDto): TimelineItem[] {
         }
       }
       @if (networkFailed()) {
-        <ask-alert variant="destructive">
+        <ask-alert variant="destructive" tabindex="-1">
           <div class="flex flex-wrap items-center gap-3">
             <span>The order could not be loaded or changed.</span>
             <button
@@ -253,6 +268,7 @@ export function statusSteps(order: OrderDto): TimelineItem[] {
 export class OrderDetail {
   protected readonly store = inject(OrdersStore);
   private readonly injector = inject(Injector);
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly heading = viewChild<ElementRef<HTMLElement>>('heading');
   private readonly dialogs = inject(DialogService);
   private readonly id = toSignal(
@@ -283,7 +299,7 @@ export class OrderDetail {
   protected readonly delivery = computed(() => {
     const slot = this.store.order()?.deliverySlot;
     if (!slot) return 'Not booked yet';
-    return `${formatSlotDate(slot.date)}, ${slot.window.slice(0, 2)}:00 to ${slot.window.slice(3)}:00`;
+    return formatSlot(slot);
   });
 
   constructor() {
@@ -304,6 +320,25 @@ export class OrderDetail {
     });
   }
 
+  /** The order changed elsewhere: the message asks for a reload, so the alert offers one. */
+  protected readonly staleOrder = computed(() => {
+    const failure = this.store.failure();
+    return (
+      failure?.kind === 'business' && failure.code === 'invalid-transition'
+    );
+  });
+
+  /** The button pressed is disabled while saving and may be gone; the refusal takes focus. */
+  private refused(): void {
+    afterNextRender(
+      () =>
+        this.host.nativeElement
+          .querySelector<HTMLElement>('[role="alert"][tabindex="-1"]')
+          ?.focus(),
+      { injector: this.injector },
+    );
+  }
+
   protected reload(): void {
     void this.store.load(this.id());
   }
@@ -311,6 +346,7 @@ export class OrderDetail {
   protected async confirm(): Promise<void> {
     this.notice.set('');
     if (await this.store.confirm()) this.done(`${this.id()} was confirmed.`);
+    else this.refused();
   }
 
   protected async cancel(): Promise<void> {
@@ -323,5 +359,6 @@ export class OrderDetail {
     if (!reason) return;
     if (await this.store.cancel(reason))
       this.done(`${this.id()} was cancelled.`);
+    else this.refused();
   }
 }
