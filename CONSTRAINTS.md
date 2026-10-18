@@ -49,6 +49,7 @@ Checked on every diff, at review (`review-change`), because no tool sees all of 
 | New dependencies         | Nothing added at `high` or above; licence on the allow list                                                   | dependency review (ADR 0024)               | PRs                      |
 | Workflows                | Every action pinned to a SHA; no credentials left in a checkout; no template injection or broad permissions   | zizmor (ADR 0024)                          | PRs, `main`              |
 | Commits                  | Conventional Commits, scopes from `AGENTS.md`                                                                 | commitlint                                 | commit hook              |
+| Pull request title       | The same rules: it becomes the squash commit on `main`                                                        | commitlint, CI `pr title` (not required)   | PRs (not Dependabot)     |
 
 `npm run verify` runs the rows marked `verify`. The required checks on `main` are listed in
 [ADR 0009](docs/adr/0009-strict-ci-gates-and-a-protected-main.md).

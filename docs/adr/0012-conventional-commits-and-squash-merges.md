@@ -23,6 +23,10 @@ coverage on broke a test until the next commit fixed it).
   `main`, so it has to satisfy the same rules. `main` stays a linear list of one
   conventional commit per change.
 
+_Amended 2026-10-18:_ commitlint runs on the pull request's title in CI too (the `pr title` job),
+because the local hook never sees the title that becomes the commit on `main`. Dependabot's pull
+requests are skipped: their titles follow Dependabot's own format (`build(deps-dev): Bump ...`).
+
 ## Alternatives considered
 
 - **Merge commits** - keep every intermediate commit, including the red ones, and
