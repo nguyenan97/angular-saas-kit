@@ -34,11 +34,13 @@ apart from the format check. Run both before you say a change is done.
 ```text
 apps/dashboard      admin SPA (client-side)          apps/landing   marketing page (prerendered)
 apps/dashboard-e2e  Playwright (CI: Chromium)         libs/tokens    design tokens, ThemeService
-libs/ui             components (a README each), cn() libs/mock-api  in-memory HTTP interceptor
-libs/shared/kernel    domain value types, Result, event bus (plain TS, no app uses it yet)
-libs/booking/domain  Booking domain: SalesOrder, lines, slots (plain TS, no app uses it yet)
-libs/booking/contracts    Booking API paths, DTOs, OrderPlacedV1 (plain TS, no app uses it yet)
-libs/booking/data-access  OrdersRepository, OrdersStore, Booking mock routes (no app uses it yet)
+apps/suite          order-to-cash demo SPA (Booking)  libs/mock-api  in-memory HTTP interceptor
+libs/ui             components (a README each), cn()
+libs/shared/kernel        domain value types, Result, event bus (plain TS)
+libs/booking/domain       Booking domain: SalesOrder, lines, slots (plain TS)
+libs/booking/contracts    Booking API paths, DTOs, OrderPlacedV1 (plain TS)
+libs/booking/data-access  OrdersRepository, OrdersStore, Booking mock routes
+libs/booking/feature-orders  Orders list, New order, Order detail pages
 docs/               guides, C4 diagrams (architecture/), ADRs (adr/), the VitePress site
 scripts/            assemble/preview the Pages site; the check:* scripts that verify runs
 ```
@@ -75,7 +77,7 @@ its tags.
 ## Commits, PRs and `main`
 
 - **Conventional Commits.** The scope, if any, is one of `ui`, `tokens`, `mock-api`, `dashboard`,
-  `landing`, `ci`, `deps`, `repo`. `docs` is a type, not a scope. The PR title becomes the squash
+  `landing`, `suite`, `ci`, `deps`, `repo`. `docs` is a type, not a scope. The PR title becomes the squash
   commit, so it follows the same rules.
 - `main` is protected: the required checks (ADR 0009) must pass and the branch must be up to date.
   Work on a branch and open a PR; never push to `main`, never `--no-verify`.
@@ -95,8 +97,8 @@ its tags.
   file becomes their source.
 - **Nx does not merge comma-separated configurations** for this executor: `-c production,pages`
   silently builds plain production. The `pages` configuration stands alone.
-- **The theme init script lives in three places** (`THEME_INIT_SCRIPT` and each app's
-  `index.html`); `theme-init.spec.ts` fails when they drift. Change all three.
+- **The theme init script lives in four places** (`THEME_INIT_SCRIPT` and each app's
+  `index.html`: dashboard, landing, suite); `theme-init.spec.ts` fails when they drift. Change all four.
 - **Coverage instrumentation breaks `__dirname`** in specs; use `workspaceRoot` from `@nx/devkit`.
 - **CI runs on Linux.** A script test must hold on a case-sensitive file system with `/`
   separators; an assertion that only Windows or macOS produces fails CI (`check-docs.test.mjs` did once).

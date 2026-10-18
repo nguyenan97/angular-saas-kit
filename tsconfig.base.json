@@ -41,6 +41,9 @@
       ],
       "@angular-saas-kit/booking-data-access/mock": [
         "./libs/booking/data-access/src/mock.ts"
+      ],
+      "@angular-saas-kit/booking-feature-orders": [
+        "./libs/booking/feature-orders/src/index.ts"
       ]
     }
   },

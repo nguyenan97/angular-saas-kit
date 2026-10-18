@@ -5,6 +5,7 @@ import {
 } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import type { OrderDto } from '@angular-saas-kit/booking-contracts';
+import { OrdersRepository } from './orders.repository';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { toFailure } from './failure';
@@ -26,7 +27,12 @@ const REQUEST = {
 
 beforeEach(() => {
   TestBed.configureTestingModule({
-    providers: [provideHttpClient(), provideHttpClientTesting(), OrdersStore],
+    providers: [
+      provideHttpClient(),
+      provideHttpClientTesting(),
+      OrdersRepository,
+      OrdersStore,
+    ],
   });
   store = TestBed.inject(OrdersStore);
   http = TestBed.inject(HttpTestingController);

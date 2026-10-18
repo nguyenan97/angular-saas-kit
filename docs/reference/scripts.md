@@ -67,7 +67,7 @@ Installed by `husky` when you run `npm ci`.
 | `commit-msg` | `commitlint`, which enforces [Conventional Commits](https://www.conventionalcommits.org/). |
 
 The optional scope of a commit must be one of `ui`, `tokens`, `mock-api`, `dashboard`,
-`landing`, `ci`, `deps`, `repo`. A new area of the codebase needs an entry in
+`landing`, `suite`, `ci`, `deps`, `repo`. A new area of the codebase needs an entry in
 `commitlint.config.mjs` before commits can mention it. The pull request title becomes the
 commit on `main`, so it follows the same rules. See
 [ADR 0012](../adr/0012-conventional-commits-and-squash-merges.md).

@@ -14,7 +14,11 @@ let http: HttpTestingController;
 
 beforeEach(() => {
   TestBed.configureTestingModule({
-    providers: [provideHttpClient(), provideHttpClientTesting()],
+    providers: [
+      provideHttpClient(),
+      provideHttpClientTesting(),
+      OrdersRepository,
+    ],
   });
   repository = TestBed.inject(OrdersRepository);
   http = TestBed.inject(HttpTestingController);

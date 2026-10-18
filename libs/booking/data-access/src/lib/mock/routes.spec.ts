@@ -253,7 +253,11 @@ describe('POST /api/booking/orders/:id/place', () => {
       body: { slotId: slot.id },
     }) as OrderDto;
 
-    expect(placed).toMatchObject({ status: 'placed', slotId: slot.id });
+    expect(placed).toMatchObject({
+      status: 'placed',
+      slotId: slot.id,
+      deliverySlot: { date: slot.date, window: slot.window },
+    });
     expect(placed.history.map((h) => h.status)).toEqual(['draft', 'placed']);
     expect(data.slots.find((s) => s.id === slot.id)?.booked).toBe(
       slot.booked + 1,

@@ -1,0 +1,17 @@
+/* Suite global styles.
+ * Tokens, Tailwind and the theme mapping arrive through the shared
+ * stylesheet; this file only says where Tailwind finds the classes to
+ * generate: this app, the shared components, and the business contexts'
+ * pages. */
+@import '../../../libs/tokens/src/styles.css';
+
+@source './';
+@source '../../../libs/ui/src';
+@source '../../../libs/booking/feature-orders/src';
+
+/* Tests and stories are not part of the app: their strings must not turn
+ * into utilities in the production CSS. */
+@source not './**/*.spec.ts';
+@source not '../../../libs/ui/src/**/*.spec.ts';
+@source not '../../../libs/ui/src/**/*.stories.ts';
+@source not '../../../libs/booking/feature-orders/src/**/*.spec.ts';

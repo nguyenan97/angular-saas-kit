@@ -1,0 +1,94 @@
+{
+  "name": "suite",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "ask",
+  "sourceRoot": "apps/suite/src",
+  "tags": ["type:app", "scope:suite"],
+  "targets": {
+    "build": {
+      "executor": "@angular/build:application",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "outputPath": "dist/apps/suite",
+        "browser": "apps/suite/src/main.ts",
+        "tsConfig": "apps/suite/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/suite/public"
+          }
+        ],
+        "styles": ["apps/suite/src/styles.css"]
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "350kb",
+              "maximumError": "500kb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/suite/src/app/mock-backend.ts",
+              "with": "apps/suite/src/app/mock-backend.production.ts"
+            },
+            {
+              "replace": "apps/suite/src/app/demo-data.ts",
+              "with": "apps/suite/src/app/demo-data.production.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@angular/build:dev-server",
+      "defaultConfiguration": "development",
+      "configurations": {
+        "production": {
+          "buildTarget": "suite:build:production"
+        },
+        "development": {
+          "buildTarget": "suite:build:development"
+        }
+      },
+      "options": {
+        "port": 4300
+      }
+    },
+    "test": {
+      "executor": "@angular/build:unit-test",
+      "outputs": ["{workspaceRoot}/coverage/suite"],
+      "options": {
+        "watch": false,
+        "coverage": true,
+        "coverageReporters": ["lcov", "text-summary"]
+      }
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "suite:build",
+        "port": 4300,
+        "staticFilePath": "dist/apps/suite/browser",
+        "spa": true
+      }
+    }
+  }
+}

@@ -15,12 +15,13 @@ repository already enforces boundaries with Nx tags
 
 Each bounded context is a set of Nx libraries under `libs/<context>/`, one per layer: `domain`
 (plain TypeScript), `contracts` (what other contexts may import), `data-access` and `feature-*`.
-`shared-kernel`, `booking-domain`, `booking-contracts` and `booking-data-access` exist; the
-feature layer arrives with the suite app.
+All four layers exist for Booking (`booking-domain`, `booking-contracts`, `booking-data-access`,
+`booking-feature-orders`), on `shared-kernel`; the `suite` app mounts them.
 
 - **Tags:** every library keeps `type:lib`, takes `scope:<context>`, and adds a `layer:` tag.
 - **Lint:** `layer:domain` may depend only on `layer:domain`, `layer:contracts` only on
-  `layer:domain`, `layer:data-access` on those two and `mock-api` (tagged `role:mock-backend`), and a context only on
+  `layer:domain`, `layer:data-access` on those two and `mock-api` (tagged `role:mock-backend`), `layer:feature` on
+  data access, domain, contracts and shared libraries, and a context only on
   itself and `scope:shared`. Domain and contracts libraries also refuse `@angular/*` and `rxjs`
   imports.
 - **Shared kernel:** the value types (`Money`, quantities, `Result`) and the event bus that every

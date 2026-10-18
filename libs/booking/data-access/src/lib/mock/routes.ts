@@ -105,6 +105,11 @@ export function bookingMockRoutes(
   const find = (id: string | undefined) =>
     data.orders.find((record) => record.order.id === id);
 
+  function deliverySlot(id: string | undefined) {
+    const slot = data.slots.find((candidate) => candidate.id === id);
+    return slot && { date: slot.date, window: slot.window };
+  }
+
   function toDto({ order, createdAt, history }: OrderRecord): OrderDto {
     return {
       id: order.id,
@@ -118,7 +123,11 @@ export function bookingMockRoutes(
       history: [...history],
       ...(order.status === 'draft'
         ? {}
-        : { slotId: order.slotId, placedAt: order.placedAt }),
+        : {
+            slotId: order.slotId,
+            placedAt: order.placedAt,
+            deliverySlot: deliverySlot(order.slotId),
+          }),
       ...(order.status === 'cancelled'
         ? { cancelReason: order.cancelReason }
         : {}),

@@ -6,14 +6,14 @@ import { describe, expect, it } from 'vitest';
 import { THEME_INIT_SCRIPT } from './theme-init';
 
 /**
- * The anti-flash snippet lives in two places by necessity: as a TS export
+ * The anti-flash snippet lives in two kinds of place by necessity: as a TS export
  * (so the kit can be embedded elsewhere) and inlined in each index.html (so
  * it runs before first paint). Nothing stops those copies drifting apart
  * except this test - and a drifted copy is invisible in review but produces
  * a theme flash on every reload.
  */
 describe('THEME_INIT_SCRIPT', () => {
-  const apps = ['dashboard', 'landing'];
+  const apps = ['dashboard', 'landing', 'suite'];
 
   /**
    * Prettier reformats index.html, so a byte-for-byte comparison would fail
