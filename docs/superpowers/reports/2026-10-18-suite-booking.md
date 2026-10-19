@@ -1,6 +1,7 @@
 # Report: the suite's Booking context
 
-Date: 2026-10-18 to 2026-10-19 (the file is named for the day the batch started, as the plan says). Mode: autonomous (ADR 0027). Spec:
+Date: 2026-10-18, when the batch merged; the report was written on 2026-10-19 (the plan names the
+file for the batch's day). Mode: autonomous (ADR 0027). Spec:
 [`../specs/2026-10-17-suite-booking-design.md`](../specs/2026-10-17-suite-booking-design.md). Plan:
 [`../plans/2026-10-18-suite-2-booking-context.md`](../plans/2026-10-18-suite-2-booking-context.md)
 (plan 1, the kernel and the domain, merged earlier as #73).
@@ -11,7 +12,8 @@ Each pull request was squash-merged with every required check green on its final
 branch up to date with `main`. Before each merge a separate agent, started for the purpose with the
 `review-change` skill and reading the branch only through git refs, reviewed the diff; every
 blocking and should-fix finding was fixed in follow-up commits on the same pull request and
-re-reviewed until none was left. The reviews ran in this session and are summarised in each pull
+re-reviewed until none was left (the re-reviews of #107 and #108 are recorded in their bodies;
+those of #105 and #106 ran in this session too, and their bodies record only the fixes). The reviews ran in this session and are summarised in each pull
 request's body ("Written with AI").
 
 | PR  | Pull request                                                    | What it did                                                                                                                                                                                                                      |
@@ -40,7 +42,7 @@ No new ADR: the hard-to-reverse decision (bounded contexts as Nx libraries, four
 [ADR 0021](../../adr/0021-bounded-contexts-as-nx-libraries.md), amended in A and C as the layers
 arrived. The rest is in the plan's decision log: `mockResponse` instead of throwing for non-200
 answers; the list state in the feature (URL-driven), the current order in the store; an inline
-listbox for the combobox, not a CDK overlay; four pull requests over the 400-line guide, as the
+listbox for the combobox, not a CDK overlay; four pull requests over the 400-line limit, as the
 person asked for the spec's split; `role:mock-backend` on `mock-api` so data access cannot reach
 `ui`; DTOs alias domain types until a second context consumes them.
 
@@ -113,23 +115,32 @@ Most severe first. None is applied here; each accepted fix gets its own pull req
 1. **A service provided in root bypassed the route's interceptors** (high). `OrdersRepository` was
    `providedIn: 'root'`; since Angular provides `HttpClient` in root, it took that one, without
    the mock backend the pages route adds. Every unit test passed (they provide `HttpClient`
-   themselves); only the browser showed it (d07d25b in #107). Fix, a spec pattern: the suite's
-   `pages.routes.spec.ts` asks the route's injector for the repository and expects the mock's
-   answer; add that step to `add-dashboard-page` ("prove the page's data comes from the route's
-   providers") and a line to `AGENTS.md` Traps: a service that uses `HttpClient` is provided next
-   to `provideHttpClient`, never in root.
-2. **`resource.value()` throws in an error state** (high). Two pages read it with `?? []`
-   (Overview, then New order: a blocking review finding in #107). Fix, a check: a
-   `scripts/check-*.mjs` rule (or a lint rule) that flags `.value() ??` and `.value()?.` on a
-   resource, wired into `verify` and listed in `CONSTRAINTS.md`; the fix it points to is
-   `hasValue() ? value() : fallback`.
+   themselves); only the browser showed it (d07d25b in #107). Fix, a check: a
+   `scripts/check-*.mjs` rule that fails on an `@Injectable({ providedIn: 'root' })` class that
+   injects `HttpClient`, wired into `verify` and listed in `CONSTRAINTS.md` (no such class is on
+   `main` today, so it passes on day one). The `add-dashboard-page` skill can add the spec pattern
+   the suite now has (`pages.routes.spec.ts`: ask the route's injector for the repository and
+   expect the mock's answer).
+2. **`resource.value()` throws in an error state** (high). Two pages read it with `?? []`: the
+   Overview (fixed before its pull request opened, 7b532f8 in #107) and New order (a blocking
+   review finding, fixed in d7ab325 in #107). Fix, a check: a `scripts/check-*.mjs` rule (or a lint
+   rule) that flags `.value() ??` and `.value()?.` on a resource, wired into `verify` and listed in
+   `CONSTRAINTS.md`; the fix it points to is `hasValue() ? value() : fallback`. Three uses on `main`
+   are safe only because an `@if (error)` guards them (`apps/dashboard/src/app/pages/overview.ts`,
+   two, and `apps/suite/src/app/pages/overview.ts`, one): the fix pull request migrates them to
+   `hasValue()` first, so the check does not turn `verify` red.
 3. **`whenStable()` waits for open HTTP requests** (medium). Component tests hung for the 5-second
-   timeout four times before each one flushed its request first, and each spec grew its own `tick`
-   helper. Fix, a skill edit to `test-first`: flush the request before `whenStable()`, or wait with
-   a timer; and one shared helper in a testing entry point if a third app needs it.
-4. **BDD after the pages** (medium). The spec's Delivery order contradicted its Testing rule, and
-   `plan-tasks` followed Delivery. Fix, a skill edit to `plan-tasks`: a user-facing scenario's
-   feature file and steps belong to the task that builds its page, not to a later e2e task.
+   timeout four times before each one flushed its request first, and four specs grew their own
+   `tick` helper (`apps/suite/src/app/pages/overview.spec.ts`, and the `new-order`,
+   `order-detail` and `orders-list` specs in `libs/booking/feature-orders`). Fix, a skill edit to
+   `test-first`: flush the request before `whenStable()`, or wait with a timer; and one shared
+   helper in a testing entry point if a third app needs it.
+4. **BDD after the pages** (medium). The spec's Testing section asks for the scenario before the
+   page ("BDD: the scenario is written before the page"), while its Delivery section lists "e2e,
+   Pages and docs" as the last pull request; `plan-tasks` followed Delivery and put the feature
+   files in task D2, after the pages of C5 to C7. Fix, a skill edit to `plan-tasks`: a user-facing
+   scenario's feature file and steps belong to the task that builds its page, not to a later e2e
+   task.
 5. **BDD steps racing the mock's latency** (low). Parallel reference requests land 200 to 600 ms
    apart; a step pressed a key before the list it read had arrived (29bb6db in #108). Fix, a line in
    the suite guide's tests section: a step waits for what a person reads before acting on it.
